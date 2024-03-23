@@ -33,7 +33,7 @@ extension DependencyMagnetCommand {
       do {
         dependenciesConfigData = try Data(contentsOf: commonOptions.config.prependingCurrentDirectoryPath().asFileURL())
         dependenciesConfig = try YAMLDecoder().decode(DependenciesConfig.self, from: dependenciesConfigData)
-      } catch let error {
+      } catch {
         throwError(.configNotDecodable, error.localizedDescription)
       }
 

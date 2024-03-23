@@ -1,5 +1,5 @@
 //
-//  DependenciesConfig.swift
+//  DependenciesConfig+Extensions.swift
 //  Copyright © 2023 Jason Fieldman.
 //
 

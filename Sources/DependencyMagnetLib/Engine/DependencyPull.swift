@@ -31,11 +31,11 @@ extension DependencyPull {
 
   func validateNoDuplicates(_ dependencies: [Dependency]) {
     var urls: Set<String> = []
-    dependencies.forEach {
-      if urls.contains($0.url) {
-        throwError(.duplicateDependencies, "Duplicate dependency found: \($0.url)")
+    for dependency in dependencies {
+      if urls.contains(dependency.url) {
+        throwError(.duplicateDependencies, "Duplicate dependency found: \(dependency.url)")
       }
-      urls.insert($0.url)
+      urls.insert(dependency.url)
     }
   }
 
