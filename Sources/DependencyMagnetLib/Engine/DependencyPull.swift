@@ -17,6 +17,7 @@ public class DependencyPull {
     createDirectory(workspacePath)
     createDirectory(outputPath)
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
+    reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     resolveWorkspacePackage(workspacePath: workspacePath)
   }
 }
@@ -68,9 +69,38 @@ extension DependencyPull {
     }
   }
 
+  func reuseExistingPackageResolvedFile(
+    workspacePath: String,
+    outputPath: String
+  ) {
+    let existingResolvedFile = "Package.resolved".prepending(directoryPath: outputPath)
+    let targetResolvedFile = "Package.resolved".prepending(directoryPath: workspacePath)
+
+    guard existingResolvedFile.isFile else {
+      vprint(.verbose, "No existing Package.resolved to reuse in output path")
+      return
+    }
+
+    do {
+      if targetResolvedFile.isFile {
+        try FileManager.default.removeItem(atPath: targetResolvedFile)
+      }
+      try FileManager.default.copyItem(
+        atPath: existingResolvedFile,
+        toPath: targetResolvedFile
+      )
+    } catch {
+      throwError(.fileError, "Could not copy Package.resolved from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
+    }
+
+    vprint(.verbose, "Copied existing Package.resolved to workspace path")
+  }
+
   func resolveWorkspacePackage(
     workspacePath: String
   ) {
+    vprint(.verbose, "Running 'swift package resolve' on workspace")
+
     let result = Process.execute(
       command: "swift package resolve",
       workingDirectory: workspacePath.prependingCurrentDirectoryPath().asDirectoryURL(),

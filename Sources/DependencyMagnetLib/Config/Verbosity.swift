@@ -33,16 +33,15 @@ extension Verbosity: Comparable {
 
 public func setVerbosity(_ verbosity: Verbosity) {
   gVerbosityLevel = verbosity
-  vprint(.verbose, "Verbosity: \(gVerbosityLevel.name)")
 }
 
 func vprint(_ verboseness: Verbosity, _ str: String) {
   if verboseness == .error {
-    fputs(str + "\n", stderr)
+    fputs("💀 \(str)\n", stderr)
     return
   }
 
   if verboseness.rawValue <= gVerbosityLevel.rawValue {
-    print(str)
+    print("🧲 \(str)")
   }
 }
