@@ -51,7 +51,6 @@ public extension FileManager {
       return nil
     }
 
-    print("SHA \(directory) \(SHA256.hash(data: shasumData).compactMap { String(format: "%02x", $0) }.joined())")
     return SHA256.hash(data: shasumData).compactMap { String(format: "%02x", $0) }.joined()
   }
 

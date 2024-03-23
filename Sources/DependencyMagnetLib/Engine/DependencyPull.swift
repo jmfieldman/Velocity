@@ -189,7 +189,7 @@ extension DependencyPull {
       let state = try JSONDecoder().decode(WorkspaceState.self, from: data)
 
       if gVerbosityLevel == .debug {
-        for dep in state.object?.dependencies ?? [] {
+        for dep in state.object?.dependencies?.sorted() ?? [] {
           vprint(.debug, "Dependency in workspace: \(dep.displayTuple)")
         }
       }
@@ -261,7 +261,7 @@ extension DependencyPull {
       throwError(.noDependencies, "No dependencies found in workspace state")
     }
 
-    for dependency in dependencies {
+    for dependency in dependencies.sorted() {
       guard let subpath = dependency.subpath else {
         vprint(.normal, "Warning: dependency \(dependency.displayName) has no subpath")
         continue

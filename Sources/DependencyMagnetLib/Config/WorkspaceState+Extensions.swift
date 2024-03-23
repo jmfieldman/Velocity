@@ -31,3 +31,13 @@ extension WorkspaceStateDependency {
     state?.checkoutState?.revision ?? state?.checkoutState?.version ?? "??"
   }
 }
+
+extension WorkspaceStateDependency: Comparable {
+  static func < (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
+    lhs.displayTuple.lowercased() < rhs.displayTuple.lowercased()
+  }
+
+  static func == (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
+    lhs.displayTuple.lowercased() == rhs.displayTuple.lowercased()
+  }
+}
