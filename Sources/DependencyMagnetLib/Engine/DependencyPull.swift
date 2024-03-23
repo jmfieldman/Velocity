@@ -32,6 +32,7 @@ public class DependencyPull: NSObject {
     // Copy the new dependencies over to the output
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
     let outputState = readOutputState(outputPath: outputPath)
+    replaceRemotePackages(workspacePath: workspacePath, workspaceState: workspaceState)
     copyDependencies(
       workspacePath: workspacePath,
       workspaceState: workspaceState,
@@ -146,6 +147,63 @@ extension DependencyPull {
 
     guard result.exitCode == 0 else {
       throwError(.swiftPackageManager, "'swift package resolve' failed on workspace package in \(workspacePath)")
+    }
+  }
+
+  /// Replaces all of the remote url-based packages in each dependency
+  /// with its local-path version.
+  func replaceRemotePackages(
+    workspacePath: String,
+    workspaceState: WorkspaceState
+  ) {
+    vprint(.debug, "Replacing remote packages in dependency checkouts")
+
+    let checkoutPath = "checkouts"
+      .prepending(directoryPath: kBuildDir)
+      .prepending(directoryPath: workspacePath)
+
+    var needleMap: [String: String] = [:]
+    for dependency in workspaceState.object?.dependencies ?? [] {
+      guard let locationVariants = dependency.packageRef?.location?.locationVariants(), !locationVariants.isEmpty else {
+        continue
+      }
+
+      guard let subpath = dependency.subpath else {
+        continue
+      }
+
+      let replacePath = "../\(subpath)"
+
+      for variant in locationVariants {
+        needleMap[variant] = replacePath
+      }
+    }
+
+    for dependency in workspaceState.object?.dependencies ?? [] {
+      guard let subpath = dependency.subpath else {
+        continue
+      }
+
+      let depPath = subpath.prepending(directoryPath: checkoutPath)
+      guard depPath.isDirectory else {
+        vprint(.debug, "Skipping dependency \(dependency.displayName) with invalid path \(depPath)")
+        continue
+      }
+
+      guard let files = try? FileManager.default.contentsOfDirectory(atPath: depPath) else {
+        continue
+      }
+
+      for depFile in files {
+        guard depFile.hasPrefix("Package"), depFile.hasSuffix(".swift") else {
+          continue
+        }
+
+        replaceOccurrences(
+          haystackPath: depFile.prepending(directoryPath: depPath),
+          needleMap: needleMap
+        )
+      }
     }
   }
 
@@ -360,5 +418,33 @@ extension DependencyPull: FileManagerDelegate {
   /// Do not copy .git files
   public func fileManager(_ fileManager: FileManager, shouldCopyItemAtPath srcPath: String, toPath dstPath: String) -> Bool {
     !(srcPath.hasSuffix(".git") || srcPath.hasSuffix("DS_Store"))
+  }
+}
+
+extension DependencyPull {
+  /// Replace each key in the needle map with its value, in the file
+  /// at haystackPath.
+  func replaceOccurrences(
+    haystackPath: String,
+    needleMap: [String: String]
+  ) {
+    guard haystackPath.isFile else {
+      return
+    }
+
+    let fileString: String
+    do {
+      fileString = try String(contentsOfFile: haystackPath)
+    } catch {
+      throwError(.fileError, "Could not read file \(haystackPath)")
+    }
+
+    let lines = fileString.replacePackageUrls(needleMap: needleMap)
+
+    do {
+      try lines.write(toFile: haystackPath, atomically: true, encoding: .utf8)
+    } catch {
+      throwError(.fileError, "Could not write to file \(haystackPath)")
+    }
   }
 }

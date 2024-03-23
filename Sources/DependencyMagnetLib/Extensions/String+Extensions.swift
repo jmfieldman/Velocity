@@ -87,3 +87,60 @@ public extension String {
     URL(fileURLWithPath: self, isDirectory: true, relativeTo: nil)
   }
 }
+
+extension String {
+  func firstNeedleValue(
+    needleMap: [String: String]
+  ) -> String? {
+    let lowercaseHaystack = lowercased()
+    return needleMap.keys
+      .first { lowercaseHaystack.contains($0.lowercased()) }
+      .flatMap { needleMap[$0] }
+  }
+
+  func replacePackageUrls(
+    needleMap: [String: String]
+  ) -> String {
+    let separator = "|#!@"
+    var linifiedString = components(separatedBy: .newlines).joined(separator: separator)
+
+    let pattern = "\\.package\\(.*?url:.*?\\)"
+    guard let regex = try? NSRegularExpression(pattern: pattern) else {
+      return self
+    }
+
+    let matches = regex.matches(in: linifiedString, range: NSRange(linifiedString.startIndex..., in: linifiedString))
+    for match in matches.reversed() {
+      let matchedString = String(linifiedString[Range(match.range, in: linifiedString)!])
+      let innerParens = matchedString.contains("(\"")
+      if let replacementNeedle = matchedString.firstNeedleValue(needleMap: needleMap) {
+        linifiedString = linifiedString.replacingCharacters(
+          in: Range(match.range, in: linifiedString)!,
+          with: ".package(path: \"\(replacementNeedle)\"\(innerParens ? "" : ")")"
+        )
+      }
+    }
+
+    return linifiedString.replacingOccurrences(of: separator, with: "\n")
+  }
+
+  func locationVariants() -> [String] {
+    if hasPrefix("git") {
+      return [self]
+    }
+
+    guard hasPrefix("http") else {
+      return []
+    }
+
+    if hasSuffix(".git") {
+      return [self, replacingOccurrences(of: ".git", with: "", options: [.anchored, .backwards])]
+    }
+
+    if hasSuffix("/") {
+      return [self]
+    }
+
+    return [self, "\(self).git"]
+  }
+}
