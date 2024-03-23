@@ -5,6 +5,10 @@
 
 import Foundation
 
+private let kBuildDir = ".build"
+private let kWorkspaceStateJsonPath = "\(kBuildDir)/workspace-state.json"
+private let kPackageResolver = "Package.resolved"
+
 public class DependencyPull {
   public init() {}
 
@@ -19,6 +23,8 @@ public class DependencyPull {
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
     reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     resolveWorkspacePackage(workspacePath: workspacePath)
+
+    let workspaceState = readWorkspaceState(workspacePath: workspacePath)
   }
 }
 
@@ -73,11 +79,11 @@ extension DependencyPull {
     workspacePath: String,
     outputPath: String
   ) {
-    let existingResolvedFile = "Package.resolved".prepending(directoryPath: outputPath)
-    let targetResolvedFile = "Package.resolved".prepending(directoryPath: workspacePath)
+    let existingResolvedFile = kPackageResolver.prepending(directoryPath: outputPath)
+    let targetResolvedFile = kPackageResolver.prepending(directoryPath: workspacePath)
 
     guard existingResolvedFile.isFile else {
-      vprint(.verbose, "No existing Package.resolved to reuse in output path")
+      vprint(.verbose, "No existing \(kPackageResolver) to reuse in output path")
       return
     }
 
@@ -90,10 +96,10 @@ extension DependencyPull {
         toPath: targetResolvedFile
       )
     } catch {
-      throwError(.fileError, "Could not copy Package.resolved from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
+      throwError(.fileError, "Could not copy \(kPackageResolver) from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
     }
 
-    vprint(.verbose, "Copied existing Package.resolved to workspace path")
+    vprint(.verbose, "Copied existing \(kPackageResolver) to workspace path")
   }
 
   func resolveWorkspacePackage(
@@ -110,6 +116,29 @@ extension DependencyPull {
 
     guard result.exitCode == 0 else {
       throwError(.swiftPackageManager, "'swift package resolve' failed on workspace package in \(workspacePath)")
+    }
+  }
+
+  func readWorkspaceState(
+    workspacePath: String
+  ) -> WorkspaceState {
+    let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(directoryPath: workspacePath)
+
+    do {
+      let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectoryPath().asFileURL())
+      let state = try JSONDecoder().decode(WorkspaceState.self, from: data)
+
+      if gVerbosityLevel == .debug {
+        for dep in state.object?.dependencies ?? [] {
+          let name = dep.packageRef?.name ?? dep.packageRef?.identity ?? "??"
+          let version = dep.state?.checkoutState?.version ?? dep.state?.checkoutState?.revision ?? "??"
+          vprint(.debug, "Dependency in workspace state: \(name) @ \(version)")
+        }
+      }
+
+      return state
+    } catch {
+      throwError(.fileError, "Could read/parse workspace-state.json: \(error.localizedDescription)")
     }
   }
 }

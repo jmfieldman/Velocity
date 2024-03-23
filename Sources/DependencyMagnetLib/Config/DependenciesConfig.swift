@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class Dependency: Decodable {
+public struct Dependency: Decodable {
   public let url: String
   public let from: String?
   public let range: String?
@@ -15,6 +15,6 @@ public class Dependency: Decodable {
   public let exact: String?
 }
 
-public class DependenciesConfig: Decodable {
+public struct DependenciesConfig: Decodable {
   public let dependencies: [Dependency]?
 }
