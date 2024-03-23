@@ -23,12 +23,15 @@ public class DependencyPull {
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
     reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     resolveWorkspacePackage(workspacePath: workspacePath)
+    retainPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
 
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
   }
 }
 
 extension DependencyPull {
+  /// This helper function ensures that a directory exists at the specified
+  /// path.
   func createDirectory(_ path: String) {
     do {
       try FileManager.default.createDirectory(at: path.prependingCurrentDirectoryPath().asDirectoryURL(), withIntermediateDirectories: true)
@@ -37,6 +40,8 @@ extension DependencyPull {
     }
   }
 
+  /// Verifies that there are no duplicate dependency urls in the
+  /// dependencies.yml config
   func validateNoDuplicates(_ dependencies: [Dependency]) {
     var urls: Set<String> = []
     for dependency in dependencies {
@@ -47,6 +52,9 @@ extension DependencyPull {
     }
   }
 
+  /// Creates the Package.swift file in the workspace; this package
+  /// references all of the dependencies so that they can be pulled
+  /// into the workspace checkout directory.
   func createWorkspacePackage(
     workspacePath: String,
     dependencies: [Dependency]
@@ -75,6 +83,9 @@ extension DependencyPull {
     }
   }
 
+  /// This pulls the Package.resolved file from the output path
+  /// back into the workspace path, so that the resolved versions
+  /// can be reused if possible.
   func reuseExistingPackageResolvedFile(
     workspacePath: String,
     outputPath: String
@@ -102,6 +113,9 @@ extension DependencyPull {
     vprint(.verbose, "Copied existing \(kPackageResolver) to workspace path")
   }
 
+  /// This performs the actual 'swift package resolve' in the
+  /// workspace, pulling the dependencies into the checkout
+  /// directory.
   func resolveWorkspacePackage(
     workspacePath: String
   ) {
@@ -119,6 +133,35 @@ extension DependencyPull {
     }
   }
 
+  func retainPackageResolvedFile(
+    workspacePath: String,
+    outputPath: String
+  ) {
+    let outputResolvedFile = kPackageResolver.prepending(directoryPath: outputPath)
+    let workspaceResolvedFile = kPackageResolver.prepending(directoryPath: workspacePath)
+
+    guard workspaceResolvedFile.isFile else {
+      vprint(.verbose, "No \(kPackageResolver) in workspace path")
+      return
+    }
+
+    do {
+      if outputResolvedFile.isFile {
+        try FileManager.default.removeItem(atPath: outputResolvedFile)
+      }
+      try FileManager.default.copyItem(
+        atPath: workspaceResolvedFile,
+        toPath: outputResolvedFile
+      )
+    } catch {
+      throwError(.fileError, "Could not copy \(kPackageResolver) from \(workspacePath) to \(outputPath): \(error.localizedDescription)")
+    }
+
+    vprint(.verbose, "Copied workspace \(kPackageResolver) to output path")
+  }
+
+  /// Parses the workspace-state.json file in the workspace into a
+  /// readable data structure.
   func readWorkspaceState(
     workspacePath: String
   ) -> WorkspaceState {

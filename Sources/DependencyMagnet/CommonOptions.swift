@@ -19,7 +19,7 @@ public struct CommonOptions: ParsableArguments {
   public var debug: Bool = false
 
   @Option(help: "Path to config file")
-  public var config: String = "dependencies.yml"
+  public var config: String = "Dependencies/dependencies.yml"
 
   @Option(help: "Workspace path")
   public var workspacePath: String = ".dependency_magnet"
