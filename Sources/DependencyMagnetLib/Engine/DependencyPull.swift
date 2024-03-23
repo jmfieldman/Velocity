@@ -17,6 +17,7 @@ public class DependencyPull {
     createDirectory(workspacePath)
     createDirectory(outputPath)
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
+    resolveWorkspacePackage(workspacePath: workspacePath)
   }
 }
 
@@ -65,5 +66,20 @@ extension DependencyPull {
     } catch {
       throwError(.fileError, "Could not write to package file [\(packagePath)]: \(error.localizedDescription)")
     }
+  }
+
+  func resolveWorkspacePackage(
+    workspacePath: String
+  ) {
+    let result = Process.execute(
+      command: "swift package resolve",
+      workingDirectory: workspacePath.prependingCurrentDirectoryPath().asDirectoryURL(),
+      outputStdoutWhileRunning: gVerbosityLevel >= .normal,
+      outputStderrWhileRunning: gVerbosityLevel >= .normal
+    )
+
+    guard result.exitCode == 0 else {
+      throwError(.swiftPackageManager, "'swift package resolve' failed on workspace package in \(workspacePath)")
+    }    
   }
 }

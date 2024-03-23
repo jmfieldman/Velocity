@@ -25,6 +25,12 @@ public enum Verbosity: Int {
   }
 }
 
+extension Verbosity: Comparable {
+  public static func < (lhs: Verbosity, rhs: Verbosity) -> Bool {
+    return lhs.rawValue < rhs.rawValue
+  }
+}
+
 public func setVerbosity(_ verbosity: Verbosity) {
   gVerbosityLevel = verbosity
   vprint(.verbose, "Verbosity: \(gVerbosityLevel.name)")
