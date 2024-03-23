@@ -32,12 +32,16 @@ public class DependencyPull: NSObject {
     // Copy the new dependencies over to the output
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
     let outputState = readOutputState(outputPath: outputPath)
-    replaceRemotePackages(workspacePath: workspacePath, workspaceState: workspaceState)
+    let packagesPath = kPackagesOutputPath.prepending(directoryPath: outputPath)
     copyDependencies(
       workspacePath: workspacePath,
       workspaceState: workspaceState,
       outputPath: outputPath,
       outputState: outputState
+    )
+    replaceRemotePackages(
+      packagesPath: packagesPath,
+      workspaceState: workspaceState
     )
 
     // Keep the generated state files
@@ -153,14 +157,10 @@ extension DependencyPull {
   /// Replaces all of the remote url-based packages in each dependency
   /// with its local-path version.
   func replaceRemotePackages(
-    workspacePath: String,
+    packagesPath: String,
     workspaceState: WorkspaceState
   ) {
     vprint(.debug, "Replacing remote packages in dependency checkouts")
-
-    let checkoutPath = "checkouts"
-      .prepending(directoryPath: kBuildDir)
-      .prepending(directoryPath: workspacePath)
 
     var needleMap: [String: String] = [:]
     for dependency in workspaceState.object?.dependencies ?? [] {
@@ -184,7 +184,7 @@ extension DependencyPull {
         continue
       }
 
-      let depPath = subpath.prepending(directoryPath: checkoutPath)
+      let depPath = subpath.prepending(directoryPath: packagesPath)
       guard depPath.isDirectory else {
         vprint(.debug, "Skipping dependency \(dependency.displayName) with invalid path \(depPath)")
         continue
@@ -350,12 +350,27 @@ extension DependencyPull {
       fileManager.delegate = self
       do {
         vprint(.normal, "Importing \(dependency.displayTuple)")
+
+        for _ in 0 ..< 4 {
+          // Quiet attempts to remove item first -- squash weird
+          // interim issues with DS_Store files created while
+          // deleting
+          try? fileManager.removeItem(atPath: destinationPath)
+        }
         if destinationPath.isDirectory {
           try fileManager.removeItem(atPath: destinationPath)
         }
         try fileManager.copyItem(
           atPath: sourcePath,
           toPath: destinationPath
+        )
+
+        // An annoying artifact in some packages is an explicit
+        // exclusion for the .git directory; so create a phony
+        // directory in the new local versions
+        try FileManager.default.createDirectory(
+          atPath: ".git".prepending(directoryPath: destinationPath),
+          withIntermediateDirectories: true
         )
       } catch {
         throwError(.fileError, "Could not copy dependency from \(sourcePath) to \(destinationPath): \(error.localizedDescription)")
@@ -416,7 +431,11 @@ extension DependencyPull: FileManagerDelegate {
   }
 
   /// Do not copy .git files
-  public func fileManager(_ fileManager: FileManager, shouldCopyItemAtPath srcPath: String, toPath dstPath: String) -> Bool {
+  public func fileManager(
+    _ fileManager: FileManager,
+    shouldCopyItemAtPath srcPath: String,
+    toPath dstPath: String
+  ) -> Bool {
     !(srcPath.hasSuffix(".git") || srcPath.hasSuffix("DS_Store"))
   }
 }

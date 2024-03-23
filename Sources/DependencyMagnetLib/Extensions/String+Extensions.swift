@@ -104,19 +104,25 @@ extension String {
     let separator = "|#!@"
     var linifiedString = components(separatedBy: .newlines).joined(separator: separator)
 
-    let pattern = "\\.package\\(.*?url:.*?\\)"
-    guard let regex = try? NSRegularExpression(pattern: pattern) else {
-      return self
-    }
+    let packageRegex = try! NSRegularExpression(pattern: "\\.package\\(.*?url:.*?\\)")
+    let nameRegex = try! NSRegularExpression(pattern: "name: \".*?\"")
 
-    let matches = regex.matches(in: linifiedString, range: NSRange(linifiedString.startIndex..., in: linifiedString))
+    let matches = packageRegex.matches(in: linifiedString, range: NSRange(linifiedString.startIndex..., in: linifiedString))
     for match in matches.reversed() {
       let matchedString = String(linifiedString[Range(match.range, in: linifiedString)!])
       let innerParens = matchedString.contains("(\"")
+
+      let nameMatches = nameRegex.matches(in: matchedString, range: NSRange(matchedString.startIndex..., in: matchedString))
+      var name = ""
+      if nameMatches.count > 0 {
+        name = String(matchedString[Range(nameMatches[0].range, in: matchedString)!])
+        name = "\(name), "
+      }
+
       if let replacementNeedle = matchedString.firstNeedleValue(needleMap: needleMap) {
         linifiedString = linifiedString.replacingCharacters(
           in: Range(match.range, in: linifiedString)!,
-          with: ".package(path: \"\(replacementNeedle)\"\(innerParens ? "" : ")")"
+          with: ".package(\(name)path: \"\(replacementNeedle)\"\(innerParens ? "" : ")")"
         )
       }
     }

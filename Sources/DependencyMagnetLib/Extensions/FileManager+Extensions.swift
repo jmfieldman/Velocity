@@ -31,7 +31,7 @@ public extension FileManager {
 
     var shasum = ""
     for file in files.sorted() {
-      guard !file.hasPrefix(".") else {
+      guard !(file.hasPrefix(".") || file.hasPrefix("Package")) else {
         continue
       }
 
