@@ -11,22 +11,36 @@ private let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
 private let kPackageResolver = "Package.resolved"
 private let kPackagesOutputPath = "Packages"
 
-public class DependencyPull {
-  public init() {}
-
+public class DependencyPull: NSObject {
   public func pull(
     dependencies: [Dependency],
     workspacePath: String,
     outputPath: String
   ) {
+    // Validate inputs
     validateNoDuplicates(dependencies)
+
+    // Create output directories
     createDirectory(workspacePath)
     createDirectory(kPackagesOutputPath.prepending(directoryPath: outputPath))
+
+    // Setup the workspace and resolve our dependencies
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
     reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     resolveWorkspacePackage(workspacePath: workspacePath)
-    retainPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
+
+    // Copy the new dependencies over to the output
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
+    let outputState = readOutputState(outputPath: outputPath)
+    copyDependencies(
+      workspacePath: workspacePath,
+      workspaceState: workspaceState,
+      outputPath: outputPath,
+      outputState: outputState
+    )
+
+    // Keep the generated state files
+    retainPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     retainWorkspaceStateFile(workspacePath: workspacePath, outputPath: outputPath)
   }
 }
@@ -160,7 +174,7 @@ extension DependencyPull {
       throwError(.fileError, "Could not copy \(kPackageResolver) from \(workspacePath) to \(outputPath): \(error.localizedDescription)")
     }
 
-    vprint(.verbose, "Copied workspace \(kPackageResolver) to output path")
+    vprint(.debug, "Copied workspace \(kPackageResolver) to output path")
   }
 
   /// Parses the workspace-state.json file in the workspace into a
@@ -176,15 +190,31 @@ extension DependencyPull {
 
       if gVerbosityLevel == .debug {
         for dep in state.object?.dependencies ?? [] {
-          let name = dep.packageRef?.name ?? dep.packageRef?.identity ?? "??"
-          let version = dep.state?.checkoutState?.version ?? dep.state?.checkoutState?.revision ?? "??"
-          vprint(.debug, "Dependency in workspace: [\(name) @ \(version)]")
+          vprint(.debug, "Dependency in workspace: \(dep.displayTuple)")
         }
       }
 
       return state
     } catch {
       throwError(.fileError, "Could read/parse workspace-state.json: \(error.localizedDescription)")
+    }
+  }
+
+  /// Parses the workspace-state.json file in the output into a
+  /// readable data structure.
+  func readOutputState(
+    outputPath: String
+  ) -> WorkspaceState {
+    let outputStateJSONPath = kWorkspaceStateFile
+      .prepending(directoryPath: kPackagesOutputPath)
+      .prepending(directoryPath: outputPath)
+
+    do {
+      let data = try Data(contentsOf: outputStateJSONPath.prependingCurrentDirectoryPath().asFileURL())
+      return try JSONDecoder().decode(WorkspaceState.self, from: data)
+    } catch {
+      vprint(.verbose, "No \(kWorkspaceStateFile) in output path")
+      return WorkspaceState(object: WorkspaceStateObject(dependencies: []))
     }
   }
 
@@ -217,6 +247,118 @@ extension DependencyPull {
       throwError(.fileError, "Could not copy \(kWorkspaceStateFile) from \(sourceDir) to \(outputDir): \(error.localizedDescription)")
     }
 
-    vprint(.verbose, "Copied workspace \(kWorkspaceStateFile) to output path")
+    vprint(.debug, "Copied workspace \(kWorkspaceStateFile) to output path")
+  }
+
+  /// Copy the dependencies from the workspace to the output
+  func copyDependencies(
+    workspacePath: String,
+    workspaceState: WorkspaceState,
+    outputPath: String,
+    outputState: WorkspaceState
+  ) {
+    guard let dependencies = workspaceState.object?.dependencies, !dependencies.isEmpty else {
+      throwError(.noDependencies, "No dependencies found in workspace state")
+    }
+
+    for dependency in dependencies {
+      guard let subpath = dependency.subpath else {
+        vprint(.normal, "Warning: dependency \(dependency.displayName) has no subpath")
+        continue
+      }
+
+      let sourcePath = subpath
+        .prepending(directoryPath: "checkouts")
+        .prepending(directoryPath: kBuildDir)
+        .prepending(directoryPath: workspacePath)
+
+      let destinationPath = subpath
+        .prepending(directoryPath: kPackagesOutputPath)
+        .prepending(directoryPath: outputPath)
+
+      let shouldCopy = shouldCopy(
+        workspaceDependency: dependency,
+        outputDependency: outputState.dependency(withIdentifier: dependency.packageRef?.identity),
+        sourcePath: sourcePath,
+        destinationPath: destinationPath
+      )
+
+      guard shouldCopy else {
+        continue
+      }
+
+      // Remove the existing output and copy it ou
+      let fileManager = FileManager()
+      fileManager.delegate = self
+      do {
+        vprint(.normal, "Importing \(dependency.displayTuple)")
+        if destinationPath.isDirectory {
+          try fileManager.removeItem(atPath: destinationPath)
+        }
+        try fileManager.copyItem(
+          atPath: sourcePath,
+          toPath: destinationPath
+        )
+      } catch {
+        throwError(.fileError, "Could not copy dependency from \(sourcePath) to \(destinationPath): \(error.localizedDescription)")
+      }
+    }
+  }
+
+  /// Determine if a dependency should be copied
+  func shouldCopy(
+    workspaceDependency: WorkspaceStateDependency,
+    outputDependency: WorkspaceStateDependency?,
+    sourcePath: String,
+    destinationPath: String
+  ) -> Bool {
+    guard destinationPath.isDirectory else {
+      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : does not exist in the output path")
+      return true
+    }
+
+    guard let outputDependency else {
+      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : not tracked in output workspace-state.json")
+      return true
+    }
+
+    guard workspaceDependency.versionForEquality == outputDependency.versionForEquality else {
+      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : revision mismatch \(workspaceDependency.versionForEquality) vs. \(outputDependency.versionForEquality)")
+      return true
+    }
+
+    guard let destinationSha = FileManager.default.sha(contentsOf: destinationPath) else {
+      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : could not verify shasum")
+      return true
+    }
+
+    guard let sourceSha = FileManager.default.sha(contentsOf: sourcePath) else {
+      throwError(.fileError, "Could not determine shasum of dependency \(workspaceDependency.displayTuple)")
+    }
+
+    guard sourceSha == destinationSha else {
+      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : shasum mismatch in output path")
+      return true
+    }
+
+    vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : NO : found existing match in output")
+    return false
+  }
+}
+
+extension DependencyPull: FileManagerDelegate {
+  /// We should ignore copy errors involving .DS_Store
+  public func fileManager(
+    _ fileManager: FileManager,
+    shouldProceedAfterError error: Error,
+    copyingItemAtPath srcPath: String,
+    toPath dstPath: String
+  ) -> Bool {
+    srcPath.hasSuffix("DS_Store")
+  }
+
+  /// Do not copy .git files
+  public func fileManager(_ fileManager: FileManager, shouldCopyItemAtPath srcPath: String, toPath dstPath: String) -> Bool {
+    !(srcPath.hasSuffix(".git") || srcPath.hasSuffix("DS_Store"))
   }
 }
