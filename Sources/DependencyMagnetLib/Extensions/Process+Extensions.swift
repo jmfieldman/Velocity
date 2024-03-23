@@ -1,3 +1,8 @@
+//
+//  Process+Extensions.swift
+//  Copyright © 2021 Jason Fieldman.
+//
+
 import Foundation
 
 public extension Process {
@@ -28,8 +33,8 @@ public extension Process {
 
     task.launch()
 
-    var stdoutData: Data = Data()
-    var stderrData: Data = Data()
+    var stdoutData = Data()
+    var stderrData = Data()
 
     let stdoutHandle = stdoutPipe.fileHandleForReading
     let stderrHandle = stderrPipe.fileHandleForReading
@@ -61,6 +66,6 @@ public extension Process {
   }
 
   static func shellOutput(_ command: String) -> String {
-    return Process.execute(command: command).stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+    Process.execute(command: command).stdout.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 }

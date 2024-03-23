@@ -80,6 +80,6 @@ extension DependencyPull {
 
     guard result.exitCode == 0 else {
       throwError(.swiftPackageManager, "'swift package resolve' failed on workspace package in \(workspacePath)")
-    }    
+    }
   }
 }
