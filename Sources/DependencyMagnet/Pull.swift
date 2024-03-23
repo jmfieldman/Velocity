@@ -42,7 +42,7 @@ extension DependencyMagnetCommand {
         throwError(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
       }
 
-      await DependencyPull().pull(
+      DependencyPull().pull(
         dependencies: dependenciesConfig.dependencies ?? [],
         workspacePath: commonOptions.workspacePath,
         outputPath: commonOptions.outputPath

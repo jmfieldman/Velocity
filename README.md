@@ -1,1 +1,1 @@
-# SwiftPackageLocalizer
+# SwiftDependencyMagnet

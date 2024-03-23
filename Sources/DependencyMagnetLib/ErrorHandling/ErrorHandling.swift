@@ -9,7 +9,8 @@ public enum CommandError: Int {
   case configNotFound = 1
   case configNotDecodable
   case noDependencies
-  case programmingError
+  case duplicateDependencies
+  case noDependencyQualifier
   case fileError
 }
 
