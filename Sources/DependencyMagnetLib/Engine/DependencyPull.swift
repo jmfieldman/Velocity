@@ -6,8 +6,10 @@
 import Foundation
 
 private let kBuildDir = ".build"
-private let kWorkspaceStateJsonPath = "\(kBuildDir)/workspace-state.json"
+private let kWorkspaceStateFile = "workspace-state.json"
+private let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
 private let kPackageResolver = "Package.resolved"
+private let kPackagesOutputPath = "Packages"
 
 public class DependencyPull {
   public init() {}
@@ -19,13 +21,13 @@ public class DependencyPull {
   ) {
     validateNoDuplicates(dependencies)
     createDirectory(workspacePath)
-    createDirectory(outputPath)
+    createDirectory(kPackagesOutputPath.prepending(directoryPath: outputPath))
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
     reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
     resolveWorkspacePackage(workspacePath: workspacePath)
     retainPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
-
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
+    retainWorkspaceStateFile(workspacePath: workspacePath, outputPath: outputPath)
   }
 }
 
@@ -133,6 +135,7 @@ extension DependencyPull {
     }
   }
 
+  /// Retains the workspace Package.resolved file in the output path
   func retainPackageResolvedFile(
     workspacePath: String,
     outputPath: String
@@ -175,7 +178,7 @@ extension DependencyPull {
         for dep in state.object?.dependencies ?? [] {
           let name = dep.packageRef?.name ?? dep.packageRef?.identity ?? "??"
           let version = dep.state?.checkoutState?.version ?? dep.state?.checkoutState?.revision ?? "??"
-          vprint(.debug, "Dependency in workspace state: \(name) @ \(version)")
+          vprint(.debug, "Dependency in workspace: [\(name) @ \(version)]")
         }
       }
 
@@ -183,5 +186,37 @@ extension DependencyPull {
     } catch {
       throwError(.fileError, "Could read/parse workspace-state.json: \(error.localizedDescription)")
     }
+  }
+
+  /// Retains the workspace-state.json file in the output path after
+  /// files have been successfully copied over
+  func retainWorkspaceStateFile(
+    workspacePath: String,
+    outputPath: String
+  ) {
+    let sourceDir = kBuildDir.prepending(directoryPath: workspacePath)
+    let sourceFile = kWorkspaceStateFile.prepending(directoryPath: sourceDir)
+
+    let outputDir = kPackagesOutputPath.prepending(directoryPath: outputPath)
+    let outputFile = kWorkspaceStateFile.prepending(directoryPath: outputDir)
+
+    guard sourceFile.isFile else {
+      vprint(.verbose, "No \(kWorkspaceStateFile) in workspace path")
+      return
+    }
+
+    do {
+      if outputFile.isFile {
+        try FileManager.default.removeItem(atPath: outputFile)
+      }
+      try FileManager.default.copyItem(
+        atPath: sourceFile,
+        toPath: outputFile
+      )
+    } catch {
+      throwError(.fileError, "Could not copy \(kWorkspaceStateFile) from \(sourceDir) to \(outputDir): \(error.localizedDescription)")
+    }
+
+    vprint(.verbose, "Copied workspace \(kWorkspaceStateFile) to output path")
   }
 }
