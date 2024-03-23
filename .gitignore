@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+.swiftpm/
+Package.resolved
+build/
+DerivedData/
+Scratch/
+Dependencies/
+.dependency_magnet/
+SampleWorkspace/
+dependencies.yml
