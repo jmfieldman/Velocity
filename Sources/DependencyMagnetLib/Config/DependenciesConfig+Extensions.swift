@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension Dependency {
+extension DependencyConfig {
   private var packageQualifier: (label: String, value: String) {
     if let from {
       return ("from: ", from)
@@ -31,5 +31,15 @@ extension Dependency {
   var packageString: String {
     let qualifier = packageQualifier
     return ".package(url: \"\(url)\", \(qualifier.label)\"\(qualifier.value)\")"
+  }
+}
+
+extension [DependencyConfig] {
+  func dependencyConfig(relatedToUrl url: String?) -> DependencyConfig? {
+    url.flatMap { url in
+      first {
+        $0.url.dependencyUrlMatch(other: url)
+      }
+    }
   }
 }

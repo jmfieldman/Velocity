@@ -13,6 +13,7 @@ public enum CommandError: Int {
   case noDependencyQualifier
   case fileError
   case swiftPackageManager
+  case invalidDate
 }
 
 public func throwError(_ error: CommandError, _ additionalDesc: String?) -> Never {

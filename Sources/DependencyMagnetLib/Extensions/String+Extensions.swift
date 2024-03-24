@@ -89,6 +89,12 @@ public extension String {
 }
 
 extension String {
+  func dependencyUrlMatch(other: String) -> Bool {
+    lowercased().hasPrefix(other.lowercased()) || other.lowercased().hasPrefix(lowercased())
+  }
+}
+
+extension String {
   func firstNeedleValue(
     needleMap: [String: String]
   ) -> String? {

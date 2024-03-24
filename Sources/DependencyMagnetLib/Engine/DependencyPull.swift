@@ -13,7 +13,7 @@ private let kPackagesOutputPath = "Packages"
 
 public class DependencyPull: NSObject {
   public func pull(
-    dependencies: [Dependency],
+    dependencies: [DependencyConfig],
     workspacePath: String,
     outputPath: String
   ) {
@@ -34,6 +34,7 @@ public class DependencyPull: NSObject {
     let outputState = readOutputState(outputPath: outputPath)
     let packagesPath = kPackagesOutputPath.prepending(directoryPath: outputPath)
     copyDependencies(
+      dependencyConfigs: dependencies,
       workspacePath: workspacePath,
       workspaceState: workspaceState,
       outputPath: outputPath,
@@ -63,7 +64,7 @@ extension DependencyPull {
 
   /// Verifies that there are no duplicate dependency urls in the
   /// dependencies.yml config
-  func validateNoDuplicates(_ dependencies: [Dependency]) {
+  func validateNoDuplicates(_ dependencies: [DependencyConfig]) {
     var urls: Set<String> = []
     for dependency in dependencies {
       if urls.contains(dependency.url) {
@@ -78,7 +79,7 @@ extension DependencyPull {
   /// into the workspace checkout directory.
   func createWorkspacePackage(
     workspacePath: String,
-    dependencies: [Dependency]
+    dependencies: [DependencyConfig]
   ) {
     let packagePath = "Package.swift".prepending(directoryPath: workspacePath)
 
@@ -310,6 +311,7 @@ extension DependencyPull {
 
   /// Copy the dependencies from the workspace to the output
   func copyDependencies(
+    dependencyConfigs: [DependencyConfig],
     workspacePath: String,
     workspaceState: WorkspaceState,
     outputPath: String,
@@ -325,6 +327,9 @@ extension DependencyPull {
         continue
       }
 
+      let dependencyConfig = dependencyConfigs
+        .dependencyConfig(relatedToUrl: dependency.packageRef?.location)
+
       let sourcePath = subpath
         .prepending(directoryPath: "checkouts")
         .prepending(directoryPath: kBuildDir)
@@ -335,6 +340,7 @@ extension DependencyPull {
         .prepending(directoryPath: outputPath)
 
       let shouldCopy = shouldCopy(
+        dependencyConfig: dependencyConfig,
         workspaceDependency: dependency,
         outputDependency: outputState.dependency(withIdentifier: dependency.packageRef?.identity),
         sourcePath: sourcePath,
@@ -372,6 +378,13 @@ extension DependencyPull {
           atPath: ".git".prepending(directoryPath: destinationPath),
           withIntermediateDirectories: true
         )
+
+        // Update the creation date of the new local directory
+        var values = URLResourceValues()
+        values.creationDate = Date()
+        var url = destinationPath.asDirectoryURL()
+        try url.setResourceValues(values)
+
       } catch {
         throwError(.fileError, "Could not copy dependency from \(sourcePath) to \(destinationPath): \(error.localizedDescription)")
       }
@@ -380,6 +393,7 @@ extension DependencyPull {
 
   /// Determine if a dependency should be copied
   func shouldCopy(
+    dependencyConfig: DependencyConfig?,
     workspaceDependency: WorkspaceStateDependency,
     outputDependency: WorkspaceStateDependency?,
     sourcePath: String,
@@ -405,13 +419,33 @@ extension DependencyPull {
       return true
     }
 
-    guard let sourceSha = FileManager.default.sha(contentsOf: sourcePath) else {
-      throwError(.fileError, "Could not determine shasum of dependency \(workspaceDependency.displayTuple)")
+    if !(dependencyConfig?.ignoreSha ?? false) {
+      guard let sourceSha = FileManager.default.sha(contentsOf: sourcePath) else {
+        throwError(.fileError, "Could not determine shasum of dependency \(workspaceDependency.displayTuple)")
+      }
+
+      guard sourceSha == destinationSha else {
+        vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : shasum mismatch in output path")
+        return true
+      }
     }
 
-    guard sourceSha == destinationSha else {
-      vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : shasum mismatch in output path")
-      return true
+    if let cursor = dependencyConfig?.refreshCursor {
+      guard let cursorDate = ISO8601DateFormatter().date(from: cursor) else {
+        throwError(.invalidDate, "Invalid date used for refreshCursor for \(workspaceDependency.displayTuple); must be valid UTC ISO8601 format")
+      }
+
+      if cursorDate > Date() {
+        vprint(.normal, "🚨🚨 Warning 🚨🚨 UTC refreshCursor [\(cursorDate.iso8601())] for \(workspaceDependency.displayTuple) is after current date; the dependency may constantly be re-copied")
+      }
+
+      let values = try! destinationPath.asDirectoryURL().resourceValues(forKeys: [.creationDateKey])
+      if let creationDate = values.creationDate {
+        if creationDate < cursorDate {
+          vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : UTC creation date [\(creationDate.iso8601())] is earlier refreshCursor [\(cursorDate.iso8601())]")
+          return true
+        }
+      }
     }
 
     vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : NO : found existing match in output")
