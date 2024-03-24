@@ -131,7 +131,7 @@ extension DependencyPull {
       throwError(.fileError, "Could not copy \(kPackageResolver) from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
     }
 
-    vprint(.verbose, "Copied existing \(kPackageResolver) to workspace path")
+    vprint(.verbose, "Copied existing \(kPackageResolver) to shadow workspace path")
   }
 
   /// This performs the actual 'swift package resolve' in the
@@ -140,7 +140,7 @@ extension DependencyPull {
   func resolveWorkspacePackage(
     workspacePath: String
   ) {
-    vprint(.verbose, "Running 'swift package resolve' on workspace")
+    vprint(.verbose, "Running 'swift package resolve' on shadow workspace")
 
     let result = Process.execute(
       command: "swift package resolve",
@@ -150,7 +150,7 @@ extension DependencyPull {
     )
 
     guard result.exitCode == 0 else {
-      throwError(.swiftPackageManager, "'swift package resolve' failed on workspace package in \(workspacePath)")
+      throwError(.swiftPackageManager, "'swift package resolve' failed on shadow workspace package in \(workspacePath)")
     }
   }
 
@@ -160,7 +160,7 @@ extension DependencyPull {
     packagesPath: String,
     workspaceState: WorkspaceState
   ) {
-    vprint(.debug, "Replacing remote packages in dependency checkouts")
+    vprint(.debug, "Replacing remote package urls in local packages")
 
     var needleMap: [String: String] = [:]
     for dependency in workspaceState.object?.dependencies ?? [] {
@@ -232,7 +232,7 @@ extension DependencyPull {
       throwError(.fileError, "Could not copy \(kPackageResolver) from \(workspacePath) to \(outputPath): \(error.localizedDescription)")
     }
 
-    vprint(.debug, "Copied workspace \(kPackageResolver) to output path")
+    vprint(.debug, "Copied shadow workspace \(kPackageResolver) to output path")
   }
 
   /// Parses the workspace-state.json file in the workspace into a
@@ -305,7 +305,7 @@ extension DependencyPull {
       throwError(.fileError, "Could not copy \(kWorkspaceStateFile) from \(sourceDir) to \(outputDir): \(error.localizedDescription)")
     }
 
-    vprint(.debug, "Copied workspace \(kWorkspaceStateFile) to output path")
+    vprint(.debug, "Copied shadow workspace \(kWorkspaceStateFile) to output path")
   }
 
   /// Copy the dependencies from the workspace to the output
