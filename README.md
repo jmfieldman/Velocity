@@ -1,4 +1,4 @@
-# Swift Dependency Magnet
+# SwiftDependencyMagnet
 
 ### The Problem
 
@@ -21,7 +21,7 @@ state of those remote repos.
 
 ### The Solution
 
-Swift Dependency Magnet lets you remove the 'remote' aspect of your SPM
+SwiftDependencyMagnet lets you remove the 'remote' aspect of your SPM
 dependencies from the perspective of your build tools.
 
 You declare the top-level dependencies that your project uses. The magnet uses SPM
@@ -29,9 +29,49 @@ to resolve the graph and put all of your dependencies (and their sub-dependencie
 a local directory. All of their Package.swift contents are relinked so that they 
 refer to the local versions as well.   
 
-Your package resolution latency issues will now be a thing of the past.
+You now have full control over when package/version resolution occurs.
 
-### How it Works
+### Installation
+
+##### Using Package.swift
+
+Add SwiftDependencyMagnet to your Package.swift file:
+
+```swift
+.package(url: "https://github.com/jmfieldman/SwiftDependencyMagnet.git", from: "<version>")
+```
+
+Swift PM will automatically detect the executable target, so you can now run the executable through your own package:
+
+```bash
+$ swift run dependency_magnet <params>
+```
+
+##### Standalone (Mint)
+
+If you want a more streamlined execution experience, try installing SwiftDependencyMagnet 
+using the very nice [Mint Package Manager](https://github.com/yonaskolb/Mint).
+
+Mint builds each Swift executable in its own environment, tracks versions, and supports 
+localized version-pegging through a Mintfile. This avoids continuous, unnecessary 
+rebuild-checks when your own project's Package.swift changes.
+
+```bash
+# Install mint on your system, e.g.
+$ brew install mint
+
+# Install SwiftDependencyMagnet
+$ mint install jmfieldman/SwiftDependencyMagnet
+
+# Run SwiftDependencyMagnet using Mint. This is the recommended method if you plan
+# on using a Mintfile for version-pegging
+$ mint run dependency_magnet <..>
+
+# Or run it directly if you have the Mint bin directory in your path
+$ dependency_magnet <..>
+```
+
+### Using SwiftDependencyMagnet
 
 Create the top-level folder `Dependencies` and put your `dependencies.yml` configuration inside it:
 
@@ -93,12 +133,19 @@ Dependencies
          +--- ...
 ```
 
+> The package files in `Dependencies/Packages` are automatically updated to use sub-dependencies that
+> are also in the same directory.
+
+#### Updating .gitignore
+
 It is recommended that you add the following to `.gitignore`:
 
 ```
 .dependency_magnet
 Dependencies/Packages/
 ```
+
+#### Using Package.swift
 
 If are using your own `Package.swift` file, you can now reference your locally-based dependencies like so:
 
@@ -115,8 +162,21 @@ let package = Package(
 
 ```
 
-Or if you are using an Xcode-based project, you can select `File > Add Package Dependencies...` and then
+#### Using Xcode
+
+If you are using an Xcode-based project, you can select `File > Add Package Dependencies...` and then
 select the `Add Local` button to choose your local top-level dependencies.
 
-The package files in `Dependencies/Packages` are automatically updated to use sub-dependencies that
-are also in the same directory.
+#### Using Xcodegen
+
+if you are using the wonderful [Xcodegen](https://github.com/yonaskolb/XcodeGen) utility, you can 
+use the [packages](https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md#swift-package) directive 
+to point to your new local paths:
+
+```yml
+packages:
+  Yams:
+    path: Dependencies/Package/Yams
+  MyCoolLibrary:
+    path: Dependencies/Package/MyCoolLibrary
+```
