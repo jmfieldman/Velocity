@@ -6,4 +6,7 @@ swift run dependency_magnet pull \
   --workspace-path Tests/.dependency_magnet \
   --output-path Tests/Dependencies
 
-(cd Tests && swift run dependency_magnet_test)
+(cd Tests && \
+  swift run dependency_magnet_test && \
+  swift package show-dependencies | grep unspecified --invert-match \
+  )
