@@ -17,12 +17,13 @@ for 15-30 seconds (or more) any time a mote of dust hits your project the wrong 
 
 Assuming that most of your dependencies are hosted on remote git repos,
 a fair bit of this time is spent dealing with the latency of checking the
-state of those remote repos.
+state of those remote repos, and resolving the version graph.
 
 ### The Solution
 
 SwiftDependencyMagnet lets you remove the 'remote' aspect of your SPM
-dependencies from the perspective of your build tools.
+dependencies from the perspective of your build tools, and SPM does not
+require version resolution for local packages.
 
 You declare the top-level dependencies that your project uses. The magnet uses SPM
 to resolve the graph and put all of your dependencies (and their sub-dependencies) in
@@ -33,7 +34,7 @@ You now have full control over when package/version resolution occurs.
 
 ### Installation
 
-##### Using Package.swift
+#### Using Package.swift
 
 Add SwiftDependencyMagnet to your Package.swift file:
 
@@ -47,7 +48,7 @@ Swift PM will automatically detect the executable target, so you can now run the
 $ swift run dependency_magnet <params>
 ```
 
-##### Standalone (Mint)
+#### Standalone (Mint)
 
 If you want a more streamlined execution experience, try installing SwiftDependencyMagnet 
 using the very nice [Mint Package Manager](https://github.com/yonaskolb/Mint).
@@ -60,7 +61,7 @@ rebuild-checks when your own project's Package.swift changes.
 # Install mint on your system, e.g.
 $ brew install mint
 
-# Install SwiftDependencyMagnet
+# Install SwiftDependencyMagnet (recommended: bypass this using the Mintfile)
 $ mint install jmfieldman/SwiftDependencyMagnet
 
 # Run SwiftDependencyMagnet using Mint. This is the recommended method if you plan

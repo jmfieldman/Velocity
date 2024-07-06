@@ -9,9 +9,9 @@ let package = Package(
     .executable(name: "dependency_magnet", targets: ["DependencyMagnet"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.3.1"),
-    .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.1.0"),
-    .package(url: "https://github.com/jpsim/Yams.git", exact: "5.0.6"),
+    .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.4.0"),
+    .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.5.2"),
+    .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.2"),
   ],
   targets: [
     .executableTarget(
