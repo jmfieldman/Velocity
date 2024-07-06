@@ -9,3 +9,8 @@ Dependencies/
 .dependency_magnet/
 SampleWorkspace/
 dependencies.yml
+
+Tests/.build/
+Tests/.dependency_magnet/
+Tests/Dependencies/Package
+Tests/Dependencies/Package.resolved
