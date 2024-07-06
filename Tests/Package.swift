@@ -12,6 +12,9 @@ let package = Package(
     .package(path: "Dependencies/Packages/swift-argument-parser"),
     .package(path: "Dependencies/Packages/swift-crypto"),
     .package(path: "Dependencies/Packages/Yams"),
+    .package(path: "Dependencies/Packages/vapor"),
+    .package(path: "Dependencies/Packages/redis"),
+    .package(path: "Dependencies/Packages/fluent"),
   ],
   targets: [
     .executableTarget(
@@ -27,6 +30,9 @@ let package = Package(
       name: "DependencyMagnetTestLib",
       dependencies: [
         .product(name: "Crypto", package: "swift-crypto"),
+        .product(name: "Vapor", package: "vapor"),
+        .product(name: "Redis", package: "redis"),
+        .product(name: "Fluent", package: "fluent"),
       ],
       path: "Sources/DependencyMagnetTestLib"
     ),
