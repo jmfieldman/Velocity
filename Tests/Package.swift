@@ -6,12 +6,12 @@ let package = Package(
   name: "SwiftDependencyMagnetTest",
   platforms: [.macOS(.v12)],
   products: [
-    .executable(name: "DependencyMagnetTest", targets: ["DependencyMagnetTest"]),
+    .executable(name: "dependency_magnet_test", targets: ["DependencyMagnetTest"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.4.0"),
-    .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.5.2"),
-    .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.2"),
+    .package(path: "Dependencies/Packages/swift-argument-parser"),
+    .package(path: "Dependencies/Packages/swift-crypto"),
+    .package(path: "Dependencies/Packages/Yams"),
   ],
   targets: [
     .executableTarget(

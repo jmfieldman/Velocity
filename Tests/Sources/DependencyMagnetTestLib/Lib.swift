@@ -3,4 +3,8 @@
 //  Copyright © 2020 Jason Fieldman.
 //
 
-public func testfunc() {}
+import Crypto
+
+public func testfunc() {
+  print("✅ Test function")
+}
