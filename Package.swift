@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "SwiftDependencyMagnet",
+  name: "Velocity",
   platforms: [.macOS(.v12)],
   products: [
     .executable(name: "dependency_magnet", targets: ["DependencyMagnet"]),
@@ -21,14 +21,14 @@ let package = Package(
         .product(name: "Yams", package: "Yams"),
         "DependencyMagnetLib",
       ],
-      path: "Sources/DependencyMagnet"
+      path: "DependencyMagnet/Sources/Command"
     ),
     .target(
       name: "DependencyMagnetLib",
       dependencies: [
         .product(name: "Crypto", package: "swift-crypto"),
       ],
-      path: "Sources/DependencyMagnetLib"
+      path: "DependencyMagnet/Sources/Library"
     ),
   ]
 )

@@ -5,12 +5,16 @@ Package.resolved
 build/
 DerivedData/
 Scratch/
-Dependencies/
-.dependency_magnet/
-SampleWorkspace/
-dependencies.yml
 
-Tests/.build/
-Tests/.dependency_magnet/
-Tests/Dependencies/Package
-Tests/Dependencies/Package.resolved
+
+# DependencyMagnet
+
+DependencyMagnet/Dependencies/
+DependencyMagnet/.dependency_magnet/
+DependencyMagnet/SampleWorkspace/
+DependencyMagnet/dependencies.yml
+
+DependencyMagnet/Tests/.build/
+DependencyMagnet/Tests/.dependency_magnet/
+DependencyMagnet/Tests/Dependencies/Packages/
+DependencyMagnet/Tests/Dependencies/Package.resolved
