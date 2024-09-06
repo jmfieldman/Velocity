@@ -1,11 +1,12 @@
 //
 //  Pull.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import ArgumentParser
 import DependencyMagnetLib
 import Foundation
+import InternalUtilities
 import Yams
 
 extension DependencyMagnetCommand {
@@ -31,7 +32,7 @@ extension DependencyMagnetCommand {
       let dependenciesConfigData: Data
       let dependenciesConfig: DependenciesConfig
       do {
-        dependenciesConfigData = try Data(contentsOf: commonOptions.config.prependingCurrentDirectoryPath().asFileURL())
+        dependenciesConfigData = try Data(contentsOf: commonOptions.config.prependingCurrentDirectory().fileURL())
         dependenciesConfig = try YAMLDecoder().decode(DependenciesConfig.self, from: dependenciesConfigData)
       } catch {
         throwError(.configNotDecodable, error.localizedDescription)

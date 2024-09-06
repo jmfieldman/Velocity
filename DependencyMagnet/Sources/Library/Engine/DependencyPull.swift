@@ -1,9 +1,10 @@
 //
 //  DependencyPull.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
+import InternalUtilities
 
 private let kBuildDir = ".build"
 private let kWorkspaceStateFile = "workspace-state.json"
@@ -22,7 +23,7 @@ public class DependencyPull: NSObject {
 
     // Create output directories
     createDirectory(workspacePath)
-    createDirectory(kPackagesOutputPath.prepending(directoryPath: outputPath))
+    createDirectory(kPackagesOutputPath.prepending(path: outputPath))
 
     // Setup the workspace and resolve our dependencies
     createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
@@ -32,7 +33,7 @@ public class DependencyPull: NSObject {
     // Copy the new dependencies over to the output
     let workspaceState = readWorkspaceState(workspacePath: workspacePath)
     let outputState = readOutputState(outputPath: outputPath)
-    let packagesPath = kPackagesOutputPath.prepending(directoryPath: outputPath)
+    let packagesPath = kPackagesOutputPath.prepending(path: outputPath)
     copyDependencies(
       dependencyConfigs: dependencies,
       workspacePath: workspacePath,
@@ -56,7 +57,7 @@ extension DependencyPull {
   /// path.
   func createDirectory(_ path: String) {
     do {
-      try FileManager.default.createDirectory(at: path.prependingCurrentDirectoryPath().asDirectoryURL(), withIntermediateDirectories: true)
+      try FileManager.default.createDirectory(at: path.prependingCurrentDirectory().directoryURL(), withIntermediateDirectories: true)
     } catch {
       throwError(.fileError, "Could not create directory \(path)")
     }
@@ -81,7 +82,7 @@ extension DependencyPull {
     workspacePath: String,
     dependencies: [DependencyConfig]
   ) {
-    let packagePath = "Package.swift".prepending(directoryPath: workspacePath)
+    let packagePath = "Package.swift".prepending(path: workspacePath)
 
     let dependencyArray = dependencies.map { "    \($0.packageString)," }.joined(separator: "\n")
 
@@ -112,8 +113,8 @@ extension DependencyPull {
     workspacePath: String,
     outputPath: String
   ) {
-    let existingResolvedFile = kPackageResolver.prepending(directoryPath: outputPath)
-    let targetResolvedFile = kPackageResolver.prepending(directoryPath: workspacePath)
+    let existingResolvedFile = kPackageResolver.prepending(path: outputPath)
+    let targetResolvedFile = kPackageResolver.prepending(path: workspacePath)
 
     guard existingResolvedFile.isFile else {
       vprint(.verbose, "No existing \(kPackageResolver) to reuse in output path")
@@ -145,7 +146,7 @@ extension DependencyPull {
 
     let result = Process.execute(
       command: "swift package resolve",
-      workingDirectory: workspacePath.prependingCurrentDirectoryPath().asDirectoryURL(),
+      workingDirectory: workspacePath.prependingCurrentDirectory().directoryURL(),
       outputStdoutWhileRunning: gVerbosityLevel >= .normal,
       outputStderrWhileRunning: gVerbosityLevel >= .normal
     )
@@ -185,7 +186,7 @@ extension DependencyPull {
         continue
       }
 
-      let depPath = subpath.prepending(directoryPath: packagesPath)
+      let depPath = subpath.prepending(path: packagesPath)
       guard depPath.isDirectory else {
         vprint(.debug, "Skipping dependency \(dependency.displayName) with invalid path \(depPath)")
         continue
@@ -201,7 +202,7 @@ extension DependencyPull {
         }
 
         replaceOccurrences(
-          haystackPath: depFile.prepending(directoryPath: depPath),
+          haystackPath: depFile.prepending(path: depPath),
           needleMap: needleMap
         )
       }
@@ -213,8 +214,8 @@ extension DependencyPull {
     workspacePath: String,
     outputPath: String
   ) {
-    let outputResolvedFile = kPackageResolver.prepending(directoryPath: outputPath)
-    let workspaceResolvedFile = kPackageResolver.prepending(directoryPath: workspacePath)
+    let outputResolvedFile = kPackageResolver.prepending(path: outputPath)
+    let workspaceResolvedFile = kPackageResolver.prepending(path: workspacePath)
 
     guard workspaceResolvedFile.isFile else {
       vprint(.verbose, "No \(kPackageResolver) in workspace path")
@@ -241,10 +242,10 @@ extension DependencyPull {
   func readWorkspaceState(
     workspacePath: String
   ) -> WorkspaceState {
-    let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(directoryPath: workspacePath)
+    let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(path: workspacePath)
 
     do {
-      let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectoryPath().asFileURL())
+      let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectory().fileURL())
       let state = try JSONDecoder().decode(WorkspaceState.self, from: data)
 
       if gVerbosityLevel == .debug {
@@ -265,11 +266,11 @@ extension DependencyPull {
     outputPath: String
   ) -> WorkspaceState {
     let outputStateJSONPath = kWorkspaceStateFile
-      .prepending(directoryPath: kPackagesOutputPath)
-      .prepending(directoryPath: outputPath)
+      .prepending(path: kPackagesOutputPath)
+      .prepending(path: outputPath)
 
     do {
-      let data = try Data(contentsOf: outputStateJSONPath.prependingCurrentDirectoryPath().asFileURL())
+      let data = try Data(contentsOf: outputStateJSONPath.prependingCurrentDirectory().fileURL())
       return try JSONDecoder().decode(WorkspaceState.self, from: data)
     } catch {
       vprint(.verbose, "No \(kWorkspaceStateFile) in output path")
@@ -283,11 +284,11 @@ extension DependencyPull {
     workspacePath: String,
     outputPath: String
   ) {
-    let sourceDir = kBuildDir.prepending(directoryPath: workspacePath)
-    let sourceFile = kWorkspaceStateFile.prepending(directoryPath: sourceDir)
+    let sourceDir = kBuildDir.prepending(path: workspacePath)
+    let sourceFile = kWorkspaceStateFile.prepending(path: sourceDir)
 
-    let outputDir = kPackagesOutputPath.prepending(directoryPath: outputPath)
-    let outputFile = kWorkspaceStateFile.prepending(directoryPath: outputDir)
+    let outputDir = kPackagesOutputPath.prepending(path: outputPath)
+    let outputFile = kWorkspaceStateFile.prepending(path: outputDir)
 
     guard sourceFile.isFile else {
       vprint(.verbose, "No \(kWorkspaceStateFile) in workspace path")
@@ -331,13 +332,13 @@ extension DependencyPull {
         .dependencyConfig(relatedToUrl: dependency.packageRef?.location)
 
       let sourcePath = subpath
-        .prepending(directoryPath: "checkouts")
-        .prepending(directoryPath: kBuildDir)
-        .prepending(directoryPath: workspacePath)
+        .prepending(path: "checkouts")
+        .prepending(path: kBuildDir)
+        .prepending(path: workspacePath)
 
       let destinationPath = subpath
-        .prepending(directoryPath: kPackagesOutputPath)
-        .prepending(directoryPath: outputPath)
+        .prepending(path: kPackagesOutputPath)
+        .prepending(path: outputPath)
 
       let shouldCopy = shouldCopy(
         dependencyConfig: dependencyConfig,
@@ -375,14 +376,14 @@ extension DependencyPull {
         // exclusion for the .git directory; so create a phony
         // directory in the new local versions
         try FileManager.default.createDirectory(
-          atPath: ".git".prepending(directoryPath: destinationPath),
+          atPath: ".git".prepending(path: destinationPath),
           withIntermediateDirectories: true
         )
 
         // Update the creation date of the new local directory
         var values = URLResourceValues()
         values.creationDate = Date()
-        var url = destinationPath.asDirectoryURL()
+        var url = destinationPath.directoryURL()
         try url.setResourceValues(values)
 
       } catch {
@@ -439,7 +440,7 @@ extension DependencyPull {
         vprint(.normal, "🚨🚨 Warning 🚨🚨 UTC refreshCursor [\(cursorDate.iso8601())] for \(workspaceDependency.displayTuple) is after current date; the dependency may constantly be re-copied")
       }
 
-      let values = try! destinationPath.asDirectoryURL().resourceValues(forKeys: [.creationDateKey])
+      let values = try! destinationPath.directoryURL().resourceValues(forKeys: [.creationDateKey])
       if let creationDate = values.creationDate {
         if creationDate < cursorDate {
           vprint(.debug, "Copy decision: \(workspaceDependency.displayTuple) : YES : UTC creation date [\(creationDate.iso8601())] is earlier refreshCursor [\(cursorDate.iso8601())]")

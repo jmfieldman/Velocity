@@ -14,6 +14,16 @@ let package = Package(
     .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.2"),
   ],
   targets: [
+    // Internal Utilities
+
+    .target(
+      name: "InternalUtilities",
+      dependencies: [],
+      path: "InternalUtilities"
+    ),
+
+    // Dependency Magnet
+
     .executableTarget(
       name: "DependencyMagnet",
       dependencies: [
@@ -27,6 +37,7 @@ let package = Package(
       name: "DependencyMagnetLib",
       dependencies: [
         .product(name: "Crypto", package: "swift-crypto"),
+        "InternalUtilities",
       ],
       path: "DependencyMagnet/Sources/Library"
     ),
