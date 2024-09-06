@@ -7,11 +7,13 @@ let package = Package(
   platforms: [.macOS(.v12)],
   products: [
     .executable(name: "dependency_magnet", targets: ["DependencyMagnet"]),
+    .library(name: "TmpForBuild", targets: ["ModuleManagementLib"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.4.0"),
-    .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.5.2"),
-    .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.2"),
+    .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.5.0"),
+    .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.7.0"),
+    .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.3"),
+    .package(url: "https://github.com/yonaskolb/XcodeGen.git", exact: "2.42.0"),
   ],
   targets: [
     // Internal Utilities
@@ -40,6 +42,17 @@ let package = Package(
         "InternalUtilities",
       ],
       path: "DependencyMagnet/Sources/Library"
+    ),
+
+    // Module Management
+
+    .target(
+      name: "ModuleManagementLib",
+      dependencies: [
+        .product(name: "ProjectSpec", package: "XcodeGen"),
+        "InternalUtilities",
+      ],
+      path: "ModuleManagement/Sources/Library"
     ),
   ]
 )
