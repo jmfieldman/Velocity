@@ -108,42 +108,39 @@ extension ModulePackageManager {
 
   public func importCycle() -> [(String, ModuleImport)]? {
     let state = CycleEdgeState(modules: importGraph.keys.map { $0 })
-    for module in importGraph.keys {
-      if let cycleEdges = state.cycleEdges(module: module, importGraph: importGraph) {
-        return cycleEdges
+    return importGraph
+      .keys
+      .firstMap {
+        state.cycleEdges(module: $0, importGraph: importGraph)
       }
-    }
-    return nil
   }
 
   private class CycleEdgeState {
-    var hasVisited: [String: Bool] = [:]
-    var recursionStack: [String: Bool] = [:]
+    var hasVisited: [String: Bool]
+    var recursionStack: [String: Bool]
 
     init(modules: [String]) {
-      self.hasVisited = Dictionary(uniqueKeysWithValues: modules.map { ($0, false) })
-      self.recursionStack = Dictionary(uniqueKeysWithValues: modules.map { ($0, false) })
+      self.hasVisited = .init(uniqueKeysWithValues: modules.map { ($0, false) })
+      self.recursionStack = .init(uniqueKeysWithValues: modules.map { ($0, false) })
     }
 
     func cycleEdges(module: String, importGraph: [String: Set<ModuleImport>]) -> [(String, ModuleImport)]? {
       defer { recursionStack[module] = false }
-
-      if hasVisited[module, default: false] { return nil }
+      guard !hasVisited[module, default: false] else { return nil }
 
       hasVisited[module] = true
       recursionStack[module] = true
 
-      for moduleImport in importGraph[module, default: []] {
-        if !hasVisited[moduleImport.name, default: false], let edges = cycleEdges(module: moduleImport.name, importGraph: importGraph) {
-          return [(module, moduleImport)] + edges
+      return importGraph[module, default: []]
+        .firstMap { moduleImport -> [(String, ModuleImport)]? in
+          if !hasVisited[moduleImport.name, default: false] {
+            return cycleEdges(module: moduleImport.name, importGraph: importGraph).map { [(module, moduleImport)] + $0 }
+          } else if recursionStack[moduleImport.name, default: false] {
+            return [(module, moduleImport)]
+          } else {
+            return nil
+          }
         }
-
-        if recursionStack[moduleImport.name, default: false] {
-          return [(module, moduleImport)]
-        }
-      }
-
-      return nil
     }
   }
 }
