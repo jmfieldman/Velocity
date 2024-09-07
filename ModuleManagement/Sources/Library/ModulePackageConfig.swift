@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import ProjectSpec
 
 /// Represents the Codable format of package.yml files.
 /// All fields are optional. It is valid/expected that package.yml files are
