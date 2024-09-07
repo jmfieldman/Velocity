@@ -109,7 +109,7 @@ extension ModulePackageManager {
   public func importCycle() -> [(String, ModuleImport)]? {
     let state = CycleEdgeState(modules: importGraph.keys.map { $0 })
     for module in importGraph.keys {
-      if let cycleEdges = state.cycleEdgeUtil(module: module, importGraph: importGraph) {
+      if let cycleEdges = state.cycleEdges(module: module, importGraph: importGraph) {
         return cycleEdges
       }
     }
@@ -125,7 +125,7 @@ extension ModulePackageManager {
       self.recursionStack = Dictionary(uniqueKeysWithValues: modules.map { ($0, false) })
     }
 
-    func cycleEdgeUtil(module: String, importGraph: [String: Set<ModuleImport>]) -> [(String, ModuleImport)]? {
+    func cycleEdges(module: String, importGraph: [String: Set<ModuleImport>]) -> [(String, ModuleImport)]? {
       defer { recursionStack[module] = false }
 
       if hasVisited[module, default: false] { return nil }
@@ -134,7 +134,7 @@ extension ModulePackageManager {
       recursionStack[module] = true
 
       for moduleImport in importGraph[module, default: []] {
-        if !hasVisited[moduleImport.name, default: false], let edges = cycleEdgeUtil(module: moduleImport.name, importGraph: importGraph) {
+        if !hasVisited[moduleImport.name, default: false], let edges = cycleEdges(module: moduleImport.name, importGraph: importGraph) {
           return [(module, moduleImport)] + edges
         }
 
