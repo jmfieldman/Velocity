@@ -73,6 +73,14 @@ public extension String {
     hasSuffix("/") ? String(dropLast()) : self
   }
 
+  var basePath: String {
+    (self as NSString).deletingLastPathComponent
+  }
+
+  var lastPathComponent: String {
+    (self as NSString).lastPathComponent
+  }
+
   func shaHash() -> String {
     shaData().map { String(format: "%02hhx", $0) }.joined()
   }
@@ -93,5 +101,42 @@ public extension String {
     }
 
     return result
+  }
+
+  func relative(to path: String) -> String {
+    guard hasPrefix("/") else {
+      fatalError("asRelativePath used on a non-absolute receiver: \(self)")
+    }
+
+    guard path.hasPrefix("/") else {
+      fatalError("asRelativePath used on a non-absolute argument: \(path)")
+    }
+
+    let receiverComponents = split(separator: "/")
+    let pathComponents = path.split(separator: "/")
+    var similarComponentCount = 0
+
+    while
+      receiverComponents.count > similarComponentCount,
+      pathComponents.count > similarComponentCount,
+      receiverComponents[similarComponentCount] == pathComponents[similarComponentCount]
+    {
+      similarComponentCount += 1
+    }
+
+    if similarComponentCount == receiverComponents.count {
+      return ""
+    }
+
+    let remainingSelfItems = receiverComponents[similarComponentCount ..< receiverComponents.count]
+    let remainingSelfPath = remainingSelfItems.joined(separator: "/")
+
+    let remainingPathItems = pathComponents.count - similarComponentCount
+    if remainingPathItems > 0 {
+      let backPath = [String](repeating: "..", count: remainingPathItems).joined(separator: "/")
+      return "\(backPath)/\(remainingSelfPath)"
+    } else {
+      return remainingSelfPath
+    }
   }
 }

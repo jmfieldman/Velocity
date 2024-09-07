@@ -1,45 +1,89 @@
 //
 //  Module.swift
-//  Copyright © 2021 Jason Fieldman.
+//  Copyright © 2022 Jason Fieldman.
 //
 
 import Foundation
+import InternalUtilities
+import ProjectSpec
+import Yams
 
-public enum Module: String, Codable, CaseIterable {
-  case main
-  case impl
-  case tests
-  case testHelpers
+private let kImportsYml = "imports.yml"
+private let importsDecoder = YAMLDecoder()
 
-  /// The directory name suffix used for this module type
-  var suffix: String {
-    switch self {
-    case .main: ""
-    case .impl: "Impl"
-    case .tests: "Tests"
-    case .testHelpers: "TestHelpers"
-    }
+public final class Module {
+  public let name: String
+  public let type: ModuleType
+
+  /// The absolute base path of the module
+  private let absoluteBasePath: String
+
+  /// The base path within the top-level project scope
+  private let projectBasePath: String
+
+  private lazy var importsFilePath = self.absoluteBasePath + kImportsYml
+
+  init(name: String, type: ModuleType, absoluteBasePath: String, projectBasePath: String) {
+    self.name = name
+    self.type = type
+    self.absoluteBasePath = absoluteBasePath
+    self.projectBasePath = projectBasePath
   }
 
-  /// Returns the full directory name for the module inside of a specfied
-  /// package name
-  func directory(for packageName: String) -> String {
-    packageName.appending(suffix)
+  public private(set) lazy var importedModules: [String] = self.regenerateImportsIfNecessary()
+
+  private func regenerateImportsIfNecessary() -> [String] {
+    (try? String(contentsOfFile: importsFilePath, encoding: .utf8)).flatMap {
+      try? importsDecoder.decode([String].self, from: $0)
+    } ?? (regenerateImportsFile(ignoreFilenames: []) ?? [])
   }
 
-  /// An array of sibling module types whose imports should be merged into
-  /// ours when performing import graph cycle checks.
-  var bridgedSiblingImports: [Module] {
-    switch self {
-    // Main imports Impl because of the injection pattern where protocols
-    // defined in main will inject/instantiate their implementations, which
-    // can in turn immediately require the instantiations of other injected
-    // types. So anyone using a type in main can potentially depend on a
-    // type in impl.
-    case .main: [.impl]
-    case .impl: []
-    case .tests: []
-    case .testHelpers: []
+  @discardableResult public func regenerateImportsFile(
+    ignoreFilenames: Set<String>
+  ) -> [String]? {
+    guard let imports = SwiftImportDetector.execute(
+      path: absoluteBasePath,
+      deepSearch: true,
+      ignoreFilenames: ignoreFilenames
+    )?.sorted() else {
+      return nil
     }
+
+    // Delete stray imports.yml if there are no imports in the module
+    guard imports.count > 0 else {
+      try? FileManager.default.removeItem(atPath: importsFilePath)
+      return []
+    }
+
+    if var node = try? Yams.Node(imports) {
+      node.sequence?.style = .block
+      if let string = try? Yams.serialize(node: node) {
+        try? string.write(toFile: importsFilePath, atomically: true, encoding: .utf8)
+      }
+    }
+
+    return imports
+  }
+
+  public private(set) lazy var target: ProjectSpec.Target = generateTarget()
+
+  private func generateTarget() -> ProjectSpec.Target {
+    ProjectSpec.Target(
+      name: name,
+      type: .framework,
+      platform: .auto,
+      sources: [
+        TargetSource(
+          path: projectBasePath.removingSlash(),
+          excludes: [kImportsYml]
+        ),
+      ],
+      dependencies: importedModules.map {
+        Dependency(
+          type: .framework,
+          reference: $0
+        )
+      }
+    )
   }
 }

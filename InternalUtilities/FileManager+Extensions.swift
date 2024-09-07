@@ -37,4 +37,27 @@ public extension FileManager {
       ($0 as? URL).flatMap { url in itemHandler(url.path, enumerator) }
     }
   }
+
+  func directory(
+    at fullPath: String,
+    options: FileManager.DirectoryEnumerationOptions = [],
+    contains: (String) -> Bool
+  ) -> Bool {
+    guard directoryExists(atPath: fullPath) else {
+      return false
+    }
+
+    guard let enumerator = enumerator(
+      at: URL(fileURLWithPath: fullPath),
+      includingPropertiesForKeys: nil,
+      options: options,
+      errorHandler: nil
+    ) else {
+      return false
+    }
+
+    return enumerator.contains {
+      ($0 as? URL).flatMap { url in contains(url.path) } ?? false
+    }
+  }
 }
