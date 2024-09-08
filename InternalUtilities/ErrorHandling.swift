@@ -1,6 +1,6 @@
 //
 //  ErrorHandling.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
@@ -14,6 +14,7 @@ public enum CommandError: Int {
   case fileError
   case swiftPackageManager
   case invalidDate
+  case pathNotFound
 }
 
 public func throwError(_ error: CommandError, _ additionalDesc: String?) -> Never {

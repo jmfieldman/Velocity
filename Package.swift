@@ -7,7 +7,7 @@ let package = Package(
   platforms: [.macOS(.v12)],
   products: [
     .executable(name: "dependency_magnet", targets: ["DependencyMagnet"]),
-    .library(name: "TmpForBuild", targets: ["ModuleManagementLib"]),
+    .executable(name: "modules", targets: ["ModuleGeneration"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.5.0"),
@@ -53,6 +53,28 @@ let package = Package(
         "InternalUtilities",
       ],
       path: "ModuleManagement/Sources/Library"
+    ),
+
+    // Module Generation
+
+    .executableTarget(
+      name: "ModuleGeneration",
+      dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        "InternalUtilities",
+        "ModuleManagementLib",
+        "ModuleGenerationLib",
+      ],
+      path: "ModuleGeneration/Sources/Command"
+    ),
+    .target(
+      name: "ModuleGenerationLib",
+      dependencies: [
+        .product(name: "ProjectSpec", package: "XcodeGen"),
+        "InternalUtilities",
+        "ModuleManagementLib",
+      ],
+      path: "ModuleGeneration/Sources/Library"
     ),
   ]
 )

@@ -1,11 +1,11 @@
 //
 //  Verbosity.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
 
-var gVerbosityLevel: Verbosity = .normal
+public var gVerbosityLevel: Verbosity = .normal
 
 public enum Verbosity: Int {
   case error = -1
@@ -35,13 +35,13 @@ public func setVerbosity(_ verbosity: Verbosity) {
   gVerbosityLevel = verbosity
 }
 
-func vprint(_ verboseness: Verbosity, _ str: String) {
+public func vprint(_ verboseness: Verbosity, _ str: String, _ emoji: String? = nil) {
   if verboseness == .error {
-    fputs("💀 \(str)\n", stderr)
+    fputs("\(emoji ?? "💀") \(str)\n", stderr)
     return
   }
 
   if verboseness.rawValue <= gVerbosityLevel.rawValue {
-    print("🧲 \(str)")
+    print("\(emoji ?? "🧲") \(str)")
   }
 }

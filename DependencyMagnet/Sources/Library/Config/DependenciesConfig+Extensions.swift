@@ -1,9 +1,10 @@
 //
 //  DependenciesConfig+Extensions.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
+import InternalUtilities
 
 extension DependencyConfig {
   private var packageQualifier: (label: String, value: String) {
