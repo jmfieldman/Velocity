@@ -18,6 +18,10 @@ public class DependencyConfig: Decodable {
   public let revision: String?
   public let exact: String?
 
+  /// This override is only necessary if the URL's final path component
+  /// is not the same name as the package.
+  public let packageName: String?
+
   /// If true, do not pull this dependencies to the local machine.
   /// This is useful to enumerate dependencies for Module Package
   /// generation that cannot be pulled locally.

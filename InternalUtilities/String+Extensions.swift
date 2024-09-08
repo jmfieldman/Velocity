@@ -1,6 +1,6 @@
 //
 //  String+Extensions.swift
-//  Copyright © 2021 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import CommonCrypto
@@ -71,6 +71,10 @@ public extension String {
 
   func removingSlash() -> String {
     hasSuffix("/") ? String(dropLast()) : self
+  }
+
+  func removingSuffix(_ suffix: String) -> String {
+    hasSuffix(suffix) ? String(dropLast(suffix.count)) : self
   }
 
   var basePath: String {

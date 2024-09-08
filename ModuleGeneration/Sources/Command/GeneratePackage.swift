@@ -33,7 +33,10 @@ extension ModuleGenerationCommand {
     @Option(help: "Path to the dependencies.yml file that lists the dependencies for this Package")
     public var dependenciesConfig: String = "dependencies.yml"
 
-    @Option(help: "Override the package name (otherwise will use the root basename)")
+    @Option(help: "The output path of the dependency_magnet command used to create local packages. If not provided then no local packages will be used.")
+    public var dependencyOutputPath: String?
+
+    @Option(help: "Override the generated package name (otherwise will use the root basename)")
     public var packageName: String?
 
     func run() async throws {
@@ -99,7 +102,26 @@ extension ModuleGenerationCommand {
       }
 
       return dependencies.map { dependency -> String in
-        dependency.packageString
+        guard dependency.keepRemote != true else {
+          return dependency.packageString
+        }
+
+        // Determine the name of the dependency package
+        let dependencyPackageName = dependency.packageName ?? dependency.url.removingSuffix(".git").lastPathComponent
+
+        guard let dependencyOutputPath else {
+          vprint(.normal, "Warning, no dependencyOutputPath was specified; \(dependencyPackageName) will use remote package", "❗")
+          return dependency.packageString
+        }
+
+        let dependencyPackagePath = "\(dependencyOutputPath)/Packages/\(dependencyPackageName)"
+        guard FileManager.default.directoryExists(atPath: dependencyPackagePath) else {
+          vprint(.normal, "Warning, no local package exists at \(dependencyPackagePath); \(dependencyPackageName) will use remote package", "❗")
+          return dependency.packageString
+        }
+
+        let path = dependencyPackagePath.prependingCurrentDirectory().relative(to: rootPath.prependingCurrentDirectory())
+        return ".package(name: \"\(dependencyPackageName)\", path: \"\(path)\", )"
       }.joined(separator: "\n")
     }
 
