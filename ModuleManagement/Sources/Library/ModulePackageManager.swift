@@ -1,6 +1,6 @@
 //
 //  ModulePackageManager.swift
-//  Copyright © 2022 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import InternalUtilities
 
 public final class ModulePackageManager {
   /// A list of all packages
-  private let packages: [ModulePackage]
+  public let packages: [ModulePackage]
 
   /// Module imports, keyed by Module name
   public private(set) lazy var importGraph: [String: Set<ModuleImport>] = Self.importGraph(packages: packages)

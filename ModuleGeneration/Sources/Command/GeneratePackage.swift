@@ -55,6 +55,8 @@ extension ModuleGenerationCommand {
         absoluteProjectPath: projectPath
       )
 
+      let packageManager = ModulePackageManager(packages: packages)
+
       guard packages.count > 0 else {
         vprint(.normal, "No packages found at root path: \(projectPath)")
         return
@@ -76,8 +78,9 @@ extension ModuleGenerationCommand {
         .replacingOccurrences(of: "{SWIFT_TOOLS}", with: swiftToolsVersion)
         .replacingOccurrences(of: "{PACKAGE_NAME}", with: gen_PACKAGE_NAME())
         .replacingOccurrences(of: "{PLATFORMS}", with: platforms)
+        .replacingOccurrences(of: "{PRODUCTS}", with: gen_PRODUCTS(packageManager: packageManager))
         .replacingOccurrences(of: "{DEPENDENCIES}", with: gen_DEPENDENCIES())
-        .replacingOccurrences(of: "{TARGETS}", with: gen_TARGETS())
+        .replacingOccurrences(of: "{TARGETS}", with: gen_TARGETS(packageManager: packageManager, projectPath: projectPath))
 
       try! packageContents.write(
         toFile: "\(projectPath)/Package.swift",
@@ -125,8 +128,76 @@ extension ModuleGenerationCommand {
       }.joined(separator: "\n")
     }
 
-    func gen_TARGETS() -> String {
-      ""
+    func gen_TARGETS(
+      packageManager: ModulePackageManager,
+      projectPath: String
+    ) -> String {
+      var externalImports: [String: String] = [:]
+      if
+        FileManager.default.fileExists(atPath: dependenciesConfig),
+        case let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig),
+        let dependencies = dependenciesConfig.dependencies,
+        dependencies.count > 0
+      {
+        for dependency in dependencies {
+          dependency.libraries?.forEach {
+            externalImports[$0] = ".product(name: \"\($0)\", package: \"\(dependency.inferredPackageName)\")"
+          }
+        }
+      }
+
+      var knownModules: Set<String> = []
+      for package in packageManager.packages {
+        for value in package.modules.values {
+          knownModules.insert(value.name)
+        }
+      }
+
+      var targets: [String] = []
+      packageManager.packages.sorted { $0.name < $1.name }.forEach { package in
+        package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { key in
+          guard let module = package.modules[key] else { return }
+
+          var deps: [String] = []
+          for dep in packageManager.importGraph[module.name] ?? [] {
+            if let externalImport = externalImports[dep.name] {
+              deps.append(externalImport)
+            } else if knownModules.contains(dep.name) {
+              deps.append("\"\(dep.name)\"")
+            }
+          }
+
+          let targetStr = """
+          .target(
+            name: "\(module.name)",
+            dependencies: [
+              \(deps.joined(separator: "\n"))
+            ],
+            path: "\(module.absoluteBasePath.relative(to: projectPath))",
+            exclude: [
+              \(package.fileExclusions[key]?.map { "\"\($0)\"" }.joined(separator: "\n") ?? "")
+            ]
+          ),
+          """
+          targets.append(targetStr)
+        }
+      }
+
+      return targets.joined(separator: "\n")
+    }
+
+    func gen_PRODUCTS(
+      packageManager: ModulePackageManager
+    ) -> String {
+      var result: [String] = []
+      packageManager.packages.sorted { $0.name < $1.name }.forEach { package in
+        package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { key in
+          guard let module = package.modules[key] else { return }
+          result.append(".library(name: \"\(module.name)\", targets: [\"\(module.name)\"]),")
+        }
+      }
+
+      return result.joined(separator: "\n")
     }
   }
 }

@@ -1,6 +1,6 @@
 //
 //  Module.swift
-//  Copyright © 2022 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
@@ -16,10 +16,10 @@ public final class Module {
   public let type: ModuleType
 
   /// The absolute base path of the module
-  private let absoluteBasePath: String
+  public let absoluteBasePath: String
 
   /// The base path within the top-level project scope
-  private let projectBasePath: String
+  public let projectBasePath: String
 
   private lazy var importsFilePath = self.absoluteBasePath + kImportsYml
 
