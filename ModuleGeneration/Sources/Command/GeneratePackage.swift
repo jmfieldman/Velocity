@@ -31,7 +31,7 @@ extension ModuleGenerationCommand {
     public var platforms: String
 
     @Option(help: "Path to the dependencies.yml file that lists the dependencies for this Package")
-    public var dependenciesConfig: String = "dependencies.yml"
+    public var dependenciesConfig: String = "Dependencies/dependencies.yml"
 
     @Option(help: "The output path of the dependency_magnet command used to create local packages. If not provided then no local packages will be used.")
     public var dependencyOutputPath: String?
@@ -107,7 +107,7 @@ extension ModuleGenerationCommand {
         }
 
         // Determine the name of the dependency package
-        let dependencyPackageName = dependency.packageName ?? dependency.url.removingSuffix(".git").lastPathComponent
+        let dependencyPackageName = dependency.inferredPackageName
 
         guard let dependencyOutputPath else {
           vprint(.normal, "Warning, no dependencyOutputPath was specified; \(dependencyPackageName) will use remote package", "❗")
@@ -121,7 +121,7 @@ extension ModuleGenerationCommand {
         }
 
         let path = dependencyPackagePath.prependingCurrentDirectory().relative(to: rootPath.prependingCurrentDirectory())
-        return ".package(name: \"\(dependencyPackageName)\", path: \"\(path)\", )"
+        return ".package(name: \"\(dependencyPackageName)\", path: \"\(path)\")"
       }.joined(separator: "\n")
     }
 

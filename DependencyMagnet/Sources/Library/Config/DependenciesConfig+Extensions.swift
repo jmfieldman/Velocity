@@ -6,7 +6,7 @@
 import Foundation
 import InternalUtilities
 
-extension DependencyConfig {
+public extension DependencyConfig {
   private var packageQualifier: (label: String, value: String) {
     if let from {
       return ("from: ", from)
@@ -29,9 +29,13 @@ extension DependencyConfig {
     throwError(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
   }
 
-  public var packageString: String {
+  var packageString: String {
     let qualifier = packageQualifier
     return ".package(url: \"\(url)\", \(qualifier.label)\"\(qualifier.value)\")"
+  }
+
+  var inferredPackageName: String {
+    packageName ?? url.removingSuffix(".git").lastPathComponent
   }
 }
 
