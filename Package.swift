@@ -30,7 +30,6 @@ let package = Package(
       name: "DependencyMagnet",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Yams", package: "Yams"),
         "DependencyMagnetLib",
       ],
       path: "DependencyMagnet/Sources/Command"
@@ -39,6 +38,7 @@ let package = Package(
       name: "DependencyMagnetLib",
       dependencies: [
         .product(name: "Crypto", package: "swift-crypto"),
+        .product(name: "Yams", package: "Yams"),
         "InternalUtilities",
       ],
       path: "DependencyMagnet/Sources/Library"
@@ -64,6 +64,7 @@ let package = Package(
         "InternalUtilities",
         "ModuleManagementLib",
         "ModuleGenerationLib",
+        "DependencyMagnetLib",
       ],
       path: "ModuleGeneration/Sources/Command"
     ),

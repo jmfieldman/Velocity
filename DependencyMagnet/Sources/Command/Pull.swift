@@ -7,7 +7,6 @@ import ArgumentParser
 import DependencyMagnetLib
 import Foundation
 import InternalUtilities
-import Yams
 
 extension DependencyMagnetCommand {
   /// This subcommand pulls the dependencies into the current
@@ -23,20 +22,7 @@ extension DependencyMagnetCommand {
     func run() async throws {
       setVerbosity(commonOptions.verbosity)
 
-      // Verify config exists
-      guard FileManager.default.fileExists(atPath: commonOptions.config) else {
-        throwError(.configNotFound, "Config file not found at \(commonOptions.config)")
-      }
-
-      // Decode config
-      let dependenciesConfigData: Data
-      let dependenciesConfig: DependenciesConfig
-      do {
-        dependenciesConfigData = try Data(contentsOf: commonOptions.config.prependingCurrentDirectory().fileURL())
-        dependenciesConfig = try YAMLDecoder().decode(DependenciesConfig.self, from: dependenciesConfigData)
-      } catch {
-        throwError(.configNotDecodable, error.localizedDescription)
-      }
+      let dependenciesConfig = DependenciesConfig.from(filePath: commonOptions.config)
 
       // Verify at least one dependency exists
       guard (dependenciesConfig.dependencies ?? []).count > 0 else {

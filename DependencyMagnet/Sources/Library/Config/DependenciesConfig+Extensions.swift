@@ -29,7 +29,7 @@ extension DependencyConfig {
     throwError(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
   }
 
-  var packageString: String {
+  public var packageString: String {
     let qualifier = packageQualifier
     return ".package(url: \"\(url)\", \(qualifier.label)\"\(qualifier.value)\")"
   }

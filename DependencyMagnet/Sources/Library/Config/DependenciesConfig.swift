@@ -4,8 +4,10 @@
 //
 
 import Foundation
+import InternalUtilities
+import Yams
 
-public struct DependencyConfig: Decodable {
+public class DependencyConfig: Decodable {
   public let url: String
 
   /// The package version qualifiers, prioritized top-down.
@@ -15,6 +17,11 @@ public struct DependencyConfig: Decodable {
   public let branch: String?
   public let revision: String?
   public let exact: String?
+
+  /// If true, do not pull this dependencies to the local machine.
+  /// This is useful to enumerate dependencies for Module Package
+  /// generation that cannot be pulled locally.
+  public let keepRemote: Bool?
 
   /// Enumerate the libraries that this package provides. This is
   /// used during automatic module generation to understand what
@@ -36,6 +43,24 @@ public struct DependencyConfig: Decodable {
   public let refreshCursor: String?
 }
 
-public struct DependenciesConfig: Decodable {
+public class DependenciesConfig: Decodable {
   public let dependencies: [DependencyConfig]?
+
+  public static func from(filePath: String) -> DependenciesConfig {
+    guard FileManager.default.fileExists(atPath: filePath) else {
+      throwError(.configNotFound, "Config file not found at \(filePath)")
+    }
+
+    // Decode config
+    let dependenciesConfigData: Data
+    let dependenciesConfig: DependenciesConfig
+    do {
+      dependenciesConfigData = try Data(contentsOf: filePath.prependingCurrentDirectory().fileURL())
+      dependenciesConfig = try YAMLDecoder().decode(DependenciesConfig.self, from: dependenciesConfigData)
+    } catch {
+      throwError(.configNotDecodable, error.localizedDescription)
+    }
+
+    return dependenciesConfig
+  }
 }

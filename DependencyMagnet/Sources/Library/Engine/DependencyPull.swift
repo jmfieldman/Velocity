@@ -42,6 +42,7 @@ public class DependencyPull: NSObject {
       outputState: outputState
     )
     replaceRemotePackages(
+      dependencyConfigs: dependencies,
       packagesPath: packagesPath,
       workspaceState: workspaceState
     )
@@ -159,6 +160,7 @@ extension DependencyPull {
   /// Replaces all of the remote url-based packages in each dependency
   /// with its local-path version.
   func replaceRemotePackages(
+    dependencyConfigs: [DependencyConfig],
     packagesPath: String,
     workspaceState: WorkspaceState
   ) {
@@ -166,6 +168,11 @@ extension DependencyPull {
 
     var needleMap: [String: String] = [:]
     for dependency in workspaceState.object?.dependencies ?? [] {
+      // If a dependency is marked 'keepRemote' that we should not add its variants to the needleMap
+      guard dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)?.keepRemote != true else {
+        continue
+      }
+
       guard let locationVariants = dependency.packageRef?.location?.locationVariants(), !locationVariants.isEmpty else {
         continue
       }
@@ -182,6 +189,11 @@ extension DependencyPull {
     }
 
     for dependency in workspaceState.object?.dependencies ?? [] {
+      // If a dependency is marked 'keepRemote' then we should not bother updating its Package.swift file
+      guard dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)?.keepRemote != true else {
+        continue
+      }
+
       guard let subpath = dependency.subpath else {
         continue
       }
@@ -330,6 +342,11 @@ extension DependencyPull {
 
       let dependencyConfig = dependencyConfigs
         .dependencyConfig(relatedToUrl: dependency.packageRef?.location)
+
+      guard dependencyConfig?.keepRemote != true else {
+        vprint(.debug, "Respecting keepRemote flag for dependency: \(dependency.displayName)")
+        continue
+      }
 
       let sourcePath = subpath
         .prepending(path: "checkouts")
