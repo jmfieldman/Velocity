@@ -125,7 +125,7 @@ extension ModuleGenerationCommand {
 
         let path = dependencyPackagePath.prependingCurrentDirectory().relative(to: rootPath.prependingCurrentDirectory())
         return ".package(name: \"\(dependencyPackageName)\", path: \"\(path)\")"
-      }.joined(separator: "\n")
+      }.joined(separator: ",\n")
     }
 
     func gen_TARGETS(
@@ -171,7 +171,7 @@ extension ModuleGenerationCommand {
           .target(
             name: "\(module.name)",
             dependencies: [
-              \(deps.joined(separator: "\n"))
+              \(deps.joined(separator: ",\n"))
             ],
             path: "\(module.absoluteBasePath.relative(to: projectPath))",
             exclude: [
