@@ -1,6 +1,6 @@
 //
 //  DependenciesConfig.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
@@ -15,6 +15,11 @@ public struct DependencyConfig: Decodable {
   public let branch: String?
   public let revision: String?
   public let exact: String?
+
+  /// Enumerate the libraries that this package provides. This is
+  /// used during automatic module generation to understand what
+  /// external dependencies are invoked based on import statements.
+  public let libraries: [String]?
 
   /// If this is true, then we will ignore the SHA hashes for this
   /// dependency when determining if a new copy needs to be updated
