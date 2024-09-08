@@ -1,15 +1,27 @@
 //
 //  WorkspaceState+Extensions.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
+import InternalUtilities
 
 extension WorkspaceState {
   func dependency(withIdentifier id: String?) -> WorkspaceStateDependency? {
     guard let id else { return nil }
     return object?.dependencies?.first {
       $0.packageRef?.identity == id
+    }
+  }
+
+  public static func from(workspacePath: String) -> WorkspaceState? {
+    let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(path: workspacePath)
+
+    do {
+      let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectory().fileURL())
+      return try JSONDecoder().decode(WorkspaceState.self, from: data)
+    } catch {
+      return nil
     }
   }
 }

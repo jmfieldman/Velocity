@@ -6,11 +6,11 @@
 import Foundation
 import InternalUtilities
 
-private let kBuildDir = ".build"
-private let kWorkspaceStateFile = "workspace-state.json"
-private let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
-private let kPackageResolver = "Package.resolved"
-private let kPackagesOutputPath = "Packages"
+let kBuildDir = ".build"
+let kWorkspaceStateFile = "workspace-state.json"
+let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
+let kPackageResolver = "Package.resolved"
+let kPackagesOutputPath = "Packages"
 
 public class DependencyPull: NSObject {
   public func pull(
