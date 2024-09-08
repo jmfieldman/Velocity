@@ -1,6 +1,6 @@
 //
 //  ModulePackage.swift
-//  Copyright © 2022 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
@@ -64,20 +64,18 @@ public final class ModulePackage {
     guard config.disable.flatMap({ !$0 }) ?? true else { return [:] }
 
     return Dictionary(uniqueKeysWithValues: ModuleType.allCases.compactMap { type in
-      for directory in type.directory(for: self.name) {
-        let moduleDirectory = "\(self.absoluteBasePath)\(directory)"
-        if FileManager.default.directoryExists(atPath: moduleDirectory) {
-          guard FileManager.default.directory(at: moduleDirectory, contains: { $0.hasSuffix(".swift") }) else {
-            continue
-          }
-
-          return (type, Module(
-            name: self.moduleNameFor(type: type),
-            type: type,
-            absoluteBasePath: "\(moduleDirectory)/",
-            projectBasePath: "\(self.projectBasePath)\(directory)/"
-          ))
+      let moduleDirectory = "\(self.absoluteBasePath)\(type.directory(for: self.name))"
+      if FileManager.default.directoryExists(atPath: moduleDirectory) {
+        guard FileManager.default.directory(at: moduleDirectory, contains: { $0.hasSuffix(".swift") }) else {
+          return nil
         }
+
+        return (type, Module(
+          name: self.moduleNameFor(type: type),
+          type: type,
+          absoluteBasePath: "\(moduleDirectory)/",
+          projectBasePath: "\(self.projectBasePath)\(type.directory(for: self.name))/"
+        ))
       }
 
       return nil
