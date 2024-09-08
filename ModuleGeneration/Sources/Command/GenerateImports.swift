@@ -13,7 +13,7 @@ import Yams
 extension ModuleGenerationCommand {
   final class GenerateImports: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
-      abstract: "Pull dependencies"
+      abstract: "Generate imports.yml files"
     )
 
     @OptionGroup var commonOptions: CommonOptions

@@ -12,6 +12,7 @@ import InternalUtilities
     abstract: "Contains commands for module generation and handling.",
     subcommands: [
       GenerateImports.self,
+      GeneratePackage.self,
     ]
   )
 }
