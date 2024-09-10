@@ -13,6 +13,7 @@ import InternalUtilities
     subcommands: [
       GenerateImports.self,
       GeneratePackage.self,
+      GenerateXcodegen.self,
     ]
   )
 }

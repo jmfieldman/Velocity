@@ -61,6 +61,7 @@ let package = Package(
       name: "ModuleGeneration",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "ProjectSpec", package: "XcodeGen"),
         "InternalUtilities",
         "ModuleManagementLib",
         "ModuleGenerationLib",
