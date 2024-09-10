@@ -10,6 +10,13 @@ import InternalUtilities
 import ModuleManagementLib
 import Yams
 
+let kDefaultExclusionList: [String] = [
+  "imports.yml",
+  "inject.yml",
+  "README.md",
+  "LICENSE",
+]
+
 extension ModuleGenerationCommand {
   final class GeneratePackage: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
@@ -125,7 +132,7 @@ extension ModuleGenerationCommand {
 
         let path = dependencyPackagePath.prependingCurrentDirectory().relative(to: rootPath.prependingCurrentDirectory())
         return ".package(name: \"\(dependencyPackageName)\", path: \"\(path)\")"
-      }.joined(separator: ",\n")
+      }.map { "\($0)," }.joined(separator: "\n")
     }
 
     func gen_TARGETS(
@@ -161,21 +168,23 @@ extension ModuleGenerationCommand {
           var deps: [String] = []
           for dep in packageManager.importGraph[module.name] ?? [] {
             if let externalImport = externalImports[dep.name] {
-              deps.append(externalImport)
+              deps.append("\(externalImport),")
             } else if knownModules.contains(dep.name) {
-              deps.append("\"\(dep.name)\"")
+              deps.append("\"\(dep.name)\",")
             }
           }
+
+          let exclusions = kDefaultExclusionList + (package.fileExclusions[key] ?? [])
 
           let targetStr = """
           .target(
             name: "\(module.name)",
             dependencies: [
-              \(deps.joined(separator: ",\n"))
+              \(deps.sorted().joined(separator: "\n"))
             ],
             path: "\(module.absoluteBasePath.relative(to: projectPath))",
             exclude: [
-              \(package.fileExclusions[key]?.map { "\"\($0)\"" }.joined(separator: "\n") ?? "")
+              \(exclusions.sorted().map { "\"\($0)\"," }.joined(separator: "\n"))
             ]
           ),
           """
