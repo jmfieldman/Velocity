@@ -15,6 +15,7 @@ public enum CommandError: Int {
   case swiftPackageManager
   case invalidDate
   case pathNotFound
+  case invalidArgument
 }
 
 public func throwError(_ error: CommandError, _ additionalDesc: String?) -> Never {

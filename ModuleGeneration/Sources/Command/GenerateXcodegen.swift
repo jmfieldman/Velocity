@@ -28,6 +28,9 @@ extension ModuleGenerationCommand {
     @Option(help: "Override the generated yml filename")
     public var outputFilename: String = "project-modules.yml"
 
+    @Option(help: "Comma-delimited list of suported platforms (options: iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
+    public var platforms: String = "iOS"
+
     func run() async throws {
       setVerbosity(commonOptions.verbosity)
 
@@ -38,6 +41,15 @@ extension ModuleGenerationCommand {
       guard FileManager.default.directoryExists(atPath: absoluteModuleBasePath) else {
         throwError(.pathNotFound, "Module directory not found at path: \(rootPath)")
       }
+
+      let supportedDestinations: [ProjectSpec.SupportedDestination] = platforms
+        .components(separatedBy: ",")
+        .map {
+          guard let dest = ProjectSpec.SupportedDestination(rawValue: $0) else {
+            throwError(.invalidArgument, "\($0) is not a valid platform -- options are (iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
+          }
+          return dest
+        }
 
       let packages = ModulePackageManager.packages(
         named: commonOptions.packageFileName,
@@ -68,7 +80,8 @@ extension ModuleGenerationCommand {
           let target = ProjectSpec.Target(
             name: module.name,
             type: module.type == .tests ? .unitTestBundle : .framework,
-            platform: .auto
+            platform: .auto,
+            supportedDestinations: supportedDestinations
           )
 
           targets[module.name] = target.toJSONValue() as? [String: Any]
