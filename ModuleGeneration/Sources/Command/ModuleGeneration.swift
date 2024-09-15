@@ -14,6 +14,7 @@ import InternalUtilities
       GenerateImports.self,
       GeneratePackage.self,
       GenerateXcodegen.self,
+      GenerateXcodegenDeps.self,
     ]
   )
 }
