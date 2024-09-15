@@ -62,8 +62,12 @@ extension ModuleGenerationCommand {
 
       let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig)
       var dependencyLookup: [String: DependencyConfig] = [:]
-      dependenciesConfig.dependencies?.forEach {
-        dependencyLookup[$0.inferredPackageName] = $0
+      dependenciesConfig.dependencies?.forEach { pkg in
+        if let libs = pkg.libraries, libs.count > 0 {
+          libs.forEach { dependencyLookup[$0] = pkg }
+        } else {
+          dependencyLookup[pkg.inferredPackageName] = pkg
+        }
       }
       if dependencyLookup.count == 0 {
         vprint(.verbose, "No external dependencies were detected at \(dependenciesConfig)")
@@ -84,16 +88,60 @@ extension ModuleGenerationCommand {
         }
       }
 
+      // Load our internal module set
+      let internalModuleSet = Set(packages.flatMap { package in
+        package.modules.values.map(\.name)
+      })
+
       vprint(.normal, "Generating \(outputFilename)", "🔧")
 
       var targets: [String: [String: Any]] = [:]
       packages.sorted { $0.name < $1.name }.forEach { package in
-        package.modules.values.sorted { $0.name < $1.name }.forEach { module in
+        package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { moduleType in
+          let module = package.modules[moduleType]!
+
+          // Determine dependencies
+
+          // Process the imported modules to generate internal and external dependencies
+          let (internalDependencies, externalRefs) = module.importedModules.sorted().reduce(into: ([ProjectSpec.Dependency](), [String: [String]]())) { result, depName in
+            if internalModuleSet.contains(depName) {
+              // Append internal dependencies
+              result.0.append(.init(type: .target, reference: depName))
+            } else if let depConfig = dependencyLookup[depName] {
+              // Build external references
+              result.1[depConfig.inferredPackageName, default: []].append(depName)
+            }
+          }
+
+          // Convert external references into dependencies and log them
+          let externalDependencies = externalRefs
+            .sorted(by: { $0.key < $1.key })
+            .map { ref -> ProjectSpec.Dependency in
+              .init(type: .package(products: ref.value), reference: ref.key)
+            }
+
+          // Combine internal and external dependencies
+          let dependencies = internalDependencies + externalDependencies
+
+          // Determine source exclusions
+
+          let exclusions = (kDefaultExclusionList + (package.fileExclusions[moduleType] ?? []))
+            .filter { exclusion in
+              FileManager.default.fileExists(atPath: "\(module.projectBasePath)/\(exclusion)")
+            }
+
+          // Generate Target object
+
           let target = ProjectSpec.Target(
             name: module.name,
             type: module.type == .tests ? .unitTestBundle : .framework,
             platform: .auto,
-            supportedDestinations: supportedDestinations
+            supportedDestinations: supportedDestinations,
+            sources: [.init(
+              path: module.projectBasePath,
+              excludes: exclusions
+            )],
+            dependencies: dependencies
           )
 
           targets[module.name] = target.toJSONValue() as? [String: Any]
