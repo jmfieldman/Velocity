@@ -37,7 +37,7 @@ extension ModuleGenerationCommand {
     @Option(help: "Declare the comma-delimited supported platforms list (e.g. \".macOS(.v12), .iOS(v17)\")")
     public var platforms: String
 
-    @Option(help: "Path to the dependencies.yml file that lists the dependencies for this Package")
+    @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
     public var dependenciesConfig: String = "Dependencies/dependencies.yml"
 
     @Option(help: "The output path of the dependency_magnet command used to create local packages. If not provided then no local packages will be used.")

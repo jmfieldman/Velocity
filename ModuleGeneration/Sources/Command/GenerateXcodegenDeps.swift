@@ -22,7 +22,7 @@ extension ModuleGenerationCommand {
     @Option(help: "Override the generated yml filename")
     public var outputFilename: String = "project-dependencies.yml"
 
-    @Option(help: "Path to the dependencies.yml file that lists the dependencies for this Package")
+    @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
     public var dependenciesConfig: String = "Dependencies/dependencies.yml"
 
     @Option(help: "The output path of the dependency_magnet command used to create local packages, without the Package directory suffix. If not provided then no local packages will be used. If using the default setup this should be \"Dependencies\".")

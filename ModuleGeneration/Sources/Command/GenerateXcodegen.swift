@@ -31,6 +31,9 @@ extension ModuleGenerationCommand {
     @Option(help: "Comma-delimited list of suported platforms (options: iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
     public var platforms: String = "iOS"
 
+    @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
+    public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+
     func run() async throws {
       setVerbosity(commonOptions.verbosity)
 
@@ -56,6 +59,15 @@ extension ModuleGenerationCommand {
         root: rootPath,
         absoluteProjectPath: absoluteProjectPath
       )
+
+      let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig)
+      var dependencyLookup: [String: DependencyConfig] = [:]
+      dependenciesConfig.dependencies?.forEach {
+        dependencyLookup[$0.inferredPackageName] = $0
+      }
+      if dependencyLookup.count == 0 {
+        vprint(.verbose, "No external dependencies were detected at \(dependenciesConfig)")
+      }
 
       guard packages.count > 0 else {
         vprint(.normal, "No packages found at root path: \(rootPath)")
