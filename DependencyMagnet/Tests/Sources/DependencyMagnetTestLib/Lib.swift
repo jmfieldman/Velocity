@@ -1,6 +1,6 @@
 //
 //  Lib.swift
-//  Copyright © 2020 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Crypto

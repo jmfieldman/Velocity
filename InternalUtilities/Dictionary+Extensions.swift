@@ -1,6 +1,6 @@
 //
 //  Dictionary+Extensions.swift
-//  Copyright © 2021 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import CommonCrypto

@@ -1,6 +1,6 @@
 //
 //  WorkspaceState.swift
-//  Copyright © 2023 Jason Fieldman.
+//  Copyright © 2024 Jason Fieldman.
 //
 
 import Foundation
