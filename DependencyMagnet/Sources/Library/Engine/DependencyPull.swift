@@ -72,7 +72,7 @@ public class DependencyPull: NSObject {
             try throwError(.noDependencies, "No dependencies found in dependencies config file \(options.config)")
         }
 
-        try DependencyPull().pull(
+        try pull(
             dependencies: dependenciesConfig.dependencies ?? [],
             workspacePath: options.workspacePath,
             outputPath: options.outputPath
