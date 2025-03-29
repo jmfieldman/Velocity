@@ -26,7 +26,7 @@ public extension DependencyConfig {
     if let exact {
       return ("exact: ", exact)
     }
-    throwError(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
+    exitWithErrorType(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
   }
 
   var packageString: String {

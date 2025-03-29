@@ -60,7 +60,7 @@ extension DependencyPull {
     do {
       try FileManager.default.createDirectory(at: path.prependingCurrentDirectory().directoryURL(), withIntermediateDirectories: true)
     } catch {
-      throwError(.fileError, "Could not create directory \(path)")
+      exitWithErrorType(.fileError, "Could not create directory \(path)")
     }
   }
 
@@ -70,7 +70,7 @@ extension DependencyPull {
     var urls: Set<String> = []
     for dependency in dependencies {
       if urls.contains(dependency.url) {
-        throwError(.duplicateDependencies, "Duplicate dependency found: \(dependency.url)")
+        exitWithErrorType(.duplicateDependencies, "Duplicate dependency found: \(dependency.url)")
       }
       urls.insert(dependency.url)
     }
@@ -103,7 +103,7 @@ extension DependencyPull {
     do {
       try packageContents.write(toFile: packagePath, atomically: true, encoding: .utf8)
     } catch {
-      throwError(.fileError, "Could not write to package file [\(packagePath)]: \(error.localizedDescription)")
+      exitWithErrorType(.fileError, "Could not write to package file [\(packagePath)]: \(error.localizedDescription)")
     }
   }
 
@@ -131,7 +131,7 @@ extension DependencyPull {
         toPath: targetResolvedFile
       )
     } catch {
-      throwError(.fileError, "Could not copy \(kPackageResolver) from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
+      exitWithErrorType(.fileError, "Could not copy \(kPackageResolver) from \(outputPath) to \(workspacePath): \(error.localizedDescription)")
     }
 
     vprint(.verbose, "Copied existing \(kPackageResolver) to shadow workspace path")
@@ -153,7 +153,7 @@ extension DependencyPull {
     )
 
     guard result.exitCode == 0 else {
-      throwError(.swiftPackageManager, "'swift package resolve' failed on shadow workspace package in \(workspacePath)")
+      exitWithErrorType(.swiftPackageManager, "'swift package resolve' failed on shadow workspace package in \(workspacePath)")
     }
   }
 
@@ -243,7 +243,7 @@ extension DependencyPull {
         toPath: outputResolvedFile
       )
     } catch {
-      throwError(.fileError, "Could not copy \(kPackageResolver) from \(workspacePath) to \(outputPath): \(error.localizedDescription)")
+      exitWithErrorType(.fileError, "Could not copy \(kPackageResolver) from \(workspacePath) to \(outputPath): \(error.localizedDescription)")
     }
 
     vprint(.debug, "Copied shadow workspace \(kPackageResolver) to output path")
@@ -268,7 +268,7 @@ extension DependencyPull {
 
       return state
     } catch {
-      throwError(.fileError, "Could read/parse workspace-state.json: \(error.localizedDescription)")
+      exitWithErrorType(.fileError, "Could read/parse workspace-state.json: \(error.localizedDescription)")
     }
   }
 
@@ -316,7 +316,7 @@ extension DependencyPull {
         toPath: outputFile
       )
     } catch {
-      throwError(.fileError, "Could not copy \(kWorkspaceStateFile) from \(sourceDir) to \(outputDir): \(error.localizedDescription)")
+      exitWithErrorType(.fileError, "Could not copy \(kWorkspaceStateFile) from \(sourceDir) to \(outputDir): \(error.localizedDescription)")
     }
 
     vprint(.debug, "Copied shadow workspace \(kWorkspaceStateFile) to output path")
@@ -331,7 +331,7 @@ extension DependencyPull {
     outputState: WorkspaceState
   ) {
     guard let dependencies = workspaceState.object?.dependencies, !dependencies.isEmpty else {
-      throwError(.noDependencies, "No dependencies found in workspace state")
+      exitWithErrorType(.noDependencies, "No dependencies found in workspace state")
     }
 
     for dependency in dependencies.sorted() {
@@ -404,7 +404,7 @@ extension DependencyPull {
         try url.setResourceValues(values)
 
       } catch {
-        throwError(.fileError, "Could not copy dependency from \(sourcePath) to \(destinationPath): \(error.localizedDescription)")
+        exitWithErrorType(.fileError, "Could not copy dependency from \(sourcePath) to \(destinationPath): \(error.localizedDescription)")
       }
     }
   }
@@ -439,7 +439,7 @@ extension DependencyPull {
 
     if !(dependencyConfig?.ignoreSha ?? false) {
       guard let sourceSha = FileManager.default.sha(contentsOf: sourcePath) else {
-        throwError(.fileError, "Could not determine shasum of dependency \(workspaceDependency.displayTuple)")
+        exitWithErrorType(.fileError, "Could not determine shasum of dependency \(workspaceDependency.displayTuple)")
       }
 
       guard sourceSha == destinationSha else {
@@ -450,7 +450,7 @@ extension DependencyPull {
 
     if let cursor = dependencyConfig?.refreshCursor {
       guard let cursorDate = ISO8601DateFormatter().date(from: cursor) else {
-        throwError(.invalidDate, "Invalid date used for refreshCursor for \(workspaceDependency.displayTuple); must be valid UTC ISO8601 format")
+        exitWithErrorType(.invalidDate, "Invalid date used for refreshCursor for \(workspaceDependency.displayTuple); must be valid UTC ISO8601 format")
       }
 
       if cursorDate > Date() {
@@ -507,7 +507,7 @@ extension DependencyPull {
     do {
       fileString = try String(contentsOfFile: haystackPath)
     } catch {
-      throwError(.fileError, "Could not read file \(haystackPath)")
+      exitWithErrorType(.fileError, "Could not read file \(haystackPath)")
     }
 
     let lines = fileString.replacePackageUrls(needleMap: needleMap)
@@ -515,7 +515,7 @@ extension DependencyPull {
     do {
       try lines.write(toFile: haystackPath, atomically: true, encoding: .utf8)
     } catch {
-      throwError(.fileError, "Could not write to file \(haystackPath)")
+      exitWithErrorType(.fileError, "Could not write to file \(haystackPath)")
     }
   }
 }

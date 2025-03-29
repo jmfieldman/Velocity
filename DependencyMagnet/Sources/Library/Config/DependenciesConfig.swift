@@ -52,7 +52,7 @@ public class DependenciesConfig: Decodable {
 
   public static func from(filePath: String) -> DependenciesConfig {
     guard FileManager.default.fileExists(atPath: filePath) else {
-      throwError(.configNotFound, "Config file not found at \(filePath)")
+      exitWithErrorType(.configNotFound, "Config file not found at \(filePath)")
     }
 
     // Decode config
@@ -62,7 +62,7 @@ public class DependenciesConfig: Decodable {
       dependenciesConfigData = try Data(contentsOf: filePath.prependingCurrentDirectory().fileURL())
       dependenciesConfig = try YAMLDecoder().decode(DependenciesConfig.self, from: dependenciesConfigData)
     } catch {
-      throwError(.configNotDecodable, error.localizedDescription)
+      exitWithErrorType(.configNotDecodable, error.localizedDescription)
     }
 
     return dependenciesConfig

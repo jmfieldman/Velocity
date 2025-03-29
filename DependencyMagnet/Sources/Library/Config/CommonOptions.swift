@@ -4,7 +4,6 @@
 //
 
 import ArgumentParser
-import DependencyMagnetLib
 import Foundation
 import InternalUtilities
 

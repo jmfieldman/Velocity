@@ -26,7 +26,7 @@ extension DependencyMagnetCommand {
 
       // Verify at least one dependency exists
       guard (dependenciesConfig.dependencies ?? []).count > 0 else {
-        throwError(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
+        exitWithErrorType(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
       }
 
       DependencyPull().pull(

@@ -33,7 +33,7 @@ extension ModuleGenerationCommand {
 
       // Verify dependencies file exists
       guard FileManager.default.fileExists(atPath: dependenciesConfig) else {
-        throwError(.pathNotFound, "Dependencies file not found at path: \(dependenciesConfig)")
+        exitWithErrorType(.pathNotFound, "Dependencies file not found at path: \(dependenciesConfig)")
       }
 
       vprint(.normal, "Generating \(outputFilename)", "🔧")
@@ -65,7 +65,7 @@ extension ModuleGenerationCommand {
           } else if let exact = dependency.exact {
             depDict["exactVersion"] = exact
           } else {
-            throwError(.noDependencyQualifier, "xcodegen does not support range qualifiers for package versions, use [from, branch, revision or exact] in dependencies.yml")
+            exitWithErrorType(.noDependencyQualifier, "xcodegen does not support range qualifiers for package versions, use [from, branch, revision or exact] in dependencies.yml")
           }
         }
 

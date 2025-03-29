@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum CommandError: Int {
+public enum CommandErrorType: Int {
   case configNotFound = 1
   case configNotDecodable
   case noDependencies
@@ -18,7 +18,27 @@ public enum CommandError: Int {
   case invalidArgument
 }
 
-public func throwError(_ error: CommandError, _ additionalDesc: String?) -> Never {
+public enum CommandError: Error {
+    case configNotFound
+    case configNotDecodable
+    case noDependencies
+    case duplicateDependencies
+    case noDependencyQualifier
+    case fileError
+    case swiftPackageManager
+    case invalidDate
+    case pathNotFound
+    case invalidArgument
+}
+
+public func raiseError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {
+    if let additionalDesc {
+      vprint(.error, additionalDesc)
+    }
+    throw error
+}
+
+public func exitWithErrorType(_ error: CommandErrorType, _ additionalDesc: String?) -> Never {
   if let additionalDesc {
     vprint(.error, additionalDesc)
   }

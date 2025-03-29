@@ -53,7 +53,7 @@ extension ModuleGenerationCommand {
 
       // Verify root path exists
       guard FileManager.default.directoryExists(atPath: projectPath) else {
-        throwError(.pathNotFound, "Directory not found at root path: \(projectPath)")
+        exitWithErrorType(.pathNotFound, "Directory not found at root path: \(projectPath)")
       }
 
       let packages = ModulePackageManager.packages(
