@@ -33,3 +33,6 @@
 
 # Header
 --header \n {file}\n Copyright © {created.year} Jason Fieldman.\n
+
+# Don't format test expectations
+--exclude **/Files/**.swift

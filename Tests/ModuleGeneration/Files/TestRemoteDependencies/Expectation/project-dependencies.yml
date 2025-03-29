@@ -1,0 +1,13 @@
+packages:
+  XcodeGen:
+    from: 2.24.0
+    url: https://github.com/yonaskolb/XcodeGen.git
+  Yams:
+    exactVersion: 5.0.0
+    url: https://github.com/jpsim/Yams.git
+  swift-argument-parser:
+    revision: testrevstring
+    url: https://github.com/apple/swift-argument-parser
+  swift-crypto:
+    branch: master
+    url: https://github.com/apple/swift-crypto

@@ -44,4 +44,23 @@ public class TestHelpers {
 
         FileManager.default.changeCurrentDirectoryPath(setupPath)
     }
+
+    public static func validateDiffResults(
+        testDirectory: String,
+        allowFilePathDifferences: Bool
+    ) {
+        let result = Process.execute(
+            command: "diff -r --exclude .DS_Store Setup Expectation",
+            workingDirectory: URL(fileURLWithPath: testDirectory)
+        )
+
+        let diffStrings = result.stdout.split(separator: "\n")
+
+        if allowFilePathDifferences {
+            XCTAssert(diffStrings.count > 0)
+        } else {
+            XCTAssert(result.exitCode == 0)
+        }
+        XCTAssert(diffStrings.count(where: { !$0.starts(with: "Only in") }) == 0)
+    }
 }

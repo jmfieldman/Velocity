@@ -29,14 +29,9 @@ final class DependencyMagnetTests: XCTestCase {
             )
         )
 
-        let result = Process.execute(
-            command: "diff -r --exclude .DS_Store Setup Expectation",
-            workingDirectory: URL(fileURLWithPath: testDirectory)
+        TestHelpers.validateDiffResults(
+            testDirectory: testDirectory,
+            allowFilePathDifferences: true
         )
-
-        let diffStrings = result.stdout.split(separator: "\n")
-
-        XCTAssert(diffStrings.count > 0)
-        XCTAssert(diffStrings.count(where: { !$0.starts(with: "Only in") }) == 0)
     }
 }

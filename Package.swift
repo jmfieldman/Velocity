@@ -56,7 +56,6 @@ let package = Package(
                 "TestHelpers",
             ],
             path: "Tests/DependencyMagnet",
-            // exclude: ["Files"],
             resources: [.copy("Files")]
         ),
 
@@ -95,6 +94,19 @@ let package = Package(
                 "DependencyMagnetLib",
             ],
             path: "ModuleGeneration/Sources/Library"
+        ),
+        .testTarget(
+            name: "ModuleGenerationTests",
+            dependencies: [
+                .product(name: "ProjectSpec", package: "XcodeGen"),
+                "InternalUtilities",
+                "ModuleManagementLib",
+                "ModuleGenerationLib",
+                "DependencyMagnetLib",
+                "TestHelpers",
+            ],
+            path: "Tests/ModuleGeneration",
+            resources: [.copy("Files")]
         ),
     ]
 )
