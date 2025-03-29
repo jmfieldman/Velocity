@@ -81,7 +81,7 @@ extension ModuleGenerationCommand {
 
             vprint(.normal, "Generating \(rootPath)/Package.swift", "🔧")
 
-            let packageContents = kPackageSwiftTemplate
+            let packageContents = try kPackageSwiftTemplate
                 .replacingOccurrences(of: "{SWIFT_TOOLS}", with: swiftToolsVersion)
                 .replacingOccurrences(of: "{PACKAGE_NAME}", with: gen_PACKAGE_NAME())
                 .replacingOccurrences(of: "{PLATFORMS}", with: platforms)
@@ -100,20 +100,20 @@ extension ModuleGenerationCommand {
             packageName ?? rootPath.lastPathComponent
         }
 
-        func gen_DEPENDENCIES() -> String {
+        func gen_DEPENDENCIES() throws -> String {
             guard FileManager.default.fileExists(atPath: dependenciesConfig) else {
                 vprint(.normal, "Warning, no external dependencies config found at path: \(dependenciesConfig)", "❗")
                 return ""
             }
 
-            let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig)
+            let dependenciesConfig = try DependenciesConfig.from(filePath: dependenciesConfig)
             guard let dependencies = dependenciesConfig.dependencies, dependencies.count > 0 else {
                 return ""
             }
 
-            return dependencies.map { dependency -> String in
+            return try dependencies.map { dependency -> String in
                 guard dependency.keepRemote != true else {
-                    return dependency.packageString
+                    return try dependency.packageString()
                 }
 
                 // Determine the name of the dependency package
@@ -121,13 +121,13 @@ extension ModuleGenerationCommand {
 
                 guard let dependencyOutputPath else {
                     vprint(.normal, "Warning, no dependencyOutputPath was specified; \(dependencyPackageName) will use remote package", "❗")
-                    return dependency.packageString
+                    return try dependency.packageString()
                 }
 
                 let dependencyPackagePath = "\(dependencyOutputPath)/Packages/\(dependencyPackageName)"
                 guard FileManager.default.directoryExists(atPath: dependencyPackagePath) else {
                     vprint(.normal, "Warning, no local package exists at \(dependencyPackagePath); \(dependencyPackageName) will use remote package", "❗")
-                    return dependency.packageString
+                    return try dependency.packageString()
                 }
 
                 let path = dependencyPackagePath.prependingCurrentDirectory().relative(to: rootPath.prependingCurrentDirectory())
@@ -138,11 +138,11 @@ extension ModuleGenerationCommand {
         func gen_TARGETS(
             packageManager: ModulePackageManager,
             projectPath: String
-        ) -> String {
+        ) throws -> String {
             var externalImports: [String: String] = [:]
             if
                 FileManager.default.fileExists(atPath: dependenciesConfig),
-                case let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig),
+                case let dependenciesConfig = try DependenciesConfig.from(filePath: dependenciesConfig),
                 let dependencies = dependenciesConfig.dependencies,
                 dependencies.count > 0
             {

@@ -7,7 +7,7 @@ import Foundation
 import InternalUtilities
 
 public extension DependencyConfig {
-    private var packageQualifier: (label: String, value: String) {
+    private func packageQualifier() throws -> (label: String, value: String) {
         if let from {
             return ("from: ", from)
         }
@@ -26,11 +26,11 @@ public extension DependencyConfig {
         if let exact {
             return ("exact: ", exact)
         }
-        exitWithErrorType(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
+        try throwError(.noDependencyQualifier, "Dependency \(url) does not have a qualifier")
     }
 
-    var packageString: String {
-        let qualifier = packageQualifier
+    func packageString() throws -> String {
+        let qualifier = try packageQualifier()
         return ".package(url: \"\(url)\", \(qualifier.label)\"\(qualifier.value)\")"
     }
 

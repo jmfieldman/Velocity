@@ -37,6 +37,7 @@ let package = Package(
         .target(
             name: "DependencyMagnetLib",
             dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Crypto", package: "swift-crypto"),
                 .product(name: "Yams", package: "Yams"),
                 "InternalUtilities",

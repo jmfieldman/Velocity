@@ -31,7 +31,7 @@ public enum CommandError: Error {
     case invalidArgument
 }
 
-public func raiseError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {
+public func throwError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {
     if let additionalDesc {
         vprint(.error, additionalDesc)
     }

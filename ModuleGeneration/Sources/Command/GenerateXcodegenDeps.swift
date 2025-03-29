@@ -42,7 +42,7 @@ extension ModuleGenerationCommand {
                 vprint(.normal, "No dependency magent output path provided, all packages will use remote repo")
             }
 
-            let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig)
+            let dependenciesConfig = try DependenciesConfig.from(filePath: dependenciesConfig)
             guard let dependencies = dependenciesConfig.dependencies, dependencies.count > 0 else {
                 vprint(.normal, "No dependencies found in \(dependenciesConfig)")
                 return

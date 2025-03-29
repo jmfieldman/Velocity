@@ -60,7 +60,7 @@ extension ModuleGenerationCommand {
                 absoluteProjectPath: absoluteProjectPath
             )
 
-            let dependenciesConfig = DependenciesConfig.from(filePath: dependenciesConfig)
+            let dependenciesConfig = try DependenciesConfig.from(filePath: dependenciesConfig)
             var dependencyLookup: [String: DependencyConfig] = [:]
             dependenciesConfig.dependencies?.forEach { pkg in
                 if let libs = pkg.libraries, libs.count > 0 {
