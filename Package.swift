@@ -23,6 +23,11 @@ let package = Package(
             dependencies: [],
             path: "InternalUtilities"
         ),
+        .target(
+            name: "TestHelpers",
+            dependencies: ["InternalUtilities"],
+            path: "Tests/Helpers"
+        ),
 
         // Dependency Magnet
 
@@ -43,6 +48,16 @@ let package = Package(
                 "InternalUtilities",
             ],
             path: "DependencyMagnet/Sources/Library"
+        ),
+        .testTarget(
+            name: "DependencyMagnetTests",
+            dependencies: [
+                "DependencyMagnetLib",
+                "TestHelpers",
+            ],
+            path: "Tests/DependencyMagnet",
+            // exclude: ["Files"],
+            resources: [.copy("Files")]
         ),
 
         // Module Management

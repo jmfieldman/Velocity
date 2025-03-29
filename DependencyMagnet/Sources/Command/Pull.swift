@@ -21,7 +21,13 @@ extension DependencyMagnetCommand {
         /// Execute the pull command
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
-            try DependencyPull().execute(with: commonOptions)
+            try DependencyPull().execute(
+                with: DependencyPullOptions(
+                    config: commonOptions.config,
+                    workspacePath: commonOptions.workspacePath,
+                    outputPath: commonOptions.outputPath
+                )
+            )
         }
     }
 }

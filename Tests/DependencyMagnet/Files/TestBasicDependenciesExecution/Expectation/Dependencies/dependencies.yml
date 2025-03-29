@@ -1,0 +1,3 @@
+dependencies:
+    - url: https://github.com/jpsim/Yams.git
+      exact: 5.0.0

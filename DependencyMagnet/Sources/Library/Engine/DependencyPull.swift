@@ -12,6 +12,18 @@ let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
 let kPackageResolver = "Package.resolved"
 let kPackagesOutputPath = "Packages"
 
+public struct DependencyPullOptions {
+    public let config: String
+    public let workspacePath: String
+    public let outputPath: String
+
+    public init(config: String, workspacePath: String, outputPath: String) {
+        self.config = config
+        self.workspacePath = workspacePath
+        self.outputPath = outputPath
+    }
+}
+
 public class DependencyPull: NSObject {
     public func pull(
         dependencies: [DependencyConfig],
@@ -52,18 +64,18 @@ public class DependencyPull: NSObject {
         try retainWorkspaceStateFile(workspacePath: workspacePath, outputPath: outputPath)
     }
 
-    public func execute(with commonOptions: CommonOptions) throws {
-        let dependenciesConfig = try DependenciesConfig.from(filePath: commonOptions.config)
+    public func execute(with options: DependencyPullOptions) throws {
+        let dependenciesConfig = try DependenciesConfig.from(filePath: options.config)
 
         // Verify at least one dependency exists
         guard (dependenciesConfig.dependencies ?? []).count > 0 else {
-            try throwError(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
+            try throwError(.noDependencies, "No dependencies found in dependencies config file \(options.config)")
         }
 
         try DependencyPull().pull(
             dependencies: dependenciesConfig.dependencies ?? [],
-            workspacePath: commonOptions.workspacePath,
-            outputPath: commonOptions.outputPath
+            workspacePath: options.workspacePath,
+            outputPath: options.outputPath
         )
     }
 }
