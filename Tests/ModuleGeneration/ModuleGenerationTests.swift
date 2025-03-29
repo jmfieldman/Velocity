@@ -37,4 +37,31 @@ final class ModuleGenerationTests: XCTestCase {
             allowFilePathDifferences: false
         )
     }
+
+    func testLocalDependencies() throws {
+        guard let basePath = Bundle.module.path(forResource: "Files", ofType: "") else {
+            XCTFail("No Files")
+            return
+        }
+
+        let testDirectory = try TestHelpers.initializeTest(
+            basePath: basePath,
+            directory: "TestLocalDependencies"
+        )
+
+        TestHelpers.validateTestDirectoryAndSetCurrent(testDirectory)
+
+        try GenerateXcodegenDeps.execute(
+            with: GenerateXcodegenDepsOptions(
+                outputFilename: "project-dependencies.yml",
+                dependenciesConfig: "Dependencies/dependencies.yml",
+                dependencyOutputPath: "Dependencies"
+            )
+        )
+
+        TestHelpers.validateDiffResults(
+            testDirectory: testDirectory,
+            allowFilePathDifferences: false
+        )
+    }
 }
