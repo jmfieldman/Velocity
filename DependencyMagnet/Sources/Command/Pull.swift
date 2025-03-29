@@ -21,19 +21,7 @@ extension DependencyMagnetCommand {
         /// Execute the pull command
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
-
-            let dependenciesConfig = DependenciesConfig.from(filePath: commonOptions.config)
-
-            // Verify at least one dependency exists
-            guard (dependenciesConfig.dependencies ?? []).count > 0 else {
-                exitWithErrorType(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
-            }
-
-            DependencyPull().pull(
-                dependencies: dependenciesConfig.dependencies ?? [],
-                workspacePath: commonOptions.workspacePath,
-                outputPath: commonOptions.outputPath
-            )
+            try DependencyPull().execute(with: commonOptions)
         }
     }
 }

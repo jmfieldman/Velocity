@@ -51,6 +51,21 @@ public class DependencyPull: NSObject {
         retainPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
         retainWorkspaceStateFile(workspacePath: workspacePath, outputPath: outputPath)
     }
+
+    public func execute(with commonOptions: CommonOptions) throws {
+        let dependenciesConfig = DependenciesConfig.from(filePath: commonOptions.config)
+
+        // Verify at least one dependency exists
+        guard (dependenciesConfig.dependencies ?? []).count > 0 else {
+            try raiseError(.noDependencies, "No dependencies found in dependencies config file \(commonOptions.config)")
+        }
+
+        DependencyPull().pull(
+            dependencies: dependenciesConfig.dependencies ?? [],
+            workspacePath: commonOptions.workspacePath,
+            outputPath: commonOptions.outputPath
+        )
+    }
 }
 
 extension DependencyPull {
