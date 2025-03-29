@@ -42,14 +42,14 @@ extension ModuleGenerationCommand {
 
             // Verify root path exists
             guard FileManager.default.directoryExists(atPath: absoluteModuleBasePath) else {
-                exitWithErrorType(.pathNotFound, "Module directory not found at path: \(rootPath)")
+                try throwError(.pathNotFound, "Module directory not found at path: \(rootPath)")
             }
 
-            let supportedDestinations: [ProjectSpec.SupportedDestination] = platforms
+            let supportedDestinations: [ProjectSpec.SupportedDestination] = try platforms
                 .components(separatedBy: ",")
                 .map {
                     guard let dest = ProjectSpec.SupportedDestination(rawValue: $0) else {
-                        exitWithErrorType(.invalidArgument, "\($0) is not a valid platform -- options are (iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
+                        try throwError(.invalidArgument, "\($0) is not a valid platform -- options are (iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
                     }
                     return dest
                 }

@@ -29,11 +29,11 @@ extension ModuleGenerationCommand {
 
             // Verify path exists
             guard FileManager.default.directoryExists(atPath: fullSearchPath) else {
-                exitWithErrorType(.pathNotFound, "Directory not found at search path: \(fullSearchPath)")
+                try throwError(.pathNotFound, "Directory not found at search path: \(fullSearchPath)")
             }
 
             guard FileManager.default.directoryExists(atPath: projectPath) else {
-                exitWithErrorType(.pathNotFound, "Directory not found at project path: \(projectPath)")
+                try throwError(.pathNotFound, "Directory not found at project path: \(projectPath)")
             }
 
             let packages = ModulePackageManager.packages(
