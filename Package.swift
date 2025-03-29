@@ -89,8 +89,10 @@ let package = Package(
             name: "ModuleGenerationLib",
             dependencies: [
                 .product(name: "ProjectSpec", package: "XcodeGen"),
+                .product(name: "Yams", package: "Yams"),
                 "InternalUtilities",
                 "ModuleManagementLib",
+                "DependencyMagnetLib",
             ],
             path: "ModuleGeneration/Sources/Library"
         ),
