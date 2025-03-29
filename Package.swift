@@ -1,4 +1,4 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 
@@ -10,10 +10,10 @@ let package = Package(
         .executable(name: "modules", targets: ["ModuleGeneration"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.5.0"),
-        .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.7.0"),
-        .package(url: "https://github.com/jpsim/Yams.git", exact: "5.1.3"),
-        .package(url: "https://github.com/yonaskolb/XcodeGen.git", exact: "2.42.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.0"),
+        .package(url: "https://github.com/jpsim/Yams.git", from: "5.3.0"),
+        .package(url: "https://github.com/yonaskolb/XcodeGen.git", from: "2.42.0"),
     ],
     targets: [
         // Internal Utilities
