@@ -6,7 +6,7 @@
 import Foundation
 
 extension Date {
-  func iso8601() -> String {
-    ISO8601DateFormatter().string(for: self) ?? "??"
-  }
+    func iso8601() -> String {
+        ISO8601DateFormatter().string(for: self) ?? "??"
+    }
 }

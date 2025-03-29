@@ -9,5 +9,5 @@ import Redis
 import Vapor
 
 public func testfunc() {
-  print("✅ Test function")
+    print("✅ Test function")
 }

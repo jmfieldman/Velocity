@@ -25,32 +25,32 @@
 import Foundation
 
 public class LineReader {
-  public let path: String
+    public let path: String
 
-  private let file: UnsafeMutablePointer<FILE>!
+    private let file: UnsafeMutablePointer<FILE>!
 
-  public init?(path: String) {
-    self.path = path
-    self.file = fopen(path, "r")
-    guard file != nil else { return nil }
-  }
+    public init?(path: String) {
+        self.path = path
+        self.file = fopen(path, "r")
+        guard file != nil else { return nil }
+    }
 
-  public var nextLine: String? {
-    var line: UnsafeMutablePointer<CChar>?
-    var linecap = 0
-    defer { line.flatMap { free($0) } }
-    return getline(&line, &linecap, file) > 0 ? String(cString: line!) : nil
-  }
+    public var nextLine: String? {
+        var line: UnsafeMutablePointer<CChar>?
+        var linecap = 0
+        defer { line.flatMap { free($0) } }
+        return getline(&line, &linecap, file) > 0 ? String(cString: line!) : nil
+    }
 
-  deinit {
-    fclose(file)
-  }
+    deinit {
+        fclose(file)
+    }
 }
 
 extension LineReader: Sequence {
-  public func makeIterator() -> AnyIterator<String> {
-    AnyIterator<String> {
-      self.nextLine
+    public func makeIterator() -> AnyIterator<String> {
+        AnyIterator<String> {
+            self.nextLine
+        }
     }
-  }
 }

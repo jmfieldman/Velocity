@@ -6,30 +6,30 @@
 import Foundation
 
 struct WorkspaceState: Decodable {
-  let object: WorkspaceStateObject?
+    let object: WorkspaceStateObject?
 }
 
 struct WorkspaceStateObject: Decodable {
-  let dependencies: [WorkspaceStateDependency]?
+    let dependencies: [WorkspaceStateDependency]?
 }
 
 struct WorkspaceStateDependency: Decodable {
-  let packageRef: WorkspaceStatePackageRef?
-  let state: WorkspaceStateState?
-  let subpath: String?
+    let packageRef: WorkspaceStatePackageRef?
+    let state: WorkspaceStateState?
+    let subpath: String?
 }
 
 struct WorkspaceStatePackageRef: Decodable {
-  let identity: String?
-  let location: String?
-  let name: String?
+    let identity: String?
+    let location: String?
+    let name: String?
 }
 
 struct WorkspaceStateState: Decodable {
-  let checkoutState: WorkspaceStateCheckoutState?
+    let checkoutState: WorkspaceStateCheckoutState?
 }
 
 struct WorkspaceStateCheckoutState: Decodable {
-  let revision: String?
-  let version: String?
+    let revision: String?
+    let version: String?
 }

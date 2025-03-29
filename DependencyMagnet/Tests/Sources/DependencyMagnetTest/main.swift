@@ -9,8 +9,8 @@ import Yams
 
 @main
 struct Main {
-  static func main() {
-    testfunc()
-    print("✅ Test Complete")
-  }
+    static func main() {
+        testfunc()
+        print("✅ Test Complete")
+    }
 }

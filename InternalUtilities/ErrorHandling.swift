@@ -6,41 +6,41 @@
 import Foundation
 
 public enum CommandErrorType: Int {
-  case configNotFound = 1
-  case configNotDecodable
-  case noDependencies
-  case duplicateDependencies
-  case noDependencyQualifier
-  case fileError
-  case swiftPackageManager
-  case invalidDate
-  case pathNotFound
-  case invalidArgument
+    case configNotFound = 1
+    case configNotDecodable
+    case noDependencies
+    case duplicateDependencies
+    case noDependencyQualifier
+    case fileError
+    case swiftPackageManager
+    case invalidDate
+    case pathNotFound
+    case invalidArgument
 }
 
 public enum CommandError: Error {
-  case configNotFound
-  case configNotDecodable
-  case noDependencies
-  case duplicateDependencies
-  case noDependencyQualifier
-  case fileError
-  case swiftPackageManager
-  case invalidDate
-  case pathNotFound
-  case invalidArgument
+    case configNotFound
+    case configNotDecodable
+    case noDependencies
+    case duplicateDependencies
+    case noDependencyQualifier
+    case fileError
+    case swiftPackageManager
+    case invalidDate
+    case pathNotFound
+    case invalidArgument
 }
 
 public func raiseError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {
-  if let additionalDesc {
-    vprint(.error, additionalDesc)
-  }
-  throw error
+    if let additionalDesc {
+        vprint(.error, additionalDesc)
+    }
+    throw error
 }
 
 public func exitWithErrorType(_ error: CommandErrorType, _ additionalDesc: String?) -> Never {
-  if let additionalDesc {
-    vprint(.error, additionalDesc)
-  }
-  exit(Int32(error.rawValue))
+    if let additionalDesc {
+        vprint(.error, additionalDesc)
+    }
+    exit(Int32(error.rawValue))
 }

@@ -7,49 +7,49 @@ import Foundation
 import InternalUtilities
 
 extension WorkspaceState {
-  func dependency(withIdentifier id: String?) -> WorkspaceStateDependency? {
-    guard let id else { return nil }
-    return object?.dependencies?.first {
-      $0.packageRef?.identity == id
+    func dependency(withIdentifier id: String?) -> WorkspaceStateDependency? {
+        guard let id else { return nil }
+        return object?.dependencies?.first {
+            $0.packageRef?.identity == id
+        }
     }
-  }
 
-  public static func from(workspacePath: String) -> WorkspaceState? {
-    let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(path: workspacePath)
+    public static func from(workspacePath: String) -> WorkspaceState? {
+        let workspaceStateJSONPath = kWorkspaceStateJsonPath.prepending(path: workspacePath)
 
-    do {
-      let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectory().fileURL())
-      return try JSONDecoder().decode(WorkspaceState.self, from: data)
-    } catch {
-      return nil
+        do {
+            let data = try Data(contentsOf: workspaceStateJSONPath.prependingCurrentDirectory().fileURL())
+            return try JSONDecoder().decode(WorkspaceState.self, from: data)
+        } catch {
+            return nil
+        }
     }
-  }
 }
 
 extension WorkspaceStateDependency {
-  var displayName: String {
-    packageRef?.name ?? packageRef?.identity ?? "??"
-  }
+    var displayName: String {
+        packageRef?.name ?? packageRef?.identity ?? "??"
+    }
 
-  var displayVersion: String {
-    state?.checkoutState?.version ?? state?.checkoutState?.revision ?? "??"
-  }
+    var displayVersion: String {
+        state?.checkoutState?.version ?? state?.checkoutState?.revision ?? "??"
+    }
 
-  var displayTuple: String {
-    "[\(displayName) @ \(displayVersion)]"
-  }
+    var displayTuple: String {
+        "[\(displayName) @ \(displayVersion)]"
+    }
 
-  var versionForEquality: String {
-    state?.checkoutState?.revision ?? state?.checkoutState?.version ?? "??"
-  }
+    var versionForEquality: String {
+        state?.checkoutState?.revision ?? state?.checkoutState?.version ?? "??"
+    }
 }
 
 extension WorkspaceStateDependency: Comparable {
-  static func < (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
-    lhs.displayTuple.lowercased() < rhs.displayTuple.lowercased()
-  }
+    static func < (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
+        lhs.displayTuple.lowercased() < rhs.displayTuple.lowercased()
+    }
 
-  static func == (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
-    lhs.displayTuple.lowercased() == rhs.displayTuple.lowercased()
-  }
+    static func == (lhs: WorkspaceStateDependency, rhs: WorkspaceStateDependency) -> Bool {
+        lhs.displayTuple.lowercased() == rhs.displayTuple.lowercased()
+    }
 }
