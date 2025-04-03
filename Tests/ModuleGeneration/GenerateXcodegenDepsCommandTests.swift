@@ -1,5 +1,5 @@
 //
-//  ModuleGenerationTests.swift
+//  GenerateXcodegenDepsCommandTests.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -7,7 +7,7 @@
 import TestHelpers
 import XCTest
 
-final class ModuleGenerationTests: XCTestCase {
+final class GenerateXcodegenDepsCommandTests: XCTestCase {
     /// Passing `nil` to `dependencyOutputPath` means that generation will force
     /// the use of all-remote dependencies (since it cannot specify the local repo
     /// path.)
