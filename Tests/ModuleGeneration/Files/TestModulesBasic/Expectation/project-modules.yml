@@ -1,0 +1,43 @@
+targets:
+  PackageOne:
+    platform: auto
+    sources:
+      path: Modules/PackageOne/PackageOne
+    supportedDestinations:
+    - iOS
+    type: framework
+  PackageOneImpl:
+    platform: auto
+    sources:
+      path: Modules/PackageOne/PackageOneImpl
+    supportedDestinations:
+    - iOS
+    type: framework
+  PackageThree:
+    platform: auto
+    sources:
+      path: Modules/RecursiveDirectory/PackageThree/PackageThree
+    supportedDestinations:
+    - iOS
+    type: framework
+  PackageThreeImpl:
+    platform: auto
+    sources:
+      path: Modules/RecursiveDirectory/PackageThree/PackageThreeImpl
+    supportedDestinations:
+    - iOS
+    type: framework
+  PackageTwo:
+    platform: auto
+    sources:
+      path: Modules/PackageTwo/PackageTwo
+    supportedDestinations:
+    - iOS
+    type: framework
+  PackageTwoImpl:
+    platform: auto
+    sources:
+      path: Modules/PackageTwo/PackageTwoImpl
+    supportedDestinations:
+    - iOS
+    type: framework

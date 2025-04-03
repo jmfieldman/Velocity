@@ -68,17 +68,31 @@ public enum GenerateXcodegen {
             absoluteProjectPath: absoluteProjectPath
         )
 
-        let dependenciesConfig = try DependenciesConfig.from(filePath: options.dependenciesConfig)
         var dependencyLookup: [String: DependencyConfig] = [:]
-        dependenciesConfig.dependencies?.forEach { pkg in
-            if let libs = pkg.libraries, libs.count > 0 {
-                libs.forEach { dependencyLookup[$0] = pkg }
-            } else {
-                dependencyLookup[pkg.inferredPackageName] = pkg
+        do {
+            let dependenciesConfig = try DependenciesConfig.from(filePath: options.dependenciesConfig)
+            dependenciesConfig.dependencies?.forEach { pkg in
+                if let libs = pkg.libraries, libs.count > 0 {
+                    libs.forEach { dependencyLookup[$0] = pkg }
+                } else {
+                    dependencyLookup[pkg.inferredPackageName] = pkg
+                }
             }
-        }
-        if dependencyLookup.count == 0 {
-            vprint(.verbose, "No external dependencies were detected at \(dependenciesConfig)")
+            if dependencyLookup.count == 0 {
+                vprint(.verbose, "No external dependencies were detected at \(options.dependenciesConfig)")
+            }
+        } catch {
+            guard let cmdError = error as? CommandError else {
+                return
+            }
+            switch cmdError {
+            case .configNotFound:
+                vprint(.verbose, "No dependency config file detected at \(options.dependenciesConfig)")
+            case .configNotDecodable:
+                vprint(.verbose, "Malformed/unparsable dependency config file at \(options.dependenciesConfig)")
+            default:
+                vprint(.error, "Failed to parse dependency config file at \(options.dependenciesConfig): \(error)")
+            }
         }
 
         guard packages.count > 0 else {
