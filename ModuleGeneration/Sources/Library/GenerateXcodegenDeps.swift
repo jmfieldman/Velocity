@@ -13,8 +13,8 @@ import Yams
 
 public struct GenerateXcodegenDepsOptions {
     public let outputFilename: String
-    public var dependenciesConfig: String
-    public var dependencyOutputPath: String?
+    public let dependenciesConfig: String
+    public let dependencyOutputPath: String?
 
     public init(
         outputFilename: String,
