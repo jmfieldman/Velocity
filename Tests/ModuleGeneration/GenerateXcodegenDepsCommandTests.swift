@@ -19,7 +19,7 @@ final class GenerateXcodegenDepsCommandTests: XCTestCase {
 
         let testDirectory = try TestHelpers.initializeTest(
             basePath: basePath,
-            directory: "TestRemoteDependencies"
+            directory: "TestDepsRemoteDependencies"
         )
 
         TestHelpers.validateTestDirectoryAndSetCurrent(testDirectory)
@@ -46,7 +46,7 @@ final class GenerateXcodegenDepsCommandTests: XCTestCase {
 
         let testDirectory = try TestHelpers.initializeTest(
             basePath: basePath,
-            directory: "TestLocalDependencies"
+            directory: "TestDepsLocalDependencies"
         )
 
         TestHelpers.validateTestDirectoryAndSetCurrent(testDirectory)
