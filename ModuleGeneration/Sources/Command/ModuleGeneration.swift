@@ -11,7 +11,7 @@ import InternalUtilities
     static var configuration = CommandConfiguration(
         abstract: "Contains commands for module generation and handling.",
         subcommands: [
-            GenerateImports.self,
+            GenerateImportsCommand.self,
             GeneratePackage.self,
             GenerateXcodegenCommand.self,
             GenerateXcodegenDepsCommand.self,

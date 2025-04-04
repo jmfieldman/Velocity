@@ -50,7 +50,7 @@ public enum SwiftImportDetector {
                 continue
             }
 
-            if !cleanLine.hasPrefix("import"), !cleanLine.hasPrefix("@testable"), !cleanLine.hasPrefix("@_exported") {
+            if !cleanLine.hasPrefix("import"), !cleanLine.hasPrefix("@testable import"), !cleanLine.hasPrefix("@_exported import"), !cleanLine.hasPrefix("private import") {
                 return results
             }
 
