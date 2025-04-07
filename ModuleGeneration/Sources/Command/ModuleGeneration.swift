@@ -12,7 +12,7 @@ import InternalUtilities
         abstract: "Contains commands for module generation and handling.",
         subcommands: [
             GenerateImportsCommand.self,
-            GeneratePackage.self,
+            GeneratePackageCommand.self,
             GenerateXcodegenCommand.self,
             GenerateXcodegenDepsCommand.self,
         ]
