@@ -83,6 +83,7 @@ public enum GeneratePackage {
             .replacingOccurrences(of: "{PRODUCTS}", with: gen_PRODUCTS(packageManager: packageManager))
             .replacingOccurrences(of: "{DEPENDENCIES}", with: gen_DEPENDENCIES(options: options))
             .replacingOccurrences(of: "{TARGETS}", with: gen_TARGETS(packageManager: packageManager, projectPath: projectPath, options: options))
+            .prettified()
 
         try! packageContents.write(
             toFile: "\(projectPath)/Package.swift",
@@ -212,18 +213,37 @@ private let kPackageSwiftTemplate = """
 import PackageDescription
 
 let package = Package(
-  name: "{PACKAGE_NAME}",
-  platforms: [
-    {PLATFORMS}
-  ],
-  products: [
-    {PRODUCTS}
-  ],
-  dependencies: [
-    {DEPENDENCIES}
-  ],
-  targets: [
-    {TARGETS}
-  ]
+    name: "{PACKAGE_NAME}",
+    platforms: [
+        {PLATFORMS}
+    ],
+    products: [
+{PRODUCTS}
+    ],
+    dependencies: [
+{DEPENDENCIES}
+    ],
+    targets: [
+{TARGETS}
+    ]
 )
 """
+
+private extension String {
+    func prettified() -> String {
+        var result = ""
+        var indent = 0
+        for line in split(separator: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.hasPrefix(")") || trimmed.hasPrefix("]") {
+                indent -= 4
+            }
+            let indented = String(repeating: " ", count: indent) + trimmed
+            if trimmed.hasSuffix("(") || trimmed.hasSuffix("[") {
+                indent += 4
+            }
+            result += indented + "\n"
+        }
+        return result
+    }
+}
