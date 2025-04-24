@@ -46,36 +46,36 @@ public enum GenerateXcodegenDeps {
             return
         }
 
-        var packages: [String: [String: Any]] = [:]
+        var packages: [String: PackageEnc] = [:]
         try dependencies.sorted { $0.inferredPackageName < $1.inferredPackageName }.forEach { dependency in
-            var depDict: [String: Any] = [:]
+            var packageEnc = PackageEnc()
             if let depOutputPath = options.dependencyOutputPath, dependency.keepRemote != true {
-                depDict["path"] = "\(depOutputPath)/Packages/\(dependency.inferredPackageName)"
+                packageEnc.path = "\(depOutputPath)/Packages/\(dependency.inferredPackageName)"
             } else {
-                depDict["url"] = dependency.url
+                packageEnc.url = dependency.url
 
                 if let from = dependency.from {
-                    depDict["from"] = from
+                    packageEnc.from = from
                 } else if let branch = dependency.branch {
-                    depDict["branch"] = branch
+                    packageEnc.branch = branch
                 } else if let revision = dependency.revision {
-                    depDict["revision"] = revision
+                    packageEnc.revision = revision
                 } else if let exact = dependency.exact {
-                    depDict["exactVersion"] = exact
+                    packageEnc.exactVersion = exact
                 } else {
                     try throwError(.noDependencyQualifier, "xcodegen does not support range qualifiers for package versions, use [from, branch, revision or exact] in dependencies.yml")
                 }
             }
 
-            packages[dependency.inferredPackageName] = depDict
+            packages[dependency.inferredPackageName] = packageEnc
         }
 
-        try! (try! Yams.dump(
-            object: ["packages": packages],
-            sortKeys: true,
-            sequenceStyle: .block,
-            mappingStyle: .block
-        )).removingEmptyYml().write(
+        let packagesEnc = PackagesEnc(packages: packages)
+        let encoder = YAMLEncoder()
+        encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)
+        let encodedString = try encoder.encode(packagesEnc)
+
+        try! encodedString.removingEmptyYml().write(
             toFile: options.outputFilename,
             atomically: true,
             encoding: .utf8
@@ -89,4 +89,19 @@ private extension String {
             .filter { !($0.contains(": null") || $0.contains(": []") || $0.contains(": {}")) }
             .joined(separator: "\n")
     }
+}
+
+// MARK: Encodable Objects for YAML Output
+
+private struct PackagesEnc: Encodable {
+    var packages: [String: PackageEnc]
+}
+
+private struct PackageEnc: Encodable {
+    var path: String?
+    var url: String?
+    var from: String?
+    var branch: String?
+    var revision: String?
+    var exactVersion: String?
 }

@@ -9,6 +9,7 @@ import Foundation
 import InternalUtilities
 import ModuleManagementLib
 import ProjectSpec
+import XcodeProj
 import Yams
 
 let kDefaultExclusionList: [String] = [
@@ -130,7 +131,7 @@ public enum GenerateXcodegen {
 
         vprint(.normal, "Generating \(options.outputFilename)", "🔧")
 
-        var targets: [String: [String: Any]] = [:]
+        var targets: [String: TargetEnc] = [:]
         packages.sorted { $0.name < $1.name }.forEach { package in
             package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { moduleType in
                 let module = package.modules[moduleType]!
@@ -138,10 +139,10 @@ public enum GenerateXcodegen {
                 // Determine dependencies
 
                 // Process the imported modules to generate internal and external dependencies
-                let (internalDependencies, externalRefs) = module.importedModules.sorted().reduce(into: ([ProjectSpec.Dependency](), [String: [String]]())) { result, depName in
+                let (internalDependencies, externalRefs) = module.importedModules.sorted().reduce(into: ([DependencyEnc](), [String: [String]]())) { result, depName in
                     if internalModuleSet.contains(depName) {
                         // Append internal dependencies
-                        result.0.append(.init(type: .target, reference: depName))
+                        result.0.append(DependencyEnc(target: depName))
                     } else if let depConfig = dependencyLookup[depName] {
                         // Build external references
                         result.1[depConfig.inferredPackageName, default: []].append(depName)
@@ -151,8 +152,8 @@ public enum GenerateXcodegen {
                 // Convert external references into dependencies and log them
                 let externalDependencies = externalRefs
                     .sorted(by: { $0.key < $1.key })
-                    .map { ref -> ProjectSpec.Dependency in
-                        .init(type: .package(products: ref.value), reference: ref.key)
+                    .map { ref -> DependencyEnc in
+                        DependencyEnc(package: ref.key, products: ref.value)
                     }
 
                 // Combine internal and external dependencies
@@ -161,9 +162,6 @@ public enum GenerateXcodegen {
                 // Determine source exclusions
 
                 let exclusions = (kDefaultExclusionList + (package.fileExclusions[moduleType] ?? []))
-                    .filter { exclusion in
-                        FileManager.default.fileExists(atPath: "\(module.projectBasePath)/\(exclusion)")
-                    }
 
                 // Generate Target object
 
@@ -175,20 +173,30 @@ public enum GenerateXcodegen {
                     sources: [.init(
                         path: module.projectBasePath,
                         excludes: exclusions
-                    )],
-                    dependencies: dependencies
+                    )]
                 )
 
-                targets[module.name] = target.toJSONValue() as? [String: Any]
+                targets[module.name] = TargetEnc(
+                    type: target.type.rawValue.replacingOccurrences(of: "com.apple.product-type.", with: ""),
+                    platform: target.platform.rawValue,
+                    supportedDestinations: supportedDestinations.map(\.rawValue),
+                    dependencies: dependencies,
+                    sources: target.sources.map {
+                        SourceEnc(
+                            path: $0.path,
+                            excludes: $0.excludes
+                        )
+                    }
+                )
             }
         }
 
-        try! (try! Yams.dump(
-            object: ["targets": targets],
-            sortKeys: true,
-            sequenceStyle: .block,
-            mappingStyle: .block
-        )).removingEmptyYml().write(
+        let targetsEnc = TargetsEnc(targets: targets)
+        let encoder = YAMLEncoder()
+        encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)
+        let encodedString = try encoder.encode(targetsEnc)
+
+        try! encodedString.removingEmptyYml().write(
             toFile: options.outputFilename,
             atomically: true,
             encoding: .utf8
@@ -202,4 +210,33 @@ private extension String {
             .filter { !($0.contains(": null") || $0.contains(": []") || $0.contains(": {}")) }
             .joined(separator: "\n")
     }
+}
+
+// MARK: Encodable Objects for YAML Output
+
+private struct TargetsEnc: Encodable {
+    var targets: [String: TargetEnc]
+}
+
+private struct TargetEnc: Encodable {
+    var type: String
+    var platform: String
+    var supportedDestinations: [String]
+    var dependencies: [DependencyEnc]
+    var sources: [SourceEnc]
+}
+
+private struct DependencyEnc: Encodable {
+    var target: String?
+    var embed: Bool?
+    var framework: String?
+    var sdk: String?
+
+    var package: String?
+    var products: [String]?
+}
+
+private struct SourceEnc: Encodable {
+    var path: String
+    var excludes: [String]
 }
