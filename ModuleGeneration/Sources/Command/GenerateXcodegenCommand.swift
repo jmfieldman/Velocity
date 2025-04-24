@@ -20,7 +20,7 @@ extension ModuleGenerationCommand {
         @Flag(name: [.long], help: "Force imports.yml regeneration for all modules")
         public var regenImports: Bool = false
 
-        @Option(help: "Regenerate module info.plist files if needed")
+        @Flag(name: [.long], help: "Regenerate module info.plist files if needed")
         public var regenInfoPlists: Bool = false
 
         @Option(help: "Root path for modules detection and file generation")
