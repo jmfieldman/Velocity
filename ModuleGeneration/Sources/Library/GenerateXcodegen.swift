@@ -185,7 +185,9 @@ public enum GenerateXcodegen {
 
         try! (try! Yams.dump(
             object: ["targets": targets],
-            sortKeys: true
+            sortKeys: true,
+            sequenceStyle: .block,
+            mappingStyle: .block
         )).removingEmptyYml().write(
             toFile: options.outputFilename,
             atomically: true,

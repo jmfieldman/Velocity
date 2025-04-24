@@ -72,7 +72,9 @@ public enum GenerateXcodegenDeps {
 
         try! (try! Yams.dump(
             object: ["packages": packages],
-            sortKeys: true
+            sortKeys: true,
+            sequenceStyle: .block,
+            mappingStyle: .block
         )).removingEmptyYml().write(
             toFile: options.outputFilename,
             atomically: true,
