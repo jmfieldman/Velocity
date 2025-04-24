@@ -20,6 +20,9 @@ extension ModuleGenerationCommand {
         @Flag(name: [.long], help: "Force imports.yml regeneration for all modules")
         public var regenImports: Bool = false
 
+        @Option(help: "Regenerate module info.plist files if needed")
+        public var regenInfoPlists: Bool = false
+
         @Option(help: "Root path for modules detection and file generation")
         public var rootPath: String
 
@@ -38,6 +41,7 @@ extension ModuleGenerationCommand {
                 with: GenerateXcodegenOptions(
                     rootPath: rootPath,
                     regenImports: regenImports,
+                    regenInfoPlists: regenInfoPlists,
                     outputFilename: outputFilename,
                     platforms: platforms,
                     dependenciesConfig: dependenciesConfig,

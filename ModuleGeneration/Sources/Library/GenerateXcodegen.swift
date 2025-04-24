@@ -21,6 +21,7 @@ let kDefaultExclusionList: [String] = [
 public struct GenerateXcodegenOptions {
     public let rootPath: String
     public let regenImports: Bool
+    public let regenInfoPlists: Bool
     public let outputFilename: String
     public let platforms: String
     public let dependenciesConfig: String
@@ -29,12 +30,14 @@ public struct GenerateXcodegenOptions {
     public init(
         rootPath: String,
         regenImports: Bool = false,
+        regenInfoPlists: Bool = false,
         outputFilename: String = "project-modules.yml",
         platforms: String = "iOS",
         dependenciesConfig: String = "Dependencies/dependencies.yml",
         packageFileName: String = "package.yml"
     ) {
         self.regenImports = regenImports
+        self.regenInfoPlists = regenInfoPlists
         self.rootPath = rootPath
         self.outputFilename = outputFilename
         self.platforms = platforms
@@ -106,6 +109,16 @@ public enum GenerateXcodegen {
                 package.modules.values.sorted { $0.name < $1.name }.forEach { module in
                     vprint(.debug, "Regenerate imports for \(module.name)", "🔧")
                     module.regenerateImportsFile(ignoreFilenames: [])
+                }
+            }
+        }
+
+        if options.regenInfoPlists {
+            vprint(.normal, "Regenerate Info.plist for \(packages.count) package\(packages.count == 1 ? "" : "s")", "🔧")
+            try packages.sorted { $0.name < $1.name }.forEach { package in
+                try package.modules.values.sorted { $0.name < $1.name }.forEach { module in
+                    vprint(.debug, "Regenerate Info.plist for \(module.name)", "🔧")
+                    try module.regenInfoPlists()
                 }
             }
         }
