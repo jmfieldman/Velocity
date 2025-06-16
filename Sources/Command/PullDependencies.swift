@@ -1,5 +1,5 @@
 //
-//  Pull.swift
+//  PullDependencies.swift
 //  Copyright © 2024 Jason Fieldman.
 //
 
@@ -8,24 +8,33 @@ import DependencyMagnetLib
 import Foundation
 import InternalUtilities
 
-extension DependencyMagnetCommand {
+extension VelocityCommand {
     /// This subcommand pulls the dependencies into the current
     /// directory.
-    final class Pull: AsyncParsableCommand {
+    final class PullDependencies: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Pull dependencies"
         )
 
         @OptionGroup var commonOptions: CommonOptions
 
+        @Option(help: "Path to config file")
+        public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+
+        @Option(help: "Workspace path")
+        public var workspacePath: String = ".dependency_magnet"
+
+        @Option(help: "Output path")
+        public var dependencyOutputPath: String = "Dependencies"
+
         /// Execute the pull command
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
             try DependencyPull().execute(
                 with: DependencyPullOptions(
-                    config: commonOptions.config,
-                    workspacePath: commonOptions.workspacePath,
-                    outputPath: commonOptions.outputPath
+                    config: dependenciesConfig,
+                    workspacePath: workspacePath,
+                    outputPath: dependencyOutputPath
                 )
             )
         }

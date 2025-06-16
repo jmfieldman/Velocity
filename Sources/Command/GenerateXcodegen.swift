@@ -1,5 +1,5 @@
 //
-//  GenerateXcodegenCommand.swift
+//  GenerateXcodegen.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -9,13 +9,19 @@ import InternalUtilities
 import ModuleGenerationLib
 import ModuleManagementLib
 
-extension ModuleGenerationCommand {
-    final class GenerateXcodegenCommand: AsyncParsableCommand {
+extension VelocityCommand {
+    final class GenerateXcodegen: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Generate Xcodegen project-modules.yml"
         )
 
         @OptionGroup var commonOptions: CommonOptions
+
+        @Option(help: "Override the normal package file name (package.yml)")
+        public var packageFileName: String = "package.yml"
+
+        @Option(help: "Specify the project path (if not the current working directory)")
+        public var projectPath: String? = nil
 
         @Flag(name: [.long], help: "Force imports.yml regeneration for all modules")
         public var regenImports: Bool = false
@@ -37,7 +43,7 @@ extension ModuleGenerationCommand {
 
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
-            try GenerateXcodegen.execute(
+            try ModuleGenerationLib.GenerateXcodegen.execute(
                 with: GenerateXcodegenOptions(
                     rootPath: rootPath,
                     regenImports: regenImports,
@@ -45,7 +51,7 @@ extension ModuleGenerationCommand {
                     outputFilename: outputFilename,
                     platforms: platforms,
                     dependenciesConfig: dependenciesConfig,
-                    packageFileName: commonOptions.packageFileName
+                    packageFileName: packageFileName
                 )
             )
         }

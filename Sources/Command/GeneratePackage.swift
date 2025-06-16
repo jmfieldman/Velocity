@@ -1,5 +1,5 @@
 //
-//  GeneratePackageCommand.swift
+//  GeneratePackage.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -9,13 +9,19 @@ import InternalUtilities
 import ModuleGenerationLib
 import ModuleManagementLib
 
-extension ModuleGenerationCommand {
-    final class GeneratePackageCommand: AsyncParsableCommand {
+extension VelocityCommand {
+    final class GeneratePackage: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Generate Package.swift file"
         )
 
         @OptionGroup var commonOptions: CommonOptions
+
+        @Option(help: "Override the normal package file name (package.yml)")
+        public var packageFileName: String = "package.yml"
+
+        @Option(help: "Specify the project path (if not the current working directory)")
+        public var projectPath: String? = nil
 
         @Flag(name: [.long], help: "Force imports.yml regeneration for all modules")
         public var regenImports: Bool = false
@@ -40,7 +46,7 @@ extension ModuleGenerationCommand {
 
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
-            try GeneratePackage.execute(
+            try ModuleGenerationLib.GeneratePackage.execute(
                 with: GeneratePackageOptions(
                     regenImports: regenImports,
                     rootPath: rootPath,
@@ -49,7 +55,7 @@ extension ModuleGenerationCommand {
                     dependenciesConfig: dependenciesConfig,
                     dependencyOutputPath: dependencyOutputPath,
                     packageName: packageName,
-                    packageFileName: commonOptions.packageFileName
+                    packageFileName: packageFileName
                 )
             )
         }

@@ -19,12 +19,6 @@ public struct CommonOptions: ParsableArguments {
     @Flag(name: [.long], help: "Print debug output (higher than verbose)")
     public var debug: Bool = false
 
-    @Option(help: "Override the normal package file name (package.yml)")
-    public var packageFileName: String = "package.yml"
-
-    @Option(help: "Specify the project path (if not the current working directory)")
-    public var projectPath: String? = nil
-
     public init() {}
 }
 

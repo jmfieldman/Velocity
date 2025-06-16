@@ -6,8 +6,7 @@ let package = Package(
     name: "Velocity",
     platforms: [.macOS(.v12)],
     products: [
-        .executable(name: "dependency_magnet", targets: ["DependencyMagnet"]),
-        .executable(name: "generate_modules", targets: ["ModuleGeneration"]),
+        .executable(name: "velocity", targets: ["Velocity"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
@@ -21,7 +20,7 @@ let package = Package(
         .target(
             name: "InternalUtilities",
             dependencies: [],
-            path: "InternalUtilities"
+            path: "Sources/Libraries/InternalUtilities"
         ),
         .target(
             name: "TestHelpers",
@@ -29,51 +28,10 @@ let package = Package(
             path: "Tests/Helpers"
         ),
 
-        // Dependency Magnet
+        // Velocity Command
 
         .executableTarget(
-            name: "DependencyMagnet",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                "DependencyMagnetLib",
-            ],
-            path: "DependencyMagnet/Sources/Command"
-        ),
-        .target(
-            name: "DependencyMagnetLib",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "Crypto", package: "swift-crypto"),
-                .product(name: "Yams", package: "Yams"),
-                "InternalUtilities",
-            ],
-            path: "DependencyMagnet/Sources/Library"
-        ),
-        .testTarget(
-            name: "DependencyMagnetTests",
-            dependencies: [
-                "DependencyMagnetLib",
-                "TestHelpers",
-            ],
-            path: "Tests/DependencyMagnet",
-            resources: [.copy("Files")]
-        ),
-
-        // Module Management
-
-        .target(
-            name: "ModuleManagementLib",
-            dependencies: [
-                .product(name: "ProjectSpec", package: "XcodeGen"),
-                "InternalUtilities",
-            ],
-            path: "ModuleManagement/Sources/Library"
-        ),
-
-        // Module Generation
-
-        .executableTarget(
-            name: "ModuleGeneration",
+            name: "Velocity",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "ProjectSpec", package: "XcodeGen"),
@@ -82,7 +40,28 @@ let package = Package(
                 "ModuleGenerationLib",
                 "DependencyMagnetLib",
             ],
-            path: "ModuleGeneration/Sources/Command"
+            path: "Sources/Command"
+        ),
+
+        // Libraries
+
+        .target(
+            name: "DependencyMagnetLib",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Yams", package: "Yams"),
+                "InternalUtilities",
+            ],
+            path: "Sources/Libraries/DependencyMagnet"
+        ),
+        .target(
+            name: "ModuleManagementLib",
+            dependencies: [
+                .product(name: "ProjectSpec", package: "XcodeGen"),
+                "InternalUtilities",
+            ],
+            path: "Sources/Libraries/ModuleManagement"
         ),
         .target(
             name: "ModuleGenerationLib",
@@ -93,7 +72,19 @@ let package = Package(
                 "ModuleManagementLib",
                 "DependencyMagnetLib",
             ],
-            path: "ModuleGeneration/Sources/Library"
+            path: "Sources/Libraries/ModuleGeneration"
+        ),
+
+        // Tests
+
+        .testTarget(
+            name: "DependencyMagnetTests",
+            dependencies: [
+                "DependencyMagnetLib",
+                "TestHelpers",
+            ],
+            path: "Tests/DependencyMagnet",
+            resources: [.copy("Files")]
         ),
         .testTarget(
             name: "ModuleGenerationTests",
