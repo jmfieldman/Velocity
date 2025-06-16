@@ -9,7 +9,7 @@ import InternalUtilities
 import ModuleGenerationLib
 import ModuleManagementLib
 
-extension VelocityCommand {
+extension Velocity {
     final class GenerateImports: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Generate imports.yml files"
@@ -17,8 +17,8 @@ extension VelocityCommand {
 
         @OptionGroup var commonOptions: CommonOptions
 
-        @Option(help: "Override the normal package file name (package.yml)")
-        public var packageFileName: String = "package.yml"
+        @Option(help: "Override the normal package file name (\(kFilenamePackageYml))")
+        public var packageFileName: String = kFilenamePackageYml
 
         @Option(help: "Specify the project path (if not the current working directory)")
         public var projectPath: String? = nil

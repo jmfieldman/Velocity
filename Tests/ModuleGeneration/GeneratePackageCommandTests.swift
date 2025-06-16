@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import InternalUtilities
 @testable import ModuleGenerationLib
 import TestHelpers
 import XCTest
@@ -31,7 +32,7 @@ final class GeneratePackageCommandTests: XCTestCase {
                 dependenciesConfig: "Dependencies/dependencies.yml",
                 dependencyOutputPath: nil,
                 packageName: "TestPackage",
-                packageFileName: "package.yml"
+                packageFileName: kFilenamePackageYml
             )
         )
 

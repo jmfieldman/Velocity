@@ -9,7 +9,7 @@ import InternalUtilities
 import ModuleGenerationLib
 import ModuleManagementLib
 
-extension VelocityCommand {
+extension Velocity {
     final class GenerateXcodegenDeps: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Generate Xcodegen project-dependencies.yml from dependencies.yml file"

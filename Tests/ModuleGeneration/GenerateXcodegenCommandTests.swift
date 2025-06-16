@@ -3,6 +3,7 @@
 //  Copyright © 2025 Jason Fieldman.
 //
 
+import InternalUtilities
 @testable import ModuleGenerationLib
 import TestHelpers
 import XCTest
@@ -28,7 +29,7 @@ final class GenerateXcodegenCommandTests: XCTestCase {
                 outputFilename: "project-modules.yml",
                 platforms: "iOS",
                 dependenciesConfig: "Dependencies/dependencies.yml",
-                packageFileName: "package.yml"
+                packageFileName: kFilenamePackageYml
             )
         )
 

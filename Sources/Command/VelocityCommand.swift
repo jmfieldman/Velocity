@@ -7,7 +7,7 @@ import ArgumentParser
 import InternalUtilities
 
 /// The main command collection for the command line tool.
-@main struct VelocityCommand: AsyncParsableCommand {
+@main struct Velocity: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "Contains commands for the Velocity package.",
         subcommands: [

@@ -8,7 +8,7 @@ import DependencyMagnetLib
 import Foundation
 import InternalUtilities
 
-extension VelocityCommand {
+extension Velocity {
     /// This subcommand pulls the dependencies into the current
     /// directory.
     final class PullDependencies: AsyncParsableCommand {

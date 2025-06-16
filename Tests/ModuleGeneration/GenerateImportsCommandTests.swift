@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import InternalUtilities
 @testable import ModuleGenerationLib
 import TestHelpers
 import XCTest
@@ -26,7 +27,7 @@ final class GenerateImportsCommandTests: XCTestCase {
             with: GenerateImportsOptions(
                 searchPath: ".",
                 projectPath: nil,
-                packageFilename: "package.yml"
+                packageFilename: kFilenamePackageYml
             )
         )
 
