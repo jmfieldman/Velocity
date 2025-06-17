@@ -1,10 +1,10 @@
 packages:
   XcodeGen:
-    path: Dependencies/Packages/XcodeGen
+    path: local/Packages/XcodeGen
   Yams:
-    path: Dependencies/Packages/Yams
+    path: local/Packages/Yams
   swift-argument-parser:
-    path: Dependencies/Packages/swift-argument-parser
+    path: local/Packages/swift-argument-parser
   swift-crypto:
     branch: master
     url: https://github.com/apple/swift-crypto

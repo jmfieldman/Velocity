@@ -26,7 +26,7 @@ final class DependencyMagnetTests: XCTestCase {
             with: DependencyPullOptions(
                 config: kPathDependencyConfig,
                 workspacePath: kPathMagnetWorkspace,
-                outputPath: "Dependencies"
+                outputPath: kPathDependencyOutput
             )
         )
 

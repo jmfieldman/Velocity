@@ -56,7 +56,7 @@ final class GenerateXcodegenDepsCommandTests: XCTestCase {
             with: GenerateXcodegenDepsOptions(
                 outputFilename: "project-dependencies.yml",
                 dependenciesConfig: kPathDependencyConfig,
-                dependencyOutputPath: "Dependencies"
+                dependencyOutputPath: kPathDependencyOutput
             )
         )
 

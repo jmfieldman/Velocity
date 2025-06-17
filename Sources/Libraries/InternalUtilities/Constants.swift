@@ -15,3 +15,7 @@ public let kPathMagnetWorkspace: String = ".dependency_magnet"
 
 /// The path to the dependencies.yml file
 public let kPathDependencyConfig = "dependencies.yml"
+
+/// The path that local dependencies are put under.
+/// This path should be included in .gitignore
+public let kPathDependencyOutput = "local"

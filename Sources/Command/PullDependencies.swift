@@ -25,7 +25,7 @@ extension Velocity {
         public var workspacePath: String = kPathMagnetWorkspace
 
         @Option(help: "Output path")
-        public var dependencyOutputPath: String = "Dependencies"
+        public var dependencyOutputPath: String = kPathDependencyOutput
 
         /// Execute the pull command
         func run() async throws {
