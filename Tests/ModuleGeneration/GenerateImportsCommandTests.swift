@@ -27,7 +27,7 @@ final class GenerateImportsCommandTests: XCTestCase {
             with: GenerateImportsOptions(
                 searchPath: ".",
                 projectPath: nil,
-                packageFilename: kFilenamePackageYml
+                packageFilename: kPathPackageYml
             )
         )
 

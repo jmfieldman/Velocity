@@ -22,7 +22,7 @@ extension Velocity {
         public var dependenciesConfig: String = "Dependencies/dependencies.yml"
 
         @Option(help: "Workspace path")
-        public var workspacePath: String = ".dependency_magnet"
+        public var workspacePath: String = kPathMagnetWorkspace
 
         @Option(help: "Output path")
         public var dependencyOutputPath: String = "Dependencies"

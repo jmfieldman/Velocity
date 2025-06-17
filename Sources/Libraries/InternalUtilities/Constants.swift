@@ -5,4 +5,5 @@
 
 import Foundation
 
-public let kFilenamePackageYml = "package.yml"
+public let kPathPackageYml = "package.yml"
+public let kPathMagnetWorkspace: String = ".dependency_magnet"

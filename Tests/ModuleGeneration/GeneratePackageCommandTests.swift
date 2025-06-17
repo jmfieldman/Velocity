@@ -32,7 +32,7 @@ final class GeneratePackageCommandTests: XCTestCase {
                 dependenciesConfig: "Dependencies/dependencies.yml",
                 dependencyOutputPath: nil,
                 packageName: "TestPackage",
-                packageFileName: kFilenamePackageYml
+                packageFileName: kPathPackageYml
             )
         )
 

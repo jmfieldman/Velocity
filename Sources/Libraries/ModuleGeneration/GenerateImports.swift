@@ -19,7 +19,7 @@ public struct GenerateImportsOptions {
     public init(
         searchPath: String = ".",
         projectPath: String? = nil,
-        packageFilename: String = kFilenamePackageYml
+        packageFilename: String = kPathPackageYml
     ) {
         self.searchPath = searchPath
         self.projectPath = projectPath

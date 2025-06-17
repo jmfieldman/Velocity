@@ -17,8 +17,8 @@ extension Velocity {
 
         @OptionGroup var commonOptions: CommonOptions
 
-        @Option(help: "Override the normal package file name (\(kFilenamePackageYml))")
-        public var packageFileName: String = kFilenamePackageYml
+        @Option(help: "Override the normal package file name (\(kPathPackageYml))")
+        public var packageFileName: String = kPathPackageYml
 
         @Option(help: "Specify the project path (if not the current working directory)")
         public var projectPath: String? = nil

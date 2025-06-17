@@ -4,6 +4,7 @@
 //
 
 @testable import DependencyMagnetLib
+import InternalUtilities
 import TestHelpers
 import XCTest
 
@@ -24,7 +25,7 @@ final class DependencyMagnetTests: XCTestCase {
         try DependencyPull().execute(
             with: DependencyPullOptions(
                 config: "Dependencies/dependencies.yml",
-                workspacePath: ".dependency_magnet",
+                workspacePath: kPathMagnetWorkspace,
                 outputPath: "Dependencies"
             )
         )
