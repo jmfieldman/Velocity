@@ -3,6 +3,7 @@
 //  Copyright © 2025 Jason Fieldman.
 //
 
+import InternalUtilities
 @testable import ModuleGenerationLib
 import TestHelpers
 import XCTest
@@ -27,7 +28,7 @@ final class GenerateXcodegenDepsCommandTests: XCTestCase {
         try GenerateXcodegenDeps.execute(
             with: GenerateXcodegenDepsOptions(
                 outputFilename: "project-dependencies.yml",
-                dependenciesConfig: "Dependencies/dependencies.yml",
+                dependenciesConfig: kPathDependencyConfig,
                 dependencyOutputPath: nil
             )
         )
@@ -54,7 +55,7 @@ final class GenerateXcodegenDepsCommandTests: XCTestCase {
         try GenerateXcodegenDeps.execute(
             with: GenerateXcodegenDepsOptions(
                 outputFilename: "project-dependencies.yml",
-                dependenciesConfig: "Dependencies/dependencies.yml",
+                dependenciesConfig: kPathDependencyConfig,
                 dependencyOutputPath: "Dependencies"
             )
         )

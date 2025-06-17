@@ -36,7 +36,7 @@ extension Velocity {
         public var platforms: String
 
         @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
-        public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+        public var dependenciesConfig: String = kPathDependencyConfig
 
         @Option(help: "The output path of the dependency_magnet command used to create local packages. If not provided then no local packages will be used.")
         public var dependencyOutputPath: String?

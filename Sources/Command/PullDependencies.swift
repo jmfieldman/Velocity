@@ -19,7 +19,7 @@ extension Velocity {
         @OptionGroup var commonOptions: CommonOptions
 
         @Option(help: "Path to config file")
-        public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+        public var dependenciesConfig: String = kPathDependencyConfig
 
         @Option(help: "Workspace path")
         public var workspacePath: String = kPathMagnetWorkspace

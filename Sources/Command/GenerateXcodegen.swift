@@ -39,7 +39,7 @@ extension Velocity {
         public var platforms: String = "iOS"
 
         @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
-        public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+        public var dependenciesConfig: String = kPathDependencyConfig
 
         func run() async throws {
             setVerbosity(commonOptions.verbosity)

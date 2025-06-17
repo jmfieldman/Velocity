@@ -34,7 +34,7 @@ public struct GenerateXcodegenOptions {
         regenInfoPlists: Bool = false,
         outputFilename: String = "project-modules.yml",
         platforms: String = "iOS",
-        dependenciesConfig: String = "Dependencies/dependencies.yml",
+        dependenciesConfig: String = kPathDependencyConfig,
         packageFileName: String = kPathPackageYml
     ) {
         self.regenImports = regenImports

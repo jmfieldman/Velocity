@@ -21,7 +21,7 @@ extension Velocity {
         public var outputFilename: String = "project-dependencies.yml"
 
         @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
-        public var dependenciesConfig: String = "Dependencies/dependencies.yml"
+        public var dependenciesConfig: String = kPathDependencyConfig
 
         @Option(help: "The output path of the pull-dependencies command used to create local packages, without the Package directory suffix. If not provided then no local packages will be used. If using the default setup this should be \"Dependencies\".")
         public var dependencyOutputPath: String?

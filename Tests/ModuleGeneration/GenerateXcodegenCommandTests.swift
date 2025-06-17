@@ -28,7 +28,7 @@ final class GenerateXcodegenCommandTests: XCTestCase {
                 regenImports: false,
                 outputFilename: "project-modules.yml",
                 platforms: "iOS",
-                dependenciesConfig: "Dependencies/dependencies.yml",
+                dependenciesConfig: kPathDependencyConfig,
                 packageFileName: kPathPackageYml
             )
         )

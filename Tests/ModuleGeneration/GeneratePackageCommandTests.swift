@@ -29,7 +29,7 @@ final class GeneratePackageCommandTests: XCTestCase {
                 rootPath: ".",
                 swiftToolsVersion: "5.9",
                 platforms: "iOS",
-                dependenciesConfig: "Dependencies/dependencies.yml",
+                dependenciesConfig: kPathDependencyConfig,
                 dependencyOutputPath: nil,
                 packageName: "TestPackage",
                 packageFileName: kPathPackageYml

@@ -24,7 +24,7 @@ final class DependencyMagnetTests: XCTestCase {
 
         try DependencyPull().execute(
             with: DependencyPullOptions(
-                config: "Dependencies/dependencies.yml",
+                config: kPathDependencyConfig,
                 workspacePath: kPathMagnetWorkspace,
                 outputPath: "Dependencies"
             )
