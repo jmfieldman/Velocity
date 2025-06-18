@@ -37,7 +37,7 @@ public enum GenerateXcodegenDeps {
         vprint(.normal, "Generating \(options.outputFilename)", "🔧")
 
         if options.dependencyOutputPath == nil {
-            vprint(.normal, "No dependency magent output path provided, all packages will use remote repo")
+            vprint(.normal, "No dependency output path provided, all packages will use remote repo")
         }
 
         let dependenciesConfig = try DependenciesConfig.from(filePath: options.dependenciesConfig)
