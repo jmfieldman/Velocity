@@ -50,7 +50,7 @@ public enum GenerateXcodegenDeps {
         try dependencies.sorted { $0.inferredPackageName < $1.inferredPackageName }.forEach { dependency in
             var packageEnc = PackageEnc()
             if let depOutputPath = options.dependencyOutputPath, dependency.keepRemote != true {
-                packageEnc.path = "\(depOutputPath)/Packages/\(dependency.inferredPackageName)"
+                packageEnc.path = "\(depOutputPath)/Packages/\(dependency.localPackageSubpathName)"
             } else {
                 packageEnc.url = dependency.url
 

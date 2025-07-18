@@ -34,6 +34,10 @@ public extension DependencyConfig {
         return ".package(url: \"\(url)\", \(qualifier.label)\"\(qualifier.value)\")"
     }
 
+    var localPackageSubpathName: String {
+        url.removingSuffix(".git").lastPathComponent
+    }
+
     var inferredPackageName: String {
         packageName ?? url.removingSuffix(".git").lastPathComponent
     }
