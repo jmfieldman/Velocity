@@ -7,6 +7,7 @@ let package = Package(
     platforms: [.macOS(.v12)],
     products: [
         .executable(name: "velocity", targets: ["Velocity"]),
+        .library(name: "Inject", targets: ["Inject"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
@@ -43,7 +44,16 @@ let package = Package(
             path: "Sources/Command"
         ),
 
-        // Libraries
+        // External Libraries
+
+        .target(
+            name: "Inject",
+            dependencies: [
+            ],
+            path: "Sources/Libraries/Inject"
+        ),
+
+        // Internal Libraries
 
         .target(
             name: "DependencyMagnetLib",
@@ -98,6 +108,13 @@ let package = Package(
             ],
             path: "Tests/ModuleGeneration",
             resources: [.copy("Files")]
+        ),
+        .testTarget(
+            name: "InjectTests",
+            dependencies: [
+                "Inject",
+            ],
+            path: "Tests/Inject"
         ),
     ]
 )
