@@ -37,12 +37,12 @@ public extension FileManager {
             }
 
             let filePath = file.prepending(path: directory)
-            guard !filePath.isDirectory else {
+            guard filePath.isFile else {
                 continue
             }
 
             guard let filesha = sha(file: filePath) else {
-                return nil
+                continue
             }
 
             shasum += filesha
