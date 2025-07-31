@@ -12,6 +12,7 @@ import InternalUtilities
         abstract: "Contains commands for the Velocity package.",
         subcommands: [
             GenerateImports.self,
+            GenerateInject.self,
             GeneratePackage.self,
             GenerateXcodegen.self,
             GenerateXcodegenDeps.self,

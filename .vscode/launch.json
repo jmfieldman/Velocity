@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Velocity}",
+            "name": "Debug velocity",
+            "program": "${workspaceFolder:Velocity}/.build/debug/velocity",
+            "preLaunchTask": "swift: Build Debug velocity"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Velocity}",
+            "name": "Release velocity",
+            "program": "${workspaceFolder:Velocity}/.build/release/velocity",
+            "preLaunchTask": "swift: Build Release velocity"
+        }
+    ]
+}

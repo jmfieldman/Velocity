@@ -6,6 +6,8 @@
 import Foundation
 import Yams
 
+private let kDefaultNameChar = "_"
+private let kDefaultNameImpl = "Impl"
 private let yamlDecoder = YAMLDecoder()
 
 public final class ModulePackage {
@@ -53,6 +55,22 @@ public final class ModulePackage {
         self.projectBasePath = absoluteBasePath.relative(to: absoluteProjectPath).appendingMissingSlash()
         self.name = absoluteBasePath.lastPathComponent
     }
+
+    public private(set) lazy var injectMap: [String: String] = {
+        if let map = config.injectMap, map.count > 0 {
+            return map
+        }
+
+        if let injects = config.injects {
+            if injects == kDefaultNameChar {
+                return [name: "\(name)\(kDefaultNameImpl)"]
+            } else if injects.count > 0 {
+                return [injects: "\(injects)\(kDefaultNameImpl)"]
+            }
+        }
+
+        return [:]
+    }()
 
     // MARK: Private Helpers
 

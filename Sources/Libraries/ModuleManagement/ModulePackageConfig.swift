@@ -28,4 +28,21 @@ public class ModulePackageConfig: Codable {
 
     /// A list of files to exclude, keyed by module type.
     public let fileExclusions: [String: [String]]?
+
+    /// The name of the protocol this module provides an Inject implementation for.
+    /// The value should be the name of the protocol, and it automatically appends
+    /// 'Impl' for the implementation name.
+    ///
+    /// You can use a single underscore character to automatically use the Package
+    /// name as the injection class name
+    ///
+    /// Best practice is that each package only provides a single Inject implementation
+    /// named after itself, so a single underscore should work in most scenarios.
+    /// This value is ignored if `injectMap` is defined.
+    public let injects: String?
+
+    /// In more complex inject scenarios, you can define the full inject map, where
+    /// the key is the protocol name and the value is the corresponding implementation
+    /// name. If this value is defined it will override the `injects` value.
+    public let injectMap: [String: String]?
 }
