@@ -102,7 +102,7 @@ public enum GenerateInject {
 }
 
 private let kFileTemplate = """
-import Inject
+@_exported import Inject
 {IMPORTS}
 
 public extension InjectionManager {

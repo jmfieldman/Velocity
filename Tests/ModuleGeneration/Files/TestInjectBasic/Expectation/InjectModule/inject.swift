@@ -1,4 +1,4 @@
-import Inject
+@_exported import Inject
 import InjectNoImplExample
 import InjectsMapExample
 import InjectsMapExampleImpl
@@ -10,7 +10,7 @@ import RecursiveInjectsExample
 import RecursiveInjectsExampleImpl
 
 public extension InjectionManager {
-    public func injectImplementations() {
+    func injectImplementations() {
         InjectionManager.register(InjectMapTypeOne.self) { InjectMapTypeOneImpl() }
         InjectionManager.register(InjectMapTypeTwo.self) { InjectMapTypeTwoImpl() }
         InjectionManager.register(InjectNoImplExample.self) { InjectNoImplExampleImpl() }
