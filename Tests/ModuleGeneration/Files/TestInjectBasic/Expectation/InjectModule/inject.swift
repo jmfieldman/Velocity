@@ -10,7 +10,7 @@ import RecursiveInjectsExample
 import RecursiveInjectsExampleImpl
 
 public extension InjectionManager {
-    func injectImplementations() {
+    static func injectImplementations() {
         InjectionManager.register(InjectMapTypeOne.self) { InjectMapTypeOneImpl() }
         InjectionManager.register(InjectMapTypeTwo.self) { InjectMapTypeTwoImpl() }
         InjectionManager.register(InjectNoImplExample.self) { InjectNoImplExampleImpl() }

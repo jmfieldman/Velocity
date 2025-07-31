@@ -106,7 +106,7 @@ private let kFileTemplate = """
 {IMPORTS}
 
 public extension InjectionManager {
-    func {FUNCNAME}() {
+    static func {FUNCNAME}() {
 {REGISTRATION}
     }
 }
