@@ -106,7 +106,7 @@ import Inject
 {IMPORTS}
 
 public extension InjectionManager {
-    public func {FUNCNAME}() {
+    func {FUNCNAME}() {
 {REGISTRATION}
     }
 }
