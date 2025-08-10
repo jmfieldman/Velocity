@@ -9,10 +9,11 @@ let package = Package(
         .executable(name: "velocity", targets: ["Velocity"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
-        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.0"),
-        .package(url: "https://github.com/jpsim/Yams.git", from: "5.3.0"),
-        .package(url: "https://github.com/yonaskolb/XcodeGen.git", from: "2.43.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.6.1"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.14.0"),
+        .package(url: "https://github.com/jpsim/Yams.git", from: "6.1.0"),
+        .package(url: "https://github.com/yonaskolb/XcodeGen.git", from: "2.44.1"),
+        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.4"),
     ],
     targets: [
         // Internal Utilities
