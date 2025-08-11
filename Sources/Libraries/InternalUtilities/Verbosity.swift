@@ -42,6 +42,6 @@ public func vprint(_ verboseness: Verbosity, _ str: String, _ emoji: String? = n
     }
 
     if verboseness.rawValue <= gVerbosityLevel.rawValue {
-        print("\(emoji ?? "🧲") \(str)")
+        print("\(emoji ?? "☑️ ") \(str)")
     }
 }

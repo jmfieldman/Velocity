@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.6.1"),
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.14.0"),
-        .package(url: "https://github.com/jpsim/Yams.git", from: "6.1.0"),
+        .package(url: "https://github.com/jpsim/Yams.git", from: "5.4.0"),
         .package(url: "https://github.com/yonaskolb/XcodeGen.git", from: "2.44.1"),
         .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.4"),
     ],
@@ -68,7 +68,9 @@ let package = Package(
             name: "ModuleGenerationLib",
             dependencies: [
                 .product(name: "ProjectSpec", package: "XcodeGen"),
+                .product(name: "Crypto", package: "swift-crypto"),
                 .product(name: "Yams", package: "Yams"),
+                .product(name: "SQLite", package: "SQLite.swift"),
                 "InternalUtilities",
                 "ModuleManagementLib",
                 "DependencyMagnetLib",

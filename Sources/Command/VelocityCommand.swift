@@ -17,6 +17,7 @@ import InternalUtilities
             GenerateXcodegen.self,
             GenerateXcodegenDeps.self,
             PullDependencies.self,
+            SanitizeXcodegenProject.self,
         ]
     )
 }
