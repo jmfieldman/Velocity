@@ -1,5 +1,5 @@
 //
-//  GenerateXcodegen.swift
+//  GenerateXcodegenModules.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -10,7 +10,7 @@ import ModuleGenerationLib
 import ModuleManagementLib
 
 extension Velocity {
-    final class GenerateXcodegen: AsyncParsableCommand {
+    final class GenerateXcodegenModules: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Generate Xcodegen project-modules.yml"
         )
@@ -43,8 +43,8 @@ extension Velocity {
 
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
-            try ModuleGenerationLib.GenerateXcodegen.execute(
-                with: GenerateXcodegenOptions(
+            try ModuleGenerationLib.GenerateXcodegenModules.execute(
+                with: GenerateXcodegenModulesOptions(
                     rootPath: rootPath,
                     regenImports: regenImports,
                     regenInfoPlists: regenInfoPlists,

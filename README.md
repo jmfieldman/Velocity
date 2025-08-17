@@ -48,7 +48,7 @@ This command uses the `dependencies.yml` file to fetch your external SwiftPM-bas
 
 Searches through the source files of your Velocity packages. It generates an `imports.yml` file for each module, that lists each dependency. This `imports.yml` file is used by other tools to build up xcodegen yml files.
 
-### `generate-xcodegen`
+### `generate-xcodegen-modules`
 
 Generates a `project-modules.yml` xcodegen file. This yml contains all of the target declarations for every module in your project, and can be included in your main project xcodegen yml file.
 

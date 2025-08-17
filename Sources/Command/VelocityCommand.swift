@@ -14,7 +14,7 @@ import InternalUtilities
             GenerateImports.self,
             GenerateInject.self,
             GeneratePackage.self,
-            GenerateXcodegen.self,
+            GenerateXcodegenModules.self,
             GenerateXcodegenDeps.self,
             PullDependencies.self,
             SanitizeXcodegenProject.self,

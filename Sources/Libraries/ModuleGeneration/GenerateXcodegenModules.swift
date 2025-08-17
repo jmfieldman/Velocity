@@ -1,5 +1,5 @@
 //
-//  GenerateXcodegen.swift
+//  GenerateXcodegenModules.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -19,7 +19,7 @@ let kDefaultExclusionList: [String] = [
     "LICENSE",
 ]
 
-public struct GenerateXcodegenOptions {
+public struct GenerateXcodegenModulesOptions {
     public let rootPath: String
     public let regenImports: Bool
     public let regenInfoPlists: Bool
@@ -47,8 +47,8 @@ public struct GenerateXcodegenOptions {
     }
 }
 
-public enum GenerateXcodegen {
-    public static func execute(with options: GenerateXcodegenOptions) throws {
+public enum GenerateXcodegenModules {
+    public static func execute(with options: GenerateXcodegenModulesOptions) throws {
         let absoluteModuleBasePath = options.rootPath.prependingCurrentDirectory()
         let absoluteProjectPath = FileManager.default.currentDirectoryPath
 

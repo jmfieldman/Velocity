@@ -1,5 +1,5 @@
 //
-//  GenerateXcodegenCommandTests.swift
+//  GenerateXcodegenModulesCommandTests.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 
@@ -8,7 +8,7 @@ import InternalUtilities
 import TestHelpers
 import XCTest
 
-final class GenerateXcodegenCommandTests: XCTestCase {
+final class GenerateXcodegenModulesCommandTests: XCTestCase {
     func testBasicModules() throws {
         guard let basePath = Bundle.module.path(forResource: "Files", ofType: "") else {
             XCTFail("No Files")
@@ -22,8 +22,8 @@ final class GenerateXcodegenCommandTests: XCTestCase {
 
         TestHelpers.validateTestDirectoryAndSetCurrent(testDirectory)
 
-        try GenerateXcodegen.execute(
-            with: GenerateXcodegenOptions(
+        try GenerateXcodegenModules.execute(
+            with: GenerateXcodegenModulesOptions(
                 rootPath: "Modules",
                 regenImports: false,
                 outputFilename: "project-modules.yml",
