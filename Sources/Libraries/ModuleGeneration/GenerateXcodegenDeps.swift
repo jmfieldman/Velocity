@@ -47,6 +47,7 @@ public enum GenerateXcodegenDeps {
         }
 
         var packages: [String: PackageEnc] = [:]
+        var templateDeps: [DependencyEnc] = []
         try dependencies.sorted { $0.inferredPackageName < $1.inferredPackageName }.forEach { dependency in
             var packageEnc = PackageEnc()
             if let depOutputPath = options.dependencyOutputPath, dependency.keepRemote != true {
@@ -68,9 +69,19 @@ public enum GenerateXcodegenDeps {
             }
 
             packages[dependency.inferredPackageName] = packageEnc
+
+            templateDeps.append(DependencyEnc(
+                package: dependency.inferredPackageName,
+                products: dependency.libraries ?? [dependency.inferredPackageName]
+            ))
         }
 
-        let packagesEnc = PackagesEnc(packages: packages)
+        let packagesEnc = PackagesEnc(
+            packages: packages,
+            targetTemplates: [
+                "PackageInclusionTemplate": TargetTemplateEnc(dependencies: templateDeps),
+            ]
+        )
         let encoder = YAMLEncoder()
         encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)
         let encodedString = try encoder.encode(packagesEnc)
@@ -95,6 +106,7 @@ private extension String {
 
 private struct PackagesEnc: Encodable {
     var packages: [String: PackageEnc]
+    var targetTemplates: [String: TargetTemplateEnc]
 }
 
 private struct PackageEnc: Encodable {
@@ -104,4 +116,13 @@ private struct PackageEnc: Encodable {
     var branch: String?
     var revision: String?
     var exactVersion: String?
+}
+
+private struct DependencyEnc: Encodable {
+    var package: String?
+    var products: [String]?
+}
+
+private struct TargetTemplateEnc: Encodable {
+    var dependencies: [DependencyEnc]
 }

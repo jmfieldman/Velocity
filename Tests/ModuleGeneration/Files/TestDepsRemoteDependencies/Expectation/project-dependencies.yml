@@ -11,3 +11,18 @@ packages:
   swift-crypto:
     branch: master
     url: https://github.com/apple/swift-crypto
+targetTemplates:
+  PackageInclusionTemplate:
+    dependencies:
+    - package: XcodeGen
+      products:
+      - XcodeGen
+    - package: Yams
+      products:
+      - Yams
+    - package: swift-argument-parser
+      products:
+      - swift-argument-parser
+    - package: swift-crypto
+      products:
+      - swift-crypto

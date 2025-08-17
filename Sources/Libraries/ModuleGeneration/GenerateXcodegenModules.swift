@@ -226,7 +226,7 @@ private extension String {
 
 private struct TargetsEnc: Encodable {
     var targets: [String: TargetEnc]
-    var targetTemplates: [String: TargetTemplateEnc]?
+    var targetTemplates: [String: TargetTemplateEnc]
 }
 
 private struct TargetEnc: Encodable {
