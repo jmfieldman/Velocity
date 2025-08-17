@@ -1,3 +1,12 @@
+targetTemplates:
+  ModuleInclusionTemplate:
+    dependencies:
+    - target: PackageOneImpl
+    - target: PackageOne
+    - target: PackageThreeImpl
+    - target: PackageThree
+    - target: PackageTwoImpl
+    - target: PackageTwo
 targets:
   PackageOne:
     platform: auto

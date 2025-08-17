@@ -132,6 +132,7 @@ public enum GenerateXcodegenModules {
         vprint(.normal, "Generating \(options.outputFilename)", "🔧")
 
         var targets: [String: TargetEnc] = [:]
+        var templateDeps: [DependencyEnc] = []
         packages.sorted { $0.name < $1.name }.forEach { package in
             package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { moduleType in
                 let module = package.modules[moduleType]!
@@ -188,10 +189,19 @@ public enum GenerateXcodegenModules {
                         )
                     }
                 )
+
+                // Include in main app template
+
+                if moduleType.includeInAppTemplate {
+                    templateDeps.append(DependencyEnc(target: module.name))
+                }
             }
         }
 
-        let targetsEnc = TargetsEnc(targets: targets)
+        let targetsEnc = TargetsEnc(
+            targets: targets,
+            targetTemplates: ["ModuleInclusionTemplate": TargetTemplateEnc(dependencies: templateDeps)]
+        )
         let encoder = YAMLEncoder()
         encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)
         let encodedString = try encoder.encode(targetsEnc)
@@ -216,6 +226,7 @@ private extension String {
 
 private struct TargetsEnc: Encodable {
     var targets: [String: TargetEnc]
+    var targetTemplates: [String: TargetTemplateEnc]?
 }
 
 private struct TargetEnc: Encodable {
@@ -239,4 +250,19 @@ private struct DependencyEnc: Encodable {
 private struct SourceEnc: Encodable {
     var path: String
     var excludes: [String]
+}
+
+private struct TargetTemplateEnc: Encodable {
+    var dependencies: [DependencyEnc]
+}
+
+private extension ModuleType {
+    var includeInAppTemplate: Bool {
+        switch self {
+        case .main, .impl:
+            true
+        case .tests, .testHelpers:
+            false
+        }
+    }
 }
