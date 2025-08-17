@@ -72,6 +72,10 @@ public final class ModulePackage {
         return [:]
     }()
 
+    public var forceDynamicFramework: Bool? {
+        config.dynamic
+    }
+
     // MARK: Private Helpers
 
     private func moduleNameFor(type: ModuleType) -> String {

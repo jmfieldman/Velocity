@@ -27,6 +27,7 @@ public struct GenerateXcodegenModulesOptions {
     public let platforms: String
     public let dependenciesConfig: String
     public let packageFileName: String
+    public let defaultStatic: Bool
 
     public init(
         rootPath: String,
@@ -35,7 +36,8 @@ public struct GenerateXcodegenModulesOptions {
         outputFilename: String = "project-modules.yml",
         platforms: String = "iOS",
         dependenciesConfig: String = kPathDependencyConfig,
-        packageFileName: String = kPathPackageYml
+        packageFileName: String = kPathPackageYml,
+        defaultStatic: Bool = false
     ) {
         self.regenImports = regenImports
         self.regenInfoPlists = regenInfoPlists
@@ -44,6 +46,7 @@ public struct GenerateXcodegenModulesOptions {
         self.platforms = platforms
         self.dependenciesConfig = dependenciesConfig
         self.packageFileName = packageFileName
+        self.defaultStatic = defaultStatic
     }
 }
 
@@ -131,6 +134,10 @@ public enum GenerateXcodegenModules {
 
         vprint(.normal, "Generating \(options.outputFilename)", "🔧")
 
+        // Checking dynamic -> static deps
+        var dynamicInternalModules: [String: Bool] = [:]
+        var internalDepMap: [String: [String]] = [:]
+
         var targets: [String: TargetEnc] = [:]
         var templateDeps: [DependencyEnc] = []
         packages.sorted { $0.name < $1.name }.forEach { package in
@@ -144,6 +151,7 @@ public enum GenerateXcodegenModules {
                     if internalModuleSet.contains(depName) {
                         // Append internal dependencies
                         result.0.append(DependencyEnc(target: depName))
+                        internalDepMap[module.name] = (internalDepMap[module.name] ?? []) + [depName]
                     } else if let depConfig = dependencyLookup[depName] {
                         // Build external references
                         result.1[depConfig.inferredPackageName, default: []].append(depName)
@@ -164,11 +172,16 @@ public enum GenerateXcodegenModules {
 
                 let exclusions = (kDefaultExclusionList + (package.fileExclusions[moduleType] ?? []))
 
+                // dynamic vs. static
+
+                let useDynamic = package.forceDynamicFramework.flatMap { $0 } ?? !options.defaultStatic
+                dynamicInternalModules[module.name] = useDynamic
+
                 // Generate Target object
 
                 let target = ProjectSpec.Target(
                     name: module.name,
-                    type: module.type == .tests ? .unitTestBundle : .framework,
+                    type: module.type == .tests ? .unitTestBundle : (useDynamic ? .framework : .staticFramework),
                     platform: .auto,
                     supportedDestinations: supportedDestinations,
                     sources: [.init(
@@ -211,6 +224,22 @@ public enum GenerateXcodegenModules {
             atomically: true,
             encoding: .utf8
         )
+
+        // Throw warning if dynamic -> static dependency is detected
+        var dynamicViolationsDetected = false
+        for (module, dynamic) in dynamicInternalModules {
+            guard dynamic, let moduleDeps = internalDepMap[module] else { continue }
+            for moduleDep in moduleDeps {
+                if dynamicInternalModules[moduleDep] == false {
+                    vprint(.normal, "Dynamic module [\(module)] depends on static module [\(moduleDep)]", "⚠️ ")
+                    dynamicViolationsDetected = true
+                }
+            }
+        }
+
+        if dynamicViolationsDetected {
+            vprint(.normal, "It is incorrect practice to have a dynamic framework depend on a static framework. This can lead to duplicate symbol problems, and framework size bloat. Refactor your dependency graph so that dynamic frameworks are only dependent on other dynamic frameworks.", "⚠️ ")
+        }
     }
 }
 

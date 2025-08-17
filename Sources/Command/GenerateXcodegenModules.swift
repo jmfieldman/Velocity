@@ -29,6 +29,9 @@ extension Velocity {
         @Flag(name: [.long], help: "Regenerate module info.plist files if needed")
         public var regenInfoPlists: Bool = false
 
+        @Flag(name: [.long], help: "Modules default to static frameworks instead of dynamic frameworks")
+        public var defaultStatic: Bool = false
+
         @Option(help: "Root path for modules detection and file generation")
         public var rootPath: String
 
@@ -51,7 +54,8 @@ extension Velocity {
                     outputFilename: outputFilename,
                     platforms: platforms,
                     dependenciesConfig: dependenciesConfig,
-                    packageFileName: packageFileName
+                    packageFileName: packageFileName,
+                    defaultStatic: defaultStatic
                 )
             )
         }
