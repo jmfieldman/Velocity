@@ -2,7 +2,7 @@
 # If the script fails, the project is not open and we can simply regenerate the project.
 # This is the default target if a user types 'make' without arguments.	
 project:
-	@test $(shell osascript bin/kill-xcode.applescript "$(xcodeproj_path)") && ($(MAKE) xcodegen && sleep 1 && open -g "$(xcodeproj_path)") || $(MAKE) xcodegen
+	@test $(shell osascript bin/kill-xcode.applescript "$(xcodeproj_path)") && ($(MAKE) xcodegen && sleep 2 && open -g "$(xcodeproj_path)") || $(MAKE) xcodegen
 
 # The actual invocation of `xcodegen`, followed by project sanitization to optimize incremental
 # build performance.
@@ -41,6 +41,16 @@ modules:
 		--root-path Modules \
 		--platforms iOS \
 		--verbose
+
+models:
+	@mint run slate slategen gen-core-data \
+		--input-model Modules/CoasterCoreDataModel/CoasterCoreDataModel/CoasterDataModel.xcdatamodeld/CoasterDataModel.xcdatamodel \
+		--output-slate-object-path Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses \
+		--output-core-data-entity-path Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses \
+		-f \
+		--core-data-file-imports "Slate, CoasterModels"
+	@mint run swiftformat --config .swiftformat Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses
+	@mint run swiftformat --config .swiftformat Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses
 
 # This is a relatively simple example of how dynamic leaf modules work.
 # The strings module contains resources, so should be compiled as a dynamic
