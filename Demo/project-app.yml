@@ -6,7 +6,6 @@ targets:
     sources:
       - path: AppDelegate      
       - {buildPhase: resources, path: Assets/AppIcon.xcassets}
-      - {buildPhase: resources, path: Assets/Assets.xcassets}
     platform: iOS
     settings:
       base:

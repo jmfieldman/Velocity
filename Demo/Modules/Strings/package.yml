@@ -1,0 +1,4 @@
+dynamic: true
+fileExclusions:
+  main:
+    - Strings.yml

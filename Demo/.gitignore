@@ -12,6 +12,8 @@ Dependencies/Package*
 project-modules.yml
 project-dependencies.yml
 
+.sanitization/
+
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore

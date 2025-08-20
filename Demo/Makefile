@@ -11,8 +11,7 @@ xcodegen:
 	@mint run velocity sanitize-xcodegen-project \
 		--xcodeproj-path $(xcodeproj_file) \
 		--modules-yml-path project-modules.yml \
-		--project-yml-paths project.yml \
-		--verbose
+		--project-yml-paths project.yml
 
 # Used to manually run the Swift formatter. This is typically invoked by githooks, so is not
 # necessary to run manually.
