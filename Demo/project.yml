@@ -1,0 +1,33 @@
+include:
+  - project-modules.yml
+  - project-dependencies.yml
+  - project-app.yml
+
+# Top-level project name
+name: CoasterPal
+
+options:
+  bundleIdPrefix: com.example
+  createIntermediateGroups: true
+  groupSortPosition: top
+  indentWidth: 4
+  tabWidth: 4
+  usesTabs: false      
+
+settings:
+  base:
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    # DEVELOPMENT_TEAM: XXX
+    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+    SWIFT_VERSION: 6.0
+    DEAD_CODE_STRIPPING: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    ENABLE_MODULE_VERIFIER: YES
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    Release:
+      SWIFT_COMPILATION_MODE: wholemodule
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: RELEASE      

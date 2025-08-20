@@ -1,0 +1,28 @@
+# Primary build schemes
+
+targets:
+  CoasterPal:
+    type: application
+    sources:
+      - path: AppDelegate      
+      - {buildPhase: resources, path: Assets/AppIcon.xcassets}
+      - {buildPhase: resources, path: Assets/Assets.xcassets}
+    platform: iOS
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MOMC_NO_MAX_PROPERTY_COUNT_WARNINGS: true
+        INFOPLIST_FILE: Metadata/AppInfo.plist
+        CODE_SIGN_ENTITLEMENTS: Metadata/App.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.coasterpal
+        TARGETED_DEVICE_FAMILY: 1    
+    templates:
+      # These templates are generated in project-modules.yml and project-dependencies.yml
+      - ModuleInclusionTemplate
+      - PackageInclusionTemplate
+
+schemes:
+  CoasterPal:
+    build:
+      targets:
+        CoasterPal: all

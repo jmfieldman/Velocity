@@ -1,0 +1,11 @@
+dependencies:
+  - url: https://github.com/jmfieldman/CombineEx
+    from: 0.0.21 
+  - url: https://github.com/jmfieldman/Inject
+    from: 0.0.2
+  - url: https://github.com/jmfieldman/Mortar
+    from: 3.0.0
+  - url: https://github.com/open-meteo/sdk
+    from: 1.20.1
+    libraries:
+      - OpenMeteoSdk
