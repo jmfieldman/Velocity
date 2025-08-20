@@ -17,6 +17,7 @@ let kDefaultExclusionList: [String] = [
     "inject.yml",
     "README.md",
     "LICENSE",
+    "Info.plist",
 ]
 
 public struct GenerateXcodegenModulesOptions {
