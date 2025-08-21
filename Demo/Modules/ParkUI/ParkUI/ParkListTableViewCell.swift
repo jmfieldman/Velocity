@@ -5,6 +5,7 @@
 
 import CoasterDataManager
 import CoasterModels
+import Colors
 import CombineEx
 import Inject
 import MapKit
@@ -25,35 +26,41 @@ public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell 
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .themeBackgroundPrimary
 
         contentView.configure {
-            $0.layout.height == 120
-            $0.layout.width == $0.parentLayout.width
-
             UIContainer {
-                $0.backgroundColor = .init(white: 0.9, alpha: 1)
-                $0.layout.top == $0.parentLayout.topMargin
-                $0.layout.bottom == $0.parentLayout.bottomMargin
-                $0.layout.leading == $0.parentLayout.leadingMargin
-                $0.layout.trailing == $0.parentLayout.trailingMargin
-                $0.layer.cornerRadius = 8
+                $0.layout.edges == $0.parentLayout.edges
+                $0.layout.height == 120
 
-                UILabel {
-                    $0.layout.leading == $0.parentLayout.leadingMargin
+                UIContainer {
+                    $0.backgroundColor = .themeForegroundSecondary
                     $0.layout.top == $0.parentLayout.topMargin
-                    $0.textColor = .darkText
-                    $0.bind(\.text) <~ model.map(\.name)
-                }
+                    $0.layout.bottom == $0.parentLayout.bottomMargin
+                    $0.layout.leading == $0.parentLayout.leadingMargin
+                    $0.layout.trailing == $0.parentLayout.trailingMargin
+                    $0.layer.cornerRadius = 8
+                    $0.layer.masksToBounds = true
 
-                MKMapView {
-                    $0.layout.trailing == $0.parentLayout.trailing
-                    $0.layout.top == $0.parentLayout.top
-                    $0.layout.bottom == $0.parentLayout.bottom
-                    $0.layout.width == $0.layout.height
-                    $0.setRegion(.init(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), latitudinalMeters: 3000, longitudinalMeters: 3000), animated: false)
+                    UILabel {
+                        $0.layout.leading == $0.parentLayout.leadingMargin
+                        $0.layout.top == $0.parentLayout.topMargin
+                        $0.textColor = .white
+                        $0.font = .systemFont(ofSize: 18, weight: .bold)
+                        $0.bind(\.text) <~ model.map(\.name)
+                    }
 
-                    $0.sink(model.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }) { mapView, coordinate in
-                        mapView.setCenter(coordinate, animated: false)
+                    MKMapView {
+                        $0.layout.trailing == $0.parentLayout.trailing
+                        $0.layout.top == $0.parentLayout.top
+                        $0.layout.bottom == $0.parentLayout.bottom
+                        $0.layout.width == $0.layout.height
+                        $0.isUserInteractionEnabled = false
+                        $0.setRegion(.init(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), latitudinalMeters: 3000, longitudinalMeters: 3000), animated: false)
+
+                        $0.sink(model.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }) { mapView, coordinate in
+                            mapView.setCenter(coordinate, animated: false)
+                        }
                     }
                 }
             }

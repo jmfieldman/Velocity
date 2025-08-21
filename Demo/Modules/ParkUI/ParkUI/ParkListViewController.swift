@@ -17,7 +17,8 @@ public final class ParkListViewController: UIViewController {
     override public func loadView() {
         view = UIContainer {
             ManagedTableView {
-                $0.separatorColor = .clear
+                $0.backgroundColor = .themeBackgroundPrimary
+                $0.separatorStyle = .none
                 $0.layout.edges == $0.parentLayout.edges
                 $0.sections <~ model.sections
             }
@@ -29,6 +30,18 @@ public final class ParkListViewController: UIViewController {
         title = Z.general.coasterPal
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .themeBackgroundPrimary.withAlphaComponent(0.8)
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.themeForegroundPrimary,
+        ]
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.themeForegroundPrimary,
+        ]
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
 }
 
@@ -65,12 +78,13 @@ private final class ParkListViewControllerModel {
                     )
                 )
 
+                currentRows = []
                 currentOwner = park.owner
             }
 
             currentRows.append(
                 ParkListTableViewCell.Model(
-                    id: "\(park.id)",
+                    id: "park_\(park.id)",
                     latitude: park.latitude,
                     longitude: park.longitude,
                     name: park.name,
