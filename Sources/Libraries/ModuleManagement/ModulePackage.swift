@@ -30,6 +30,8 @@ public final class ModulePackage {
 
     public private(set) lazy var fileExclusions: [ModuleType: [String]] = self.config.fileExclusions?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
 
+    public private(set) lazy var resources: [ModuleType: [String]] = self.config.resources?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
+
     public init?(
         packageFilePath: String,
         absoluteProjectPath: String

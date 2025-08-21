@@ -29,6 +29,9 @@ public class ModulePackageConfig: Codable {
     /// A list of files to exclude, keyed by module type.
     public let fileExclusions: [String: [String]]?
 
+    /// A list of resources to include for a module
+    public let resources: [String: [String]]?
+
     /// Set this to true to force the framework to a dynamic (non-static) framework
     /// type; this is only necessary when using the --default-static argument during
     /// module generation.

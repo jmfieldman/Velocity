@@ -178,6 +178,12 @@ public enum GenerateXcodegenModules {
                 let useDynamic = package.forceDynamicFramework.flatMap { $0 } ?? !options.defaultStatic
                 dynamicInternalModules[module.name] = useDynamic
 
+                // Additional resources
+
+                let additionalResources: [TargetSource] = package.resources[moduleType].flatMap { resources in
+                    resources.map { TargetSource(path: $0, buildPhase: .resources) }
+                } ?? []
+
                 // Generate Target object
 
                 let target = ProjectSpec.Target(
@@ -188,7 +194,7 @@ public enum GenerateXcodegenModules {
                     sources: [.init(
                         path: module.projectBasePath,
                         excludes: exclusions
-                    )]
+                    )] + additionalResources
                 )
 
                 targets[module.name] = TargetEnc(
@@ -199,7 +205,8 @@ public enum GenerateXcodegenModules {
                     sources: target.sources.map {
                         SourceEnc(
                             path: $0.path,
-                            excludes: $0.excludes
+                            excludes: $0.excludes,
+                            buildPhase: $0.buildPhase?.toJSONValue() as? String
                         )
                     }
                 )
@@ -280,6 +287,7 @@ private struct DependencyEnc: Encodable {
 private struct SourceEnc: Encodable {
     var path: String
     var excludes: [String]
+    var buildPhase: String?
 }
 
 private struct TargetTemplateEnc: Encodable {
