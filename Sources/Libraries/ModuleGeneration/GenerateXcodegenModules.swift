@@ -181,7 +181,12 @@ public enum GenerateXcodegenModules {
                 // Additional resources
 
                 let additionalResources: [TargetSource] = package.resources[moduleType].flatMap { resources in
-                    resources.map { TargetSource(path: $0, buildPhase: .resources) }
+                    resources.map {
+                        TargetSource(
+                            path: module.projectBasePath.appendingMissingSlash() + $0,
+                            buildPhase: .resources
+                        )
+                    }
                 } ?? []
 
                 // Generate Target object
