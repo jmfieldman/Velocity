@@ -15,7 +15,7 @@ public final class CoasterDataManagerImpl: CoasterDataManager {
     let slate = Slate()
 
     public private(set) lazy var refreshParksAction = Action<Void, Void, CoasterDataError> { [weak self] _ in
-        .just(())
+        self?.refreshParksPublisher().eraseToAnyDeferredPublisher() ?? .just(())
     }
 
     public init() {

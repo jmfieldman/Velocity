@@ -17,6 +17,7 @@ public final class ParkListViewController: UIViewController {
     override public func loadView() {
         view = UIContainer {
             ManagedTableView {
+                $0.separatorColor = .clear
                 $0.layout.edges == $0.parentLayout.edges
                 $0.sections <~ model.sections
             }
