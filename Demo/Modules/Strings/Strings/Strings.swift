@@ -14,6 +14,12 @@ public enum Z {
         /// Coaster Pal
         public static let coasterPal = Z.localized("coasterPal", in: localizationKey)
     }
+
+    public enum parks: StringGroup {
+        public static let localizationKey = "parks"
+        /// Parks
+        public static let navigationTitle = Z.localized("navigationTitle", in: localizationKey)
+    }
 }
 
 public protocol StringGroup {

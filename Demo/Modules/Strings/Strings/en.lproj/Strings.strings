@@ -2,3 +2,6 @@
 
 // GENERAL
 "general.coasterPal" = "Coaster Pal";
+
+// PARKS
+"parks.navigationTitle" = "Parks";

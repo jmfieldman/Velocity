@@ -27,7 +27,7 @@ public final class ParkListViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        title = Z.general.coasterPal
+        title = Z.parks.navigationTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
 

@@ -42,12 +42,22 @@ public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell 
                     $0.layer.cornerRadius = 8
                     $0.layer.masksToBounds = true
 
-                    UILabel {
+                    UIVStack {
                         $0.layout.leading == $0.parentLayout.leadingMargin
                         $0.layout.top == $0.parentLayout.topMargin
-                        $0.textColor = .white
-                        $0.font = .systemFont(ofSize: 18, weight: .bold)
-                        $0.bind(\.text) <~ model.map(\.name)
+                        $0.alignment = .leading
+
+                        UILabel {
+                            $0.textColor = .white
+                            $0.font = .systemFont(ofSize: 18, weight: .bold)
+                            $0.bind(\.text) <~ model.map(\.name)
+                        }
+
+                        UILabel {
+                            $0.textColor = .themeForegroundPrimary
+                            $0.font = .systemFont(ofSize: 14, weight: .semibold)
+                            $0.bind(\.text) <~ model.map(\.owner)
+                        }
                     }
 
                     MKMapView {
