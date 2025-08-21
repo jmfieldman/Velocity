@@ -5,6 +5,7 @@
 
 import CoasterCoreDataModel
 import CoasterDataManager
+import CoasterModels
 import CombineEx
 import CoreData
 import Foundation
@@ -19,7 +20,7 @@ public final class CoasterDataManagerImpl: CoasterDataManager {
 
     public init() {
         let managedObjectModelURL = Bundle(for: CoasterDataModelBeacon.self)
-            .url(forResource: "CoasterDataModel", withExtension: "mom")!
+            .url(forResource: "CoasterDataModel", withExtension: "momd")!
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let databaseDirPath = documentsPath.appendingPathComponent("coaster_db")
 
@@ -37,13 +38,29 @@ public final class CoasterDataManagerImpl: CoasterDataManager {
 }
 
 extension CoasterDataManagerImpl {
-//    func refreshParksPublisher() -> AnyDeferredPublisher<Void, CoasterDataError> {
-//        DeferredFuture.withTask { [weak self] () async throws(CoasterDataError) in
-//            do {
-//                let parks = try await self?.fetchRemoteParks()
-//            } catch {
-//                throw CoasterDataError.networkError(error)
-//            }
-//        }.eraseToAnyDeferredPublisher()
-//    }
+    func refreshParksPublisher() -> AnyDeferredFuture<Void, CoasterDataError> {
+        lastParkUpdate()
+            .flatMap { [weak self] lastDate -> AnyDeferredFuture<Void, CoasterDataError> in
+                guard let self else {
+                    return .just(())
+                }
+
+                if lastDate != Date.distantPast, Date().timeIntervalSince(lastDate) < 300 {
+                    return .just(())
+                }
+
+                return fetchRemoteParks()
+                    .flatMap { [weak self] parks in
+                        self?.insertParks(parks) ?? .just(())
+                    }
+                    .eraseToAnyDeferredFuture()
+            }.eraseToAnyDeferredFuture()
+    }
+
+    public func streamParks() -> AnyPublisher<[Park], CoasterDataError> {
+        slate.stream { $0.sort(\.owner).sort(\.id) }
+            .map(\.values)
+            .mapError { CoasterDataError.databaseError($0) }
+            .eraseToAnyPublisher()
+    }
 }

@@ -22,7 +22,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Construct the window
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = ParkListViewController()
+        window?.rootViewController = UINavigationController(rootViewController: ParkListViewController())
         window?.makeKeyAndVisible()
 
         return true

@@ -1,6 +1,6 @@
 dependencies:
   - url: https://github.com/jmfieldman/CombineEx
-    from: 0.0.23
+    from: 0.0.24
   - url: https://github.com/jmfieldman/Inject
     from: 0.0.2
   - url: https://github.com/jmfieldman/Mortar
