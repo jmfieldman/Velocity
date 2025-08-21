@@ -21,6 +21,7 @@ public final class DatabasePark: NSManagedObject, Park.ManagedPropertyProviding 
     }
 
     @NSManaged public var id: Int64
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var latitude: Double
     @NSManaged public var longitude: Double
     @NSManaged public var name: String?

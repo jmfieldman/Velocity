@@ -9,6 +9,7 @@ import Foundation
 public final class Park: Sendable {
     // -- Attribute Declarations --
     public let id: Int
+    public let lastUpdated: Date
     public let latitude: Double
     public let longitude: Double
     public let name: String
@@ -18,6 +19,7 @@ public final class Park: Sendable {
 
     public enum Attributes {
         public static let id = "id"
+        public static let lastUpdated = "lastUpdated"
         public static let latitude = "latitude"
         public static let longitude = "longitude"
         public static let name = "name"
@@ -49,6 +51,9 @@ public final class Park: Sendable {
 
         // Attribute assignment
         self.id = Int(managedObject.id)
+        self.lastUpdated = { let t: Date? = managedObject.lastUpdated
+            return t!
+        }()
         self.latitude = managedObject.latitude
         self.longitude = managedObject.longitude
         self.name = { let t: String? = managedObject.name
@@ -67,6 +72,7 @@ public final class Park: Sendable {
      */
     init(
         id: Int,
+        lastUpdated: Date,
         latitude: Double,
         longitude: Double,
         name: String,
@@ -76,6 +82,7 @@ public final class Park: Sendable {
         self.slateID = NSManagedObjectID()
 
         self.id = id
+        self.lastUpdated = lastUpdated
         self.latitude = latitude
         self.longitude = longitude
         self.name = name
@@ -88,6 +95,7 @@ public final class Park: Sendable {
 public extension Park {
     protocol ManagedPropertyProviding: NSManagedObject {
         var id: Int64 { get }
+        var lastUpdated: Date? { get }
         var latitude: Double { get }
         var longitude: Double { get }
         var name: String? { get }
@@ -99,6 +107,7 @@ extension Park: Equatable {
     public static func == (lhs: Park, rhs: Park) -> Bool {
         (lhs.slateID == rhs.slateID) &&
             (lhs.id == rhs.id) &&
+            (lhs.lastUpdated == rhs.lastUpdated) &&
             (lhs.latitude == rhs.latitude) &&
             (lhs.longitude == rhs.longitude) &&
             (lhs.name == rhs.name) &&

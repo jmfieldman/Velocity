@@ -22,6 +22,7 @@ public final class DatabaseRide: NSManagedObject, Ride.ManagedPropertyProviding 
 
     @NSManaged public var id: Int64
     @NSManaged public var isOpen: Bool
+    @NSManaged public var land: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var name: String?
     @NSManaged public var waitTime: Int64

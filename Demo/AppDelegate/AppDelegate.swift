@@ -5,6 +5,7 @@
 
 import Foundation
 import Injection
+import ParkUI
 import UIKit
 
 @main
@@ -21,8 +22,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Construct the window
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UIViewController()
-        window?.rootViewController?.view.backgroundColor = .blue
+        window?.rootViewController = ParkListViewController()
         window?.makeKeyAndVisible()
 
         return true

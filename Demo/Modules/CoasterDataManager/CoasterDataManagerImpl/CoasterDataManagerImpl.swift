@@ -5,12 +5,17 @@
 
 import CoasterCoreDataModel
 import CoasterDataManager
+import CombineEx
 import CoreData
 import Foundation
 import Slate
 
 public final class CoasterDataManagerImpl: CoasterDataManager {
-    private let slate = Slate()
+    let slate = Slate()
+
+    public private(set) lazy var refreshParksAction = Action<Void, Void, CoasterDataError> { [weak self] _ in
+        .just(())
+    }
 
     public init() {
         let managedObjectModelURL = Bundle(for: CoasterDataModelBeacon.self)
@@ -29,4 +34,16 @@ public final class CoasterDataManagerImpl: CoasterDataManager {
             }
         }
     }
+}
+
+extension CoasterDataManagerImpl {
+//    func refreshParksPublisher() -> AnyDeferredPublisher<Void, CoasterDataError> {
+//        DeferredFuture.withTask { [weak self] () async throws(CoasterDataError) in
+//            do {
+//                let parks = try await self?.fetchRemoteParks()
+//            } catch {
+//                throw CoasterDataError.networkError(error)
+//            }
+//        }.eraseToAnyDeferredPublisher()
+//    }
 }

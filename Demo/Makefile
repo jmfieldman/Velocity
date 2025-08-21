@@ -2,7 +2,7 @@
 # If the script fails, the project is not open and we can simply regenerate the project.
 # This is the default target if a user types 'make' without arguments.	
 project:
-	@test $(shell osascript bin/kill-xcode.applescript "$(xcodeproj_path)") && ($(MAKE) xcodegen && sleep 2 && open -g "$(xcodeproj_path)") || $(MAKE) xcodegen
+	@test $(shell osascript bin/kill-xcode.applescript "$(xcodeproj_path)") && ($(MAKE) xcodegen && sleep 1 && open -g "$(xcodeproj_path)") || $(MAKE) xcodegen
 
 # The actual invocation of `xcodegen`, followed by project sanitization to optimize incremental
 # build performance.

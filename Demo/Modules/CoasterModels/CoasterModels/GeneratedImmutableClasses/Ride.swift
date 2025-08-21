@@ -10,6 +10,7 @@ public final class Ride: Sendable {
     // -- Attribute Declarations --
     public let id: Int
     public let isOpen: Bool
+    public let land: String?
     public let lastUpdated: Date
     public let name: String
     public let waitTime: Int
@@ -19,6 +20,7 @@ public final class Ride: Sendable {
     public enum Attributes {
         public static let id = "id"
         public static let isOpen = "isOpen"
+        public static let land = "land"
         public static let lastUpdated = "lastUpdated"
         public static let name = "name"
         public static let waitTime = "waitTime"
@@ -50,6 +52,7 @@ public final class Ride: Sendable {
         // Attribute assignment
         self.id = Int(managedObject.id)
         self.isOpen = managedObject.isOpen
+        self.land = managedObject.land
         self.lastUpdated = { let t: Date? = managedObject.lastUpdated
             return t!
         }()
@@ -68,6 +71,7 @@ public final class Ride: Sendable {
     init(
         id: Int,
         isOpen: Bool,
+        land: String?,
         lastUpdated: Date,
         name: String,
         waitTime: Int
@@ -77,6 +81,7 @@ public final class Ride: Sendable {
 
         self.id = id
         self.isOpen = isOpen
+        self.land = land
         self.lastUpdated = lastUpdated
         self.name = name
         self.waitTime = waitTime
@@ -89,6 +94,7 @@ public extension Ride {
     protocol ManagedPropertyProviding: NSManagedObject {
         var id: Int64 { get }
         var isOpen: Bool { get }
+        var land: String? { get }
         var lastUpdated: Date? { get }
         var name: String? { get }
         var waitTime: Int64 { get }
@@ -100,6 +106,7 @@ extension Ride: Equatable {
         (lhs.slateID == rhs.slateID) &&
             (lhs.id == rhs.id) &&
             (lhs.isOpen == rhs.isOpen) &&
+            (lhs.land == rhs.land) &&
             (lhs.lastUpdated == rhs.lastUpdated) &&
             (lhs.name == rhs.name) &&
             (lhs.waitTime == rhs.waitTime)
