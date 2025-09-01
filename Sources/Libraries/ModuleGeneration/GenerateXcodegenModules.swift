@@ -86,6 +86,9 @@ public enum GenerateXcodegenModules {
                     dependencyLookup[pkg.inferredPackageName] = pkg
                 }
             }
+            dependenciesConfig.projectPackages?.forEach { projectPkg in
+                projectPkg.libraries?.forEach { dependencyLookup[$0] = projectPkg.dependencyConfig() }
+            }
             if dependencyLookup.count == 0 {
                 vprint(.verbose, "No external dependencies were detected at \(options.dependenciesConfig)")
             }

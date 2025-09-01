@@ -45,10 +45,41 @@ public class DependencyConfig: Decodable {
     /// a fresh state of the dependency even if it's the same release
     /// version.
     public let refreshCursor: String?
+
+    /// Private constructor to create a dependency for a static project
+    /// package config
+    fileprivate init(projectPackageConfig: ProjectPackageConfig) {
+        self.url = projectPackageConfig.name
+        self.packageName = projectPackageConfig.name
+        self.libraries = projectPackageConfig.libraries ?? [projectPackageConfig.name]
+
+        self.from = nil
+        self.range = nil
+        self.closedRange = nil
+        self.branch = nil
+        self.revision = nil
+        self.exact = nil
+        self.keepRemote = nil
+        self.ignoreSha = nil
+        self.refreshCursor = nil
+    }
+}
+
+/// Use this to indicate that certain packages are imported statically
+/// by the project.yml (in case you do not want autogen for that package).
+/// This allows your modules to import/link with them properly.
+public class ProjectPackageConfig: Decodable {
+    public let name: String
+    public let libraries: [String]?
+
+    public func dependencyConfig() -> DependencyConfig {
+        DependencyConfig(projectPackageConfig: self)
+    }
 }
 
 public class DependenciesConfig: Decodable {
     public let dependencies: [DependencyConfig]?
+    public let projectPackages: [ProjectPackageConfig]?
 
     public static func from(filePath: String) throws -> DependenciesConfig {
         guard FileManager.default.fileExists(atPath: filePath) else {
