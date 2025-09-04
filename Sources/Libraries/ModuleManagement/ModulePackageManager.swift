@@ -90,7 +90,7 @@ extension ModulePackageManager {
                 // Defer to primary imports; add bridge imports after
                 var importSet = Set<ModuleImport>(module.importedModules.map { ModuleImport(name: $0, bridge: nil) })
 
-                for bridgedType in module.type.bridgedSiblingImports {
+                for bridgedType in module.type.bridgedSiblingImports(hasPackageInjections: !package.injectMap.isEmpty) {
                     guard let bridgedModule = package.modules[bridgedType] else { continue }
 
                     bridgedModule.importedModules
@@ -126,16 +126,16 @@ extension ModulePackageManager {
 
         func cycleEdges(module: String, importGraph: [String: Set<ModuleImport>]) -> [(String, ModuleImport)]? {
             defer { recursionStack[module] = false }
-            guard !hasVisited[module, default: false] else { return nil }
+            guard hasVisited[module] != true else { return nil }
 
             hasVisited[module] = true
             recursionStack[module] = true
 
             return importGraph[module, default: []]
                 .firstMap { moduleImport -> [(String, ModuleImport)]? in
-                    if !hasVisited[moduleImport.name, default: false] {
-                        return cycleEdges(module: moduleImport.name, importGraph: importGraph).map { [(module, moduleImport)] + $0 }
-                    } else if recursionStack[moduleImport.name, default: false] {
+                    if hasVisited[moduleImport.name] != true, let cycleEdges = cycleEdges(module: moduleImport.name, importGraph: importGraph) {
+                        return [(module, moduleImport)] + cycleEdges
+                    } else if recursionStack[moduleImport.name] == true {
                         return [(module, moduleImport)]
                     } else {
                         return nil

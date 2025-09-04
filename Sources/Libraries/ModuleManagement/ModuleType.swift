@@ -29,14 +29,14 @@ public enum ModuleType: String, Codable, CaseIterable {
 
     /// An array of sibling module types whose imports should be merged into
     /// ours when performing import graph cycle checks.
-    var bridgedSiblingImports: [ModuleType] {
+    func bridgedSiblingImports(hasPackageInjections: Bool) -> [ModuleType] {
         switch self {
         // Main imports Impl because of the injection pattern where protocols
         // defined in main will inject/instantiate their implementations, which
         // can in turn immediately require the instantiations of other injected
         // types. So anyone using a type in main can potentially depend on a
         // type in impl.
-        case .main: [.impl]
+        case .main: hasPackageInjections ? [.impl] : []
         case .impl: []
         case .tests: []
         case .testHelpers: []

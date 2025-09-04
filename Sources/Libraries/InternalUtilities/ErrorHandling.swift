@@ -16,6 +16,7 @@ public enum CommandError: Error {
     case invalidDate
     case pathNotFound
     case invalidArgument
+    case dependencyCycle
 }
 
 public func throwError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {

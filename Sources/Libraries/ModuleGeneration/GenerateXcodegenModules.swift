@@ -76,6 +76,17 @@ public enum GenerateXcodegenModules {
             absoluteProjectPath: absoluteProjectPath
         )
 
+        let packageManager = ModulePackageManager(packages: packages)
+
+        if let cycles = packageManager.importCycle(), let last = cycles.last {
+            vprint(.error, "Found dependency cycle: \(last.0) -> \(last.1.name)\(last.1.bridge.flatMap { ":\($0)" } ?? "")")
+            for cycle in cycles {
+                vprint(.normal, "> \(cycle.0) -> \(cycle.1.name)\(cycle.1.bridge.flatMap { ":\($0)" } ?? "")")
+            }
+        } else {
+            vprint(.verbose, "No dependency cycles found")
+        }
+
         var dependencyLookup: [String: DependencyConfig] = [:]
         do {
             let dependenciesConfig = try DependenciesConfig.from(filePath: options.dependenciesConfig)
