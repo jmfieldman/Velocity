@@ -37,6 +37,8 @@ public class ModulePackageConfig: Codable {
     /// module generation.
     public let dynamic: Bool?
 
+    // MARK: Injection
+
     /// The name of the protocol this module provides an Inject implementation for.
     /// The value should be the name of the protocol, and it automatically appends
     /// 'Impl' for the implementation name.
@@ -53,4 +55,18 @@ public class ModulePackageConfig: Codable {
     /// the key is the protocol name and the value is the corresponding implementation
     /// name. If this value is defined it will override the `injects` value.
     public let injectMap: [String: String]?
+
+    // MARK: Builders
+
+    /// A list of builders to register for this package. The standard builder naming
+    /// pattern for (builder) -> (implementation) is:
+    ///  - SomeTypeNameBuilder -> SomeTypeNameImpl
+    /// So this array should only contain strings like "SomeTypeName" (without any suffix).
+    ///
+    /// This array is ignored if the `builderMap` value is defined.
+    public let builders: [String]?
+
+    /// Packages that provide more complex naming patterns for their builders will
+    /// need to defined the explicit builderMap of [BuilderName: ImplementationName]
+    public let builderMap: [String: String]?
 }

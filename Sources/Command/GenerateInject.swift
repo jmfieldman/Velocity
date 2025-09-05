@@ -23,8 +23,11 @@ extension Velocity {
         @Option(help: "The swift file that will be output (including path)")
         public var outputFile: String
 
-        @Option(help: "The name of the function that will execute the injection")
-        public var injectFunctionName: String
+        @Option(help: "The name of the function that will register injections")
+        public var injectFunctionName: String = "registerInjections"
+
+        @Option(help: "The name of the function that will register builders")
+        public var builderFunctionName: String = "registerBuilders"
 
         @Option(help: "Override the normal package file name (\(kPathPackageYml))")
         public var packageFileName: String = kPathPackageYml
@@ -36,6 +39,7 @@ extension Velocity {
                     modulesPath: modulesPath,
                     outputFile: outputFile,
                     injectFunctionName: injectFunctionName,
+                    builderFunctionName: builderFunctionName,
                     packageFileName: packageFileName
                 )
             )

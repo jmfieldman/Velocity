@@ -19,10 +19,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         InjectionManager.registerInjections()
+        BuilderManager.registerBuilders()
 
         // Construct the window
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UINavigationController(rootViewController: ParkListViewController())
+        window?.rootViewController = UINavigationController(rootViewController: ParkListViewControllerBuilder().build())
         window?.makeKeyAndVisible()
 
         return true

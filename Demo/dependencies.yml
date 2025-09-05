@@ -1,8 +1,8 @@
 dependencies:
   - url: https://github.com/jmfieldman/CombineEx
-    from: 0.0.24
+    from: 0.0.26
   - url: https://github.com/jmfieldman/Inject
-    from: 0.0.2
+    from: 0.0.4
   - url: https://github.com/jmfieldman/Mortar
     from: 3.0.4
   - url: https://github.com/jmfieldman/Slate

@@ -17,6 +17,7 @@ public enum CommandError: Error {
     case pathNotFound
     case invalidArgument
     case dependencyCycle
+    case duplicateInjections
 }
 
 public func throwError(_ error: CommandError, _ additionalDesc: String?) throws -> Never {

@@ -74,6 +74,20 @@ public final class ModulePackage {
         return [:]
     }()
 
+    public private(set) lazy var builderMap: [String: String] = {
+        if let map = config.builderMap, map.count > 0 {
+            return map
+        }
+
+        if let builders = config.builders {
+            return builders.reduce(into: [:]) { result, builder in
+                result["\(builder)Builder"] = "\(builder)Impl"
+            }
+        }
+
+        return [:]
+    }()
+
     public var forceDynamicFramework: Bool? {
         config.dynamic
     }

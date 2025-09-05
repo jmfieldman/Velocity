@@ -27,6 +27,7 @@ final class GenerateInjectCommandTests: XCTestCase {
                 modulesPath: "Modules",
                 outputFile: "InjectModule/inject.swift",
                 injectFunctionName: "injectImplementations",
+                builderFunctionName: "builderImplementations",
                 packageFileName: kPathPackageYml
             )
         )
