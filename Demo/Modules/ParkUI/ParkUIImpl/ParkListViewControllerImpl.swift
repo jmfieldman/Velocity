@@ -9,7 +9,7 @@ import CombineEx
 import Inject
 import Mortar
 import ParkUI
-import Strings
+import StringsResources
 import UIKit
 
 public final class ParkListViewControllerImpl: UIViewController, ParkListViewController {

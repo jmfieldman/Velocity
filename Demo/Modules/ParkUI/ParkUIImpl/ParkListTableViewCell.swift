@@ -10,7 +10,7 @@ import CombineEx
 import Inject
 import MapKit
 import Mortar
-import Strings
+import StringsResources
 import UIKit
 
 public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell {
