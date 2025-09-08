@@ -104,7 +104,7 @@ public final class ModulePackage {
         return Dictionary(uniqueKeysWithValues: ModuleType.allCases.compactMap { type in
             let moduleDirectory = "\(self.absoluteBasePath)\(type.directory(for: self.name))"
             if FileManager.default.directoryExists(atPath: moduleDirectory) {
-                guard FileManager.default.directory(at: moduleDirectory, contains: { $0.hasSuffix(".swift") }) else {
+                guard FileManager.default.directory(at: moduleDirectory, contains: type.fileCheck) else {
                     return nil
                 }
 

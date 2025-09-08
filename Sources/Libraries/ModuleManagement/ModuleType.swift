@@ -42,4 +42,13 @@ public enum ModuleType: String, Codable, CaseIterable {
         case .testHelpers: []
         }
     }
+
+    /// This check is run on files inside of a module of this type, to ensure
+    /// that there are files that qualify this modules as "active".
+    var fileCheck: (String) -> Bool {
+        switch self {
+        case .main, .impl, .tests, .testHelpers:
+            { $0.hasSuffix(".swift") }
+        }
+    }
 }
