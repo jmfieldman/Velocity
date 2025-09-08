@@ -35,7 +35,7 @@ modules:
 		--output-file Modules/Injection/Injection/Injection.swift \
 		--inject-function-name registerInjections \
 		--verbose
-	@mint run swiftformat --config .swiftformat Modules/Injection/Injection
+	@mint run swiftformat --quiet --config .swiftformat Modules/Injection/Injection
 	@mint run velocity generate-xcodegen-modules \
 		--regen-imports \
 		--regen-info-plists \
@@ -45,13 +45,13 @@ modules:
 
 models:
 	@mint run slate slategen gen-core-data \
-		--input-model Modules/CoasterCoreDataModel/CoasterCoreDataModel/CoasterDataModel.xcdatamodeld/CoasterDataModel.xcdatamodel \
+		--input-model Modules/CoasterDataManager/CoasterDataManagerResources/CoasterDataModel.xcdatamodeld/CoasterDataModel.xcdatamodel \
 		--output-slate-object-path Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses \
 		--output-core-data-entity-path Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses \
 		-f \
 		--core-data-file-imports "Slate, CoasterModels"
-	@mint run swiftformat --config .swiftformat Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses
-	@mint run swiftformat --config .swiftformat Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses
+	@mint run swiftformat --quiet --config .swiftformat Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses
+	@mint run swiftformat --quiet --config .swiftformat Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses
 
 # This is a relatively simple example of how dynamic leaf modules work.
 # The strings module contains resources, so should be compiled as a dynamic

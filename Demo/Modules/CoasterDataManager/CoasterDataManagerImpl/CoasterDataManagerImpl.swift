@@ -3,8 +3,8 @@
 //  Copyright © 2025 Jason Fieldman.
 //
 
-import CoasterCoreDataModel
 import CoasterDataManager
+import CoasterDataManagerResources
 import CoasterModels
 import CombineEx
 import CoreData
