@@ -19,7 +19,7 @@ public final class CoasterDataManagerImpl: CoasterDataManager {
     }
 
     public init() {
-        let managedObjectModelURL = Bundle(for: CoasterDataModelBeacon.self)
+        let managedObjectModelURL = Bundle.CoasterDataManagerResources
             .url(forResource: "CoasterDataModel", withExtension: "momd")!
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let databaseDirPath = documentsPath.appendingPathComponent("coaster_db")

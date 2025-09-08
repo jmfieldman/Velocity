@@ -1,4 +1,4 @@
 dynamic: true
-resources:
-  main:
-    - Colors.xcassets
+#resources:
+#  main:
+#    - Colors.xcassets

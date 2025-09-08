@@ -5,7 +5,7 @@
 
 import CoasterDataManager
 import CoasterModels
-import Colors
+import ColorsResources
 import CombineEx
 import Inject
 import MapKit
