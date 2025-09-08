@@ -23,6 +23,8 @@ let package = Package(
             ],
             path: "../Modules/PackageOne/PackageOneImpl",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",
@@ -36,6 +38,8 @@ let package = Package(
             ],
             path: "../Modules/PackageOne/PackageOne",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",
@@ -50,6 +54,8 @@ let package = Package(
             ],
             path: "../Modules/RecursiveDirectory/PackageThree/PackageThreeImpl",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",
@@ -64,6 +70,8 @@ let package = Package(
             ],
             path: "../Modules/RecursiveDirectory/PackageThree/PackageThree",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",
@@ -78,6 +86,8 @@ let package = Package(
             ],
             path: "../Modules/PackageTwo/PackageTwoImpl",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",
@@ -91,6 +101,8 @@ let package = Package(
             ],
             path: "../Modules/PackageTwo/PackageTwo",
             exclude: [
+                "AGENTS.md",
+                "Info.plist",
                 "LICENSE",
                 "README.md",
                 "imports.yml",

@@ -11,11 +11,17 @@ import RecursiveInjectsExampleImpl
 
 public extension InjectionManager {
     static func injectImplementations() {
-        InjectionManager.register(InjectMapTypeOne.self) { InjectMapTypeOneImpl() }
-        InjectionManager.register(InjectMapTypeTwo.self) { InjectMapTypeTwoImpl() }
-        InjectionManager.register(InjectNoImplExample.self) { InjectNoImplExampleImpl() }
-        InjectionManager.register(InjectsNameExampleOther.self) { InjectsNameExampleOtherImpl() }
-        InjectionManager.register(InjectsUnderscoreExample.self) { InjectsUnderscoreExampleImpl() }
-        InjectionManager.register(RecursiveInjectsExample.self) { RecursiveInjectsExampleImpl() }
+        InjectionManager.unsafeRegister(InjectMapTypeOne.self) { InjectMapTypeOneImpl() }
+        InjectionManager.unsafeRegister(InjectMapTypeTwo.self) { InjectMapTypeTwoImpl() }
+        InjectionManager.unsafeRegister(InjectNoImplExample.self) { InjectNoImplExampleImpl() }
+        InjectionManager.unsafeRegister(InjectsNameExampleOther.self) { InjectsNameExampleOtherImpl() }
+        InjectionManager.unsafeRegister(InjectsUnderscoreExample.self) { InjectsUnderscoreExampleImpl() }
+        InjectionManager.unsafeRegister(RecursiveInjectsExample.self) { RecursiveInjectsExampleImpl() }
+    }
+}
+
+public extension BuilderManager {
+    @MainActor static func builderImplementations() {
+
     }
 }

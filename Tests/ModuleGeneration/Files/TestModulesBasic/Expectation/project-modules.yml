@@ -15,7 +15,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/PackageOne/PackageOne
     supportedDestinations:
     - iOS
@@ -27,7 +29,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/PackageOne/PackageOneImpl
     supportedDestinations:
     - iOS
@@ -39,7 +43,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/RecursiveDirectory/PackageThree/PackageThree
     supportedDestinations:
     - iOS
@@ -51,7 +57,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/RecursiveDirectory/PackageThree/PackageThreeImpl
     supportedDestinations:
     - iOS
@@ -63,7 +71,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/PackageTwo/PackageTwo
     supportedDestinations:
     - iOS
@@ -75,7 +85,9 @@ targets:
       - imports.yml
       - inject.yml
       - README.md
+      - AGENTS.md
       - LICENSE
+      - Info.plist
       path: Modules/PackageTwo/PackageTwoImpl
     supportedDestinations:
     - iOS
