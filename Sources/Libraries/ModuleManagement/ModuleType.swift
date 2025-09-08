@@ -47,17 +47,37 @@ public enum ModuleType: String, Codable, CaseIterable {
         }
     }
 
-    /// This check is run on files inside of a module of this type, to ensure
-    /// that there are files that qualify this modules as "active".
-    var fileCheck: (String) -> Bool {
+    /// These module types *must* contain code files, or they are invalid.
+    public var mustContainCode: Bool {
         switch self {
         case .main, .impl, .tests, .testHelpers:
-            { $0.hasSuffix(".swift") }
+            true
         case .resources:
-            { $0.hasSuffix(".strings") || $0.hasSuffix(".xcassets") }
+            false
         }
     }
 
+    /// These module types *must* contain resource files, or they are invalid.
+    public var mustContainResources: Bool {
+        switch self {
+        case .main, .impl, .tests, .testHelpers:
+            false
+        case .resources:
+            true
+        }
+    }
+
+    /// These module types are allowed to contain resource files without warning.
+    public var mayContainResources: Bool {
+        switch self {
+        case .main, .impl, .testHelpers:
+            false
+        case .resources, .tests:
+            true
+        }
+    }
+
+    /// The Xcode product type that this module creates
     public func xcodeProductType(dynamicPackage: Bool) -> PBXProductType {
         switch self {
         case .main, .impl, .testHelpers:

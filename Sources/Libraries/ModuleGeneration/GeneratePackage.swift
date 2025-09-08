@@ -171,8 +171,6 @@ public enum GeneratePackage {
                     }
                 }
 
-                let exclusions = kDefaultExclusionList + (package.fileExclusions[key] ?? [])
-
                 let targetStr = """
                 .target(
                   name: "\(module.name)",
@@ -181,7 +179,7 @@ public enum GeneratePackage {
                   ],
                   path: "\(module.absoluteBasePath.relative(to: projectPath))",
                   exclude: [
-                    \(exclusions.sorted().map { "\"\($0)\"," }.joined(separator: "\n"))
+                    \(module.fileExclusions.sorted().map { "\"\($0)\"," }.joined(separator: "\n"))
                   ]
                 ),
                 """

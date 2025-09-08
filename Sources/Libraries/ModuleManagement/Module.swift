@@ -12,6 +12,15 @@ private let kImportsYml = "imports.yml"
 private let kInfoPlist = "Info.plist"
 private let importsDecoder = YAMLDecoder()
 
+let kDefaultExclusionList: [String] = [
+    "inject.yml",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE",
+    kImportsYml,
+    kInfoPlist,
+]
+
 public final class Module {
     public let name: String
     public let type: ModuleType
@@ -22,13 +31,30 @@ public final class Module {
     /// The base path within the top-level project scope
     public let projectBasePath: String
 
+    /// The resources in this module
+    public let resources: [String]
+
+    /// Files to exclude from this module
+    public let fileExclusions: [String]
+
     private lazy var importsFilePath = self.absoluteBasePath + kImportsYml
 
-    init(name: String, type: ModuleType, absoluteBasePath: String, projectBasePath: String) {
+    init(
+        name: String,
+        type: ModuleType,
+        absoluteBasePath: String,
+        projectBasePath: String,
+        resources: Set<String>,
+        fileExclusions: Set<String>
+    ) {
+        let allExclusions = fileExclusions.union(kDefaultExclusionList)
+
         self.name = name
         self.type = type
         self.absoluteBasePath = absoluteBasePath
         self.projectBasePath = projectBasePath
+        self.resources = resources.subtracting(allExclusions).sorted()
+        self.fileExclusions = allExclusions.sorted()
     }
 
     public private(set) lazy var importedModules: [String] = self.regenerateImportsIfNecessary()

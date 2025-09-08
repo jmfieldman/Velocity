@@ -28,9 +28,9 @@ public final class ModulePackage {
 
     public private(set) lazy var settingsOverrides: [ModuleType: [String: String]] = self.config.settingsOverrides?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
 
-    public private(set) lazy var fileExclusions: [ModuleType: [String]] = self.config.fileExclusions?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
+    private lazy var fileExclusions: [ModuleType: [String]] = self.config.fileExclusions?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
 
-    public private(set) lazy var resources: [ModuleType: [String]] = self.config.resources?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
+    private lazy var resources: [ModuleType: [String]] = self.config.resources?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
 
     public init?(
         packageFilePath: String,
@@ -101,18 +101,44 @@ public final class ModulePackage {
     private func scanModules() -> [ModuleType: Module] {
         guard config.disable.flatMap({ !$0 }) ?? true else { return [:] }
 
+        let codeCheck: (String) -> Bool = {
+            $0.hasSuffix(".swift")
+        }
+
+        let resourceCheck: (String) -> Bool = { filename in
+            [
+                ".strings",
+                ".xcassets",
+                ".xcdatamodeld",
+                ".xcdatamodel",
+                ".plist",
+                ".png",
+                ".jpeg",
+                ".jpg",
+                ".heic",
+                ".pdf",
+                ".svg",
+                ".xib",
+            ].contains(where: { filename.hasSuffix($0) })
+        }
+
         return Dictionary(uniqueKeysWithValues: ModuleType.allCases.compactMap { type in
             let moduleDirectory = "\(self.absoluteBasePath)\(type.directory(for: self.name))"
             if FileManager.default.directoryExists(atPath: moduleDirectory) {
-                guard FileManager.default.directory(at: moduleDirectory, contains: type.fileCheck) else {
+                if type.mustContainCode, !FileManager.default.directory(at: moduleDirectory, contains: codeCheck) {
                     return nil
                 }
+
+                let detectedResources = FileManager.default.files(at: moduleDirectory, matching: resourceCheck)
+                    .map { $0.replacingOccurrences(of: moduleDirectory.appendingMissingSlash(), with: "") }
 
                 return (type, Module(
                     name: self.moduleNameFor(type: type),
                     type: type,
                     absoluteBasePath: "\(moduleDirectory)/",
-                    projectBasePath: "\(self.projectBasePath)\(type.directory(for: self.name))/"
+                    projectBasePath: "\(self.projectBasePath)\(type.directory(for: self.name))/",
+                    resources: Set(detectedResources + (resources[type] ?? [])),
+                    fileExclusions: Set(fileExclusions[type] ?? [])
                 ))
             }
 

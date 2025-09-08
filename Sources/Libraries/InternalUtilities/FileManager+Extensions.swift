@@ -60,4 +60,31 @@ public extension FileManager {
             ($0 as? URL).flatMap { url in contains(url.path) } ?? false
         }
     }
+
+    func files(
+        at fullPath: String,
+        options: FileManager.DirectoryEnumerationOptions = [],
+        matching: (String) -> Bool
+    ) -> [String] {
+        guard directoryExists(atPath: fullPath) else {
+            return []
+        }
+
+        guard let enumerator = enumerator(
+            at: URL(fileURLWithPath: fullPath),
+            includingPropertiesForKeys: nil,
+            options: options,
+            errorHandler: nil
+        ) else {
+            return []
+        }
+
+        return enumerator.compactMap {
+            guard let filePath = ($0 as? URL)?.path else {
+                return nil
+            }
+
+            return matching(filePath) ? filePath : nil
+        }
+    }
 }

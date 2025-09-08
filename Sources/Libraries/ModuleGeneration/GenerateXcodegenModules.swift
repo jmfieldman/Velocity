@@ -12,15 +12,6 @@ import ProjectSpec
 import XcodeProj
 import Yams
 
-let kDefaultExclusionList: [String] = [
-    "imports.yml",
-    "inject.yml",
-    "README.md",
-    "AGENTS.md",
-    "LICENSE",
-    "Info.plist",
-]
-
 public struct GenerateXcodegenModulesOptions {
     public let rootPath: String
     public let regenImports: Bool
@@ -188,10 +179,6 @@ public enum GenerateXcodegenModules {
                 // Combine internal and external dependencies
                 let dependencies = internalDependencies + externalDependencies
 
-                // Determine source exclusions
-
-                let exclusions = (kDefaultExclusionList + (package.fileExclusions[moduleType] ?? []))
-
                 // dynamic vs. static
 
                 let useDynamic = package.forceDynamicFramework.flatMap { $0 } ?? !options.defaultStatic
@@ -199,14 +186,21 @@ public enum GenerateXcodegenModules {
 
                 // Additional resources
 
-                let additionalResources: [TargetSource] = package.resources[moduleType].flatMap { resources in
-                    resources.map {
-                        TargetSource(
-                            path: module.projectBasePath.appendingMissingSlash() + $0,
-                            buildPhase: .resources
-                        )
-                    }
-                } ?? []
+                let additionalResources: [TargetSource] = []
+                /*
+                   xcodegen seems to be able to auto-detect the resource phase for files at the root path.
+                   leaving this out for now unless it becomes apparent that we'd want to include resources
+                   outside of the main module directory
+
+                 let additionalResources: [TargetSource] = module.resources.map { resources in
+                     resources.map {
+                         TargetSource(
+                             path: module.projectBasePath.appendingMissingSlash() + $0,
+                             buildPhase: .resources
+                         )
+                     }
+                 } ?? []
+                  */
 
                 // Generate Target object
 
@@ -217,7 +211,7 @@ public enum GenerateXcodegenModules {
                     supportedDestinations: supportedDestinations,
                     sources: [.init(
                         path: module.projectBasePath,
-                        excludes: exclusions
+                        excludes: module.fileExclusions
                     )] + additionalResources
                 )
 
@@ -239,6 +233,19 @@ public enum GenerateXcodegenModules {
 
                 if moduleType.includeInAppTemplate {
                     templateDeps.append(DependencyEnc(target: module.name))
+                }
+
+                // Resource warning
+
+                if module.resources.count > 0, !moduleType.mayContainResources {
+                    vprint(.normal, "WARNING: module [\(module.name)] contains resources, but is not a resource module type.")
+                    for resource in module.resources {
+                        vprint(.normal, " > \(resource)")
+                    }
+                }
+
+                if module.resources.count == 0, moduleType.mustContainResources {
+                    vprint(.normal, "WARNING: resource module [\(module.name)] does not contain any resources.")
                 }
             }
         }
