@@ -211,7 +211,7 @@ public enum GenerateXcodegenModules {
 
                 let target = ProjectSpec.Target(
                     name: module.name,
-                    type: module.type == .tests ? .unitTestBundle : (useDynamic ? .framework : .staticFramework),
+                    type: module.type.xcodeProductType(dynamicPackage: useDynamic),
                     platform: .auto,
                     supportedDestinations: supportedDestinations,
                     sources: [.init(
@@ -320,7 +320,7 @@ private struct TargetTemplateEnc: Encodable {
 private extension ModuleType {
     var includeInAppTemplate: Bool {
         switch self {
-        case .main, .impl:
+        case .main, .impl, .resources:
             true
         case .tests, .testHelpers:
             false

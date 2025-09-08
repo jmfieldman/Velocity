@@ -4,10 +4,12 @@
 //
 
 import Foundation
+import XcodeProj
 
 public enum ModuleType: String, Codable, CaseIterable {
     case main
     case impl
+    case resources
     case tests
     case testHelpers
 
@@ -16,6 +18,7 @@ public enum ModuleType: String, Codable, CaseIterable {
         switch self {
         case .main: ""
         case .impl: "Impl"
+        case .resources: "Resources"
         case .tests: "Tests"
         case .testHelpers: "TestHelpers"
         }
@@ -38,6 +41,7 @@ public enum ModuleType: String, Codable, CaseIterable {
         // type in impl.
         case .main: hasPackageInjections ? [.impl] : []
         case .impl: []
+        case .resources: []
         case .tests: []
         case .testHelpers: []
         }
@@ -49,6 +53,19 @@ public enum ModuleType: String, Codable, CaseIterable {
         switch self {
         case .main, .impl, .tests, .testHelpers:
             { $0.hasSuffix(".swift") }
+        case .resources:
+            { $0.hasSuffix(".strings") || $0.hasSuffix(".xcassets") }
+        }
+    }
+
+    public func xcodeProductType(dynamicPackage: Bool) -> PBXProductType {
+        switch self {
+        case .main, .impl, .testHelpers:
+            dynamicPackage ? .framework : .staticFramework
+        case .tests:
+            .unitTestBundle
+        case .resources:
+            .framework
         }
     }
 }
