@@ -9,7 +9,7 @@ import Foundation
 // access this Bundle
 
 public extension Bundle {
-    /// Access the CoasterDataManagerResources bundle
-    static let CoasterDataManagerResources = Bundle(for: CoasterDataManagerResourcesBeacon.self)
-    private class CoasterDataManagerResourcesBeacon {}
+    /// Access the ColorsResources bundle
+    static let ColorsResources = Bundle(for: ColorsResourcesBeacon.self)
+    private class ColorsResourcesBeacon {}
 }

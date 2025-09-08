@@ -16,7 +16,7 @@ xcodegen:
 # Used to manually run the Swift formatter. This is typically invoked by githooks, so is not
 # necessary to run manually.
 format:
-	@mint run swiftformat --config .swiftformat .
+	@mint run swiftformat --quiet --config .swiftformat .
 
 # This command should be run any time the dependencies.yml file is updated. It makes sure
 # The client has the latest dependency versions, and generates project-dependencies.yml
