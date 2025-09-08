@@ -16,6 +16,7 @@ let kDefaultExclusionList: [String] = [
     "imports.yml",
     "inject.yml",
     "README.md",
+    "AGENTS.md",
     "LICENSE",
     "Info.plist",
 ]
