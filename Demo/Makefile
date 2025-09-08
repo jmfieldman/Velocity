@@ -72,6 +72,11 @@ strings:
 	@sed -i '' 's/Strings.localized/Z.localized/g' Modules/Strings/StringsResources/Strings.swift
 	@sed -i '' 's/public static var/public static let/g' Modules/Strings/StringsResources/Strings.swift
 
+# Generates all of the code extensions inside of resource modules
+resources:
+	@mint run velocity generate-resources \
+		--modules-path Modules
+
 # Install all project dependencies and create the project file.
 bootstrap:
 	@brew install mint

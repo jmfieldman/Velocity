@@ -1,5 +1,5 @@
 //
-//  Bundle+ResourceExtension.swift
+//  Bundle+ColorsResources.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 

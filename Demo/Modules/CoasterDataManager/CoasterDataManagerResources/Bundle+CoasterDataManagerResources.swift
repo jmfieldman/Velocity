@@ -1,5 +1,5 @@
 //
-//  Bundle+ResourceExtension.swift
+//  Bundle+CoasterDataManagerResources.swift
 //  Copyright © 2025 Jason Fieldman.
 //
 

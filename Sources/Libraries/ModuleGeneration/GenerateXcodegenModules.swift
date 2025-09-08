@@ -237,22 +237,10 @@ public enum GenerateXcodegenModules {
 
                 // Resource warning + extensions
 
-                if module.resources.count > 0 {
-                    if moduleType.mayContainResources {
-                        let bundleResourceExtensionPath = module.projectBasePath.appendingMissingSlash() + "Bundle+ResourceExtension.swift"
-
-                        // Create bundle extension for resource-containing modules
-                        if !FileManager.default.fileExists(atPath: bundleResourceExtensionPath) {
-                            try? kBundleResourceExtensionTemplate
-                                .replacingOccurrences(of: "{MODULE_NAME}", with: module.name)
-                                .write(toFile: module.projectBasePath.appendingMissingSlash() + "Bundle+ResourceExtension.swift", atomically: true, encoding: .utf8)
-                        }
-                    } else {
-                        // Otherwise warn the user
-                        vprint(.normal, "WARNING: module [\(module.name)] contains resources, but is not a resource module type.")
-                        for resource in module.resources {
-                            vprint(.normal, " > \(resource)")
-                        }
+                if module.resources.count > 0, !moduleType.mayContainResources {
+                    vprint(.normal, "WARNING: module [\(module.name)] contains resources, but is not a resource module type.")
+                    for resource in module.resources {
+                        vprint(.normal, " > \(resource)")
                     }
                 }
 
