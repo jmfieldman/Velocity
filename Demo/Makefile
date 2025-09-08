@@ -35,6 +35,7 @@ modules:
 		--output-file Modules/Injection/Injection/Injection.swift \
 		--inject-function-name registerInjections \
 		--verbose
+	@mint run swiftformat --config .swiftformat Modules/Injection/Injection
 	@mint run velocity generate-xcodegen-modules \
 		--regen-imports \
 		--regen-info-plists \
