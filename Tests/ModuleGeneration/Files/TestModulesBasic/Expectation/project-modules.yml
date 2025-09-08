@@ -12,12 +12,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/PackageOne/PackageOne
     supportedDestinations:
     - iOS
@@ -26,12 +26,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/PackageOne/PackageOneImpl
     supportedDestinations:
     - iOS
@@ -40,12 +40,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/RecursiveDirectory/PackageThree/PackageThree
     supportedDestinations:
     - iOS
@@ -54,12 +54,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/RecursiveDirectory/PackageThree/PackageThreeImpl
     supportedDestinations:
     - iOS
@@ -68,12 +68,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/PackageTwo/PackageTwo
     supportedDestinations:
     - iOS
@@ -82,12 +82,12 @@ targets:
     platform: auto
     sources:
     - excludes:
+      - AGENTS.md
+      - Info.plist
+      - LICENSE
+      - README.md
       - imports.yml
       - inject.yml
-      - README.md
-      - AGENTS.md
-      - LICENSE
-      - Info.plist
       path: Modules/PackageTwo/PackageTwoImpl
     supportedDestinations:
     - iOS
