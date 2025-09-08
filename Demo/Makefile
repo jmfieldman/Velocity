@@ -76,6 +76,7 @@ strings:
 resources:
 	@mint run velocity generate-resources \
 		--modules-path Modules
+	@mint run swiftformat --quiet --config .swiftformat Modules
 
 # Install all project dependencies and create the project file.
 bootstrap:

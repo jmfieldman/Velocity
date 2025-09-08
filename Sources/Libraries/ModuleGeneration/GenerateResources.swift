@@ -52,21 +52,19 @@ public enum GenerateResources {
                 continue
             }
 
-            resourceModule.generateBundleExtension()
+            try resourceModule.generateBundleExtension()
         }
     }
 }
 
 private extension Module {
-    func generateBundleExtension() {
+    func generateBundleExtension() throws {
         let bundleResourceExtensionPath = projectBasePath.appendingMissingSlash() + "Bundle+\(name).swift"
 
         // Create bundle extension for resource-containing modules
-        if !FileManager.default.fileExists(atPath: bundleResourceExtensionPath) {
-            try? Module.bundleResourceExtensionTemplate
-                .replacingOccurrences(of: "{MODULE_NAME}", with: name)
-                .write(toFile: bundleResourceExtensionPath, atomically: true, encoding: .utf8)
-        }
+        try Module.bundleResourceExtensionTemplate
+            .replacingOccurrences(of: "{MODULE_NAME}", with: name)
+            .write(toFile: bundleResourceExtensionPath, atomically: true, encoding: .utf8)
     }
 
     private static let bundleResourceExtensionTemplate = """
