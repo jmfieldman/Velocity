@@ -26,7 +26,7 @@ public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell 
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .themeBackgroundPrimary
+        backgroundColor = .Colors.background
 
         contentView.configure {
             UIContainer {
@@ -34,7 +34,7 @@ public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell 
                 $0.layout.height == 120
 
                 UIContainer {
-                    $0.backgroundColor = .themeForegroundSecondary
+                    $0.backgroundColor = .Colors.foregroundSecondary
                     $0.layout.top == $0.parentLayout.topMargin
                     $0.layout.bottom == $0.parentLayout.bottomMargin
                     $0.layout.leading == $0.parentLayout.leadingMargin
@@ -54,7 +54,7 @@ public final class ParkListTableViewCell: UITableViewCell, ManagedTableViewCell 
                         }
 
                         UILabel {
-                            $0.textColor = .themeForegroundPrimary
+                            $0.textColor = .Colors.foreground
                             $0.font = .systemFont(ofSize: 14, weight: .semibold)
                             $0.bind(\.text) <~ model.map(\.owner)
                         }

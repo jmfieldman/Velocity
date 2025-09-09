@@ -5,6 +5,7 @@
 
 import CoasterDataManager
 import CoasterModels
+import ColorsResources
 import CombineEx
 import Inject
 import Mortar
@@ -27,7 +28,7 @@ public final class ParkListViewControllerImpl: UIViewController, ParkListViewCon
     override public func loadView() {
         view = UIContainer {
             ManagedTableView {
-                $0.backgroundColor = .themeBackgroundPrimary
+                $0.backgroundColor = .Colors.background
                 $0.separatorStyle = .none
                 $0.layout.edges == $0.parentLayout.edges
                 $0.sections <~ model.sections
@@ -43,12 +44,12 @@ public final class ParkListViewControllerImpl: UIViewController, ParkListViewCon
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = .themeBackgroundPrimary.withAlphaComponent(0.8)
+        appearance.backgroundColor = .Colors.background.withAlphaComponent(0.8)
         appearance.largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.themeForegroundPrimary,
+            NSAttributedString.Key.foregroundColor: UIColor.Colors.foreground,
         ]
         appearance.titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.themeForegroundPrimary,
+            NSAttributedString.Key.foregroundColor: UIColor.Colors.foreground,
         ]
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance

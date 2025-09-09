@@ -85,6 +85,10 @@ public extension String {
         (self as NSString).lastPathComponent
     }
 
+    func lowercaseFirstLetter() -> String {
+        count <= 1 ? lowercased() : (prefix(1).lowercased() + dropFirst())
+    }
+
     func shaHash() -> String {
         shaData().map { String(format: "%02hhx", $0) }.joined()
     }
