@@ -120,7 +120,9 @@ public final class Module {
         </plist>
         """
         let path = absoluteBasePath.appendingMissingSlash().appending(kInfoPlist)
-        try plistTemplate.write(toFile: path, atomically: true, encoding: .utf8)
+        if !FileManager.default.fileExists(atPath: path) {
+            try plistTemplate.write(toFile: path, atomically: true, encoding: .utf8)
+        }
     }
 
     public private(set) lazy var target: ProjectSpec.Target = generateTarget()
