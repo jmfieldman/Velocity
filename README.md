@@ -44,6 +44,20 @@ This is a brief outline of available subcommands.
 
 This command uses the `dependencies.yml` file to fetch your external SwiftPM-based dependencies and store them in local silo, separate from the standard SwiftPM toolchain. This allows Xcode to view them as local path-based packages, and skip unwanted remote version resolution.
 
+Here's an example of what a `dependencies.yml` file looks like:
+
+```yaml
+dependencies:
+  - url: https://github.com/jmfieldman/CombineEx
+    from: 0.0.26
+  - url: https://github.com/open-meteo/sdk
+    from: 1.20.1
+    libraries:
+      - OpenMeteoSdk
+```
+
+
+
 ### `generate-imports`
 
 Searches through the source files of your Velocity packages. It generates an `imports.yml` file for each module, that lists each dependency. This `imports.yml` file is used by other tools to build up xcodegen yml files.
@@ -59,6 +73,16 @@ Generates a `project-dependencies.yml` xcodegen file. This yml contains all of t
 ### `generate-inject`
 
 Identifies the injectable api/implementation classes, and generates an Inject-compatible top-level injection function. This function is executed immediately at app launch to register your injection map.
+
+### `generate-resources`
+
+Generates resource code extensions for each resource module in your project. This command scans resource modules (modules with the "Resources" suffix) and creates Swift extensions that provide type-safe access to:
+- Bundle access for each resource module
+- UIImage extensions for .xcassets image sets
+- UIColor extensions for .xcassets color sets
+- String extensions for .strings files
+
+This helps avoid boilerplate code when accessing resources programmatically and provides compile-time safety for resource references.
 
 ### `sanitize-xcodegen-project`
 
