@@ -1,7 +1,5 @@
-// This file was auto-generated with https://github.com/yonaskolb/Stringly
+// Name of App
+"coaster_pal" = "Coaster Pal";
 
-// GENERAL
-"general.coasterPal" = "Coaster Pal";
-
-// PARKS
-"parks.navigationTitle" = "Parks";
+// Title
+"parks_navigation_title" = "Parks";

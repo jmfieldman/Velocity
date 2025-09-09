@@ -89,6 +89,25 @@ public extension String {
         count <= 1 ? lowercased() : (prefix(1).lowercased() + dropFirst())
     }
 
+    func uppercaseFirstLetter() -> String {
+        count <= 1 ? lowercased() : (prefix(1).uppercased() + dropFirst())
+    }
+
+    func camelCased() -> String {
+        guard !isEmpty else { return self }
+
+        let segments = components(separatedBy: "_")
+
+        return segments.enumerated().reduce("") { result, pair in
+            let (index, component) = pair
+            if index == 0 {
+                return component
+            } else {
+                return result + String(component.uppercaseFirstLetter())
+            }
+        }
+    }
+
     func shaHash() -> String {
         shaData().map { String(format: "%02hhx", $0) }.joined()
     }

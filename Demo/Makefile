@@ -53,25 +53,6 @@ models:
 	@mint run swiftformat --quiet --config .swiftformat Modules/CoasterModels/CoasterModels/GeneratedImmutableClasses
 	@mint run swiftformat --quiet --config .swiftformat Modules/CoasterDataManager/CoasterDataManagerImpl/GeneratedDatabaseClasses
 
-# This is a relatively simple example of how dynamic leaf modules work.
-# The strings module contains resources, so should be compiled as a dynamic
-# framework, and may not rely on any internal static frameworks.
-#
-# The yonaskolb/Stringly library itself is useful for smaller personal apps
-# but does not lend itself well to apps that require web-based string admin
-# or OTA update features.
-#
-# This block also represents a personal preference of using `Z` as the prefix
-# for localized string keys so they are more visually distinct.
-strings:
-	@mint run stringly generate Modules/Strings/StringsResources/Strings.yml -d Modules/Strings/StringsResources -b Base
-	@mint run stringly generate Modules/Strings/StringsResources/Strings.yml -d Modules/Strings/StringsResources -b en
-	@echo "[Generating Strings]"
-	@sed -i '' 's/extension Strings /extension Z /g' Modules/Strings/StringsResources/Strings.swift
-	@sed -i '' 's/public enum Strings /public enum Z /g' Modules/Strings/StringsResources/Strings.swift
-	@sed -i '' 's/Strings.localized/Z.localized/g' Modules/Strings/StringsResources/Strings.swift
-	@sed -i '' 's/public static var/public static let/g' Modules/Strings/StringsResources/Strings.swift
-
 # Generates all of the code extensions inside of resource modules
 resources:
 	@mint run velocity generate-resources \
@@ -93,7 +74,6 @@ bootstrap:
 		xcodegen \
 		format \
 		modules \
-		strings \
 		bootstrap
 
 xcodeproj_file := "CoasterPal.xcodeproj"

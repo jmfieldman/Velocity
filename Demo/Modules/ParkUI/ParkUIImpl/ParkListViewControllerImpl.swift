@@ -38,7 +38,7 @@ public final class ParkListViewControllerImpl: UIViewController, ParkListViewCon
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        title = Z.parks.navigationTitle
+        title = .Strings.parksNavigationTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
 
