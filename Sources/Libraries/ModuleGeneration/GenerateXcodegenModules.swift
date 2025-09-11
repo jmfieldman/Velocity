@@ -62,7 +62,7 @@ public enum GenerateXcodegenModules {
                 return dest
             }
 
-        let packages = ModulePackageManager.packages(
+        var packages = ModulePackageManager.packages(
             named: options.packageFileName,
             root: options.rootPath,
             absoluteProjectPath: absoluteProjectPath
@@ -126,6 +126,13 @@ public enum GenerateXcodegenModules {
                     module.regenerateImportsFile(ignoreFilenames: [])
                 }
             }
+
+            // Packages needs to reload
+            packages = ModulePackageManager.packages(
+                named: options.packageFileName,
+                root: options.rootPath,
+                absoluteProjectPath: absoluteProjectPath
+            )
         }
 
         if options.regenInfoPlists {
