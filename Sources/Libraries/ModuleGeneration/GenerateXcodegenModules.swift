@@ -165,7 +165,7 @@ public enum GenerateXcodegenModules {
                 // Determine dependencies
 
                 // Process the imported modules to generate internal and external dependencies
-                let (internalDependencies, externalRefs) = module.importedModules.sorted().reduce(into: ([DependencyEnc](), [String: [String]]())) { result, depName in
+                let (internalDependencies, externalRefs, xcodeSdks) = module.importedModules.sorted().reduce(into: ([DependencyEnc](), [String: [String]](), Set<String>())) { result, depName in
                     if internalModuleSet.contains(depName) {
                         // Append internal dependencies
                         result.0.append(DependencyEnc(target: depName))
@@ -173,6 +173,8 @@ public enum GenerateXcodegenModules {
                     } else if let depConfig = dependencyLookup[depName] {
                         // Build external references
                         result.1[depConfig.inferredPackageName, default: []].append(depName)
+                    } else if let xcodeSdk = kXcodeSDKs[depName] {
+                        result.2.insert(xcodeSdk)
                     }
                 }
 
@@ -183,8 +185,15 @@ public enum GenerateXcodegenModules {
                         DependencyEnc(package: ref.key, products: ref.value)
                     }
 
+                // Convert Xcode SDKs to xcodegen dependencies
+                let XcodeDependencies = xcodeSdks
+                    .sorted()
+                    .map { framework -> DependencyEnc in
+                        DependencyEnc(sdk: framework)
+                    }
+
                 // Combine internal and external dependencies
-                let dependencies = internalDependencies + externalDependencies
+                let dependencies = internalDependencies + externalDependencies + XcodeDependencies
 
                 // dynamic vs. static
 
@@ -357,3 +366,241 @@ public extension Bundle {
     private class {MODULE_NAME}Beacon {}
 }
 """
+
+// MARK: Xcode SDKs
+
+private let kXcodeSDKs: [String: String] = {
+    var result: [String: String] = [:]
+    for sdk in _kXcodeSDKList {
+        result[sdk.replacingOccurrences(of: ".framework", with: "")] = sdk
+    }
+    return result
+}()
+
+// This is a list of `sdk` dependencies available in Xcode. These will be imported into modules
+// if they declare imports that are not found in other project or dependency module lists.
+//
+// To get testing frameworks:
+// > ls -1 /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/Library/Frameworks | awk '{ print "\""$0"\"," }'
+//
+// To get general frameworks:
+// > ls -1 /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks | awk '{ print "\""$0"\"," }'
+//
+private let _kXcodeSDKList: [String] = [
+    "LiveExecutionResultsLogger.framework",
+    "StoreKitTest.framework",
+    "Testing.framework",
+    "XCTest.framework",
+    "XCUIAutomation.framework",
+
+    "Accelerate.framework",
+    "Accessibility.framework",
+    "AccessorySetupKit.framework",
+    "Accounts.framework",
+    "ActivityKit.framework",
+    "AdAttributionKit.framework",
+    "AddressBook.framework",
+    "AddressBookUI.framework",
+    "AdServices.framework",
+    "AdSupport.framework",
+    "AppClip.framework",
+    "AppIntents.framework",
+    "AppTrackingTransparency.framework",
+    "ARKit.framework",
+    "AssetsLibrary.framework",
+    "Assignables.framework",
+    "AudioToolbox.framework",
+    "AudioUnit.framework",
+    "AuthenticationServices.framework",
+    "AutomatedDeviceEnrollment.framework",
+    "AutomaticAssessmentConfiguration.framework",
+    "AVFAudio.framework",
+    "AVFoundation.framework",
+    "AVKit.framework",
+    "AVRouting.framework",
+    "BackgroundAssets.framework",
+    "BackgroundTasks.framework",
+    "BrowserEngineCore.framework",
+    "BrowserEngineKit.framework",
+    "BrowserKit.framework",
+    "BusinessChat.framework",
+    "CallKit.framework",
+    "CarKey.framework",
+    "CarPlay.framework",
+    "CFNetwork.framework",
+    "Charts.framework",
+    "Cinematic.framework",
+    "ClassKit.framework",
+    "ClockKit.framework",
+    "CloudKit.framework",
+    "ColorSync.framework",
+    "Combine.framework",
+    "ContactProvider.framework",
+    "Contacts.framework",
+    "ContactsUI.framework",
+    "CoreAudio.framework",
+    "CoreAudioKit.framework",
+    "CoreAudioTypes.framework",
+    "CoreBluetooth.framework",
+    "CoreData.framework",
+    "CoreFoundation.framework",
+    "CoreGraphics.framework",
+    "CoreHaptics.framework",
+    "CoreImage.framework",
+    "CoreLocation.framework",
+    "CoreLocationUI.framework",
+    "CoreMedia.framework",
+    "CoreMediaIO.framework",
+    "CoreMIDI.framework",
+    "CoreML.framework",
+    "CoreMotion.framework",
+    "CoreNFC.framework",
+    "CoreServices.framework",
+    "CoreSpotlight.framework",
+    "CoreTelephony.framework",
+    "CoreText.framework",
+    "CoreTransferable.framework",
+    "CoreVideo.framework",
+    "CreateML.framework",
+    "CreateMLComponents.framework",
+    "CryptoKit.framework",
+    "CryptoTokenKit.framework",
+    "DataDetection.framework",
+    "DeveloperToolsSupport.framework",
+    "DeviceActivity.framework",
+    "DeviceCheck.framework",
+    "DeviceDiscoveryExtension.framework",
+    "DockKit.framework",
+    "EventKit.framework",
+    "EventKitUI.framework",
+    "ExposureNotification.framework",
+    "ExtensionFoundation.framework",
+    "ExtensionKit.framework",
+    "ExternalAccessory.framework",
+    "FamilyControls.framework",
+    "FileProvider.framework",
+    "FileProviderUI.framework",
+    "FinanceKit.framework",
+    "FinanceKitUI.framework",
+    "Foundation.framework",
+    "GameController.framework",
+    "GameKit.framework",
+    "GameplayKit.framework",
+    "GLKit.framework",
+    "GroupActivities.framework",
+    "GSS.framework",
+    "HealthKit.framework",
+    "HealthKitUI.framework",
+    "HomeKit.framework",
+    "iAd.framework",
+    "IdentityLookup.framework",
+    "IdentityLookupUI.framework",
+    "ImageCaptureCore.framework",
+    "ImageIO.framework",
+    "ImagePlayground.framework",
+    "Intents.framework",
+    "IntentsUI.framework",
+    "IOKit.framework",
+    "IOSurface.framework",
+    "JavaScriptCore.framework",
+    "JournalingSuggestions.framework",
+    "LightweightCodeRequirements.framework",
+    "LinkPresentation.framework",
+    "LiveCommunicationKit.framework",
+    "LocalAuthentication.framework",
+    "LocalAuthenticationEmbeddedUI.framework",
+    "LockedCameraCapture.framework",
+    "ManagedApp.framework",
+    "ManagedAppDistribution.framework",
+    "ManagedSettings.framework",
+    "ManagedSettingsUI.framework",
+    "MapKit.framework",
+    "MarketplaceKit.framework",
+    "Matter.framework",
+    "MatterSupport.framework",
+    "MediaAccessibility.framework",
+    "MediaPlayer.framework",
+    "MediaSetup.framework",
+    "MediaToolbox.framework",
+    "Messages.framework",
+    "MessageUI.framework",
+    "Metal.framework",
+    "MetalFX.framework",
+    "MetalKit.framework",
+    "MetalPerformanceShaders.framework",
+    "MetalPerformanceShadersGraph.framework",
+    "MetricKit.framework",
+    "MLCompute.framework",
+    "MobileCoreServices.framework",
+    "ModelIO.framework",
+    "MultipeerConnectivity.framework",
+    "MusicKit.framework",
+    "NaturalLanguage.framework",
+    "NearbyInteraction.framework",
+    "Network.framework",
+    "NetworkExtension.framework",
+    "NotificationCenter.framework",
+    "OpenAL.framework",
+    "OpenGLES.framework",
+    "OSLog.framework",
+    "PassKit.framework",
+    "PDFKit.framework",
+    "PencilKit.framework",
+    "PHASE.framework",
+    "Photos.framework",
+    "PhotosUI.framework",
+    "ProximityReader.framework",
+    "PushKit.framework",
+    "PushToTalk.framework",
+    "QuartzCore.framework",
+    "QuickLook.framework",
+    "QuickLookThumbnailing.framework",
+    "RealityFoundation.framework",
+    "RealityKit.framework",
+    "ReplayKit.framework",
+    "RoomPlan.framework",
+    "SafariServices.framework",
+    "SafetyKit.framework",
+    "SceneKit.framework",
+    "ScreenTime.framework",
+    "SecureElementCredential.framework",
+    "Security.framework",
+    "SecurityUI.framework",
+    "SensitiveContentAnalysis.framework",
+    "SensorKit.framework",
+    "SharedWithYou.framework",
+    "SharedWithYouCore.framework",
+    "ShazamKit.framework",
+    "Social.framework",
+    "SoundAnalysis.framework",
+    "Speech.framework",
+    "SpriteKit.framework",
+    "StickerFoundation.framework",
+    "StickerKit.framework",
+    "StoreKit.framework",
+    "SwiftData.framework",
+    "SwiftUI.framework",
+    "SwiftUICore.framework",
+    "Symbols.framework",
+    "SystemConfiguration.framework",
+    "SystemExtensions.framework",
+    "TabularData.framework",
+    "ThreadNetwork.framework",
+    "TipKit.framework",
+    "Translation.framework",
+    "TranslationUIProvider.framework",
+    "Twitter.framework",
+    "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
+    "UserNotifications.framework",
+    "UserNotificationsUI.framework",
+    "VideoSubscriberAccount.framework",
+    "VideoToolbox.framework",
+    "Vision.framework",
+    "VisionKit.framework",
+    "WatchConnectivity.framework",
+    "WeatherKit.framework",
+    "WebKit.framework",
+    "WidgetKit.framework",
+    "WorkoutKit.framework",
+]

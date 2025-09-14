@@ -47,7 +47,7 @@ public enum GenerateXcodegenDeps {
         }
 
         var packages: [String: PackageEnc] = [:]
-        var templateDeps: [DependencyEnc] = []
+        var templateDeps: [String: [DependencyEnc]] = [:]
         try dependencies.sorted { $0.inferredPackageName < $1.inferredPackageName }.forEach { dependency in
             var packageEnc = PackageEnc()
             if let depOutputPath = options.dependencyOutputPath, dependency.keepRemote != true {
@@ -70,17 +70,20 @@ public enum GenerateXcodegenDeps {
 
             packages[dependency.inferredPackageName] = packageEnc
 
-            templateDeps.append(DependencyEnc(
-                package: dependency.inferredPackageName,
-                products: dependency.libraries ?? [dependency.inferredPackageName]
-            ))
+            let templateName = dependency.templateName ?? "PackageInclusionTemplate"
+            if templateName.count > 0 {
+                templateDeps[templateName, default: []].append(DependencyEnc(
+                    package: dependency.inferredPackageName,
+                    products: dependency.libraries ?? [dependency.inferredPackageName]
+                ))
+            }
         }
 
         let packagesEnc = PackagesEnc(
             packages: packages,
-            targetTemplates: [
-                "PackageInclusionTemplate": TargetTemplateEnc(dependencies: templateDeps),
-            ]
+            targetTemplates: templateDeps.mapValues {
+                TargetTemplateEnc(dependencies: $0)
+            }
         )
         let encoder = YAMLEncoder()
         encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)

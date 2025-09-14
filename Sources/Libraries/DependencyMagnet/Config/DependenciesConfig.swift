@@ -46,12 +46,18 @@ public class DependencyConfig: Decodable {
     /// version.
     public let refreshCursor: String?
 
+    /// Put these dependencies in their own explicit template
+    /// (not PackageInclusionTemplate). You can set this to empty
+    /// string to prevent it from adding to any template.
+    public let templateName: String?
+
     /// Private constructor to create a dependency for a static project
     /// package config
     fileprivate init(projectPackageConfig: ProjectPackageConfig) {
         self.url = projectPackageConfig.name
         self.packageName = projectPackageConfig.name
         self.libraries = projectPackageConfig.libraries ?? [projectPackageConfig.name]
+        self.templateName = projectPackageConfig.templateName
 
         self.from = nil
         self.range = nil
@@ -71,6 +77,7 @@ public class DependencyConfig: Decodable {
 public class ProjectPackageConfig: Decodable {
     public let name: String
     public let libraries: [String]?
+    public let templateName: String?
 
     public func dependencyConfig() -> DependencyConfig {
         DependencyConfig(projectPackageConfig: self)
