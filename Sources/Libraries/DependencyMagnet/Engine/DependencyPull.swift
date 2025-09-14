@@ -424,6 +424,18 @@ extension DependencyPull {
                     withIntermediateDirectories: true
                 )
 
+                // Try to copy over the specified Package.swift override
+                if let dependencyConfig, let overridePackageFile = dependencyConfig.overridePackageFile {
+                    let srcPath = overridePackageFile
+                    let dstPath = destinationPath.appendingMissingSlash() + "Package.swift"
+                    if FileManager.default.fileExists(atPath: srcPath) {
+                        try FileManager.default.removeItem(atPath: dstPath)
+                        try FileManager.default.copyItem(atPath: srcPath, toPath: dstPath)
+                    } else {
+                        vprint(.normal, "Dependency [\(dependency.displayName)] missing override package file [\(overridePackageFile)]", "⚠️ ")
+                    }
+                }
+
                 // Update the creation date of the new local directory
                 var values = URLResourceValues()
                 values.creationDate = Date()

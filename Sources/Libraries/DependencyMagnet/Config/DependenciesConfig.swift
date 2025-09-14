@@ -51,6 +51,12 @@ public class DependencyConfig: Decodable {
     /// string to prevent it from adding to any template.
     public let templateName: String?
 
+    /// Some dependencies have Package.swift files that are just
+    /// too complicated to deal with properly. This is a manual override
+    /// that allows you specify the exact Package.swift you want
+    /// to save into the locally-generated package directory.
+    public let overridePackageFile: String?
+
     /// Private constructor to create a dependency for a static project
     /// package config
     fileprivate init(projectPackageConfig: ProjectPackageConfig) {
@@ -68,6 +74,7 @@ public class DependencyConfig: Decodable {
         self.keepRemote = nil
         self.ignoreSha = nil
         self.refreshCursor = nil
+        self.overridePackageFile = nil
     }
 }
 
