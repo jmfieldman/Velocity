@@ -122,12 +122,20 @@ public enum SanitizeXcodegenProject {
 
         // Step -- Remove any DerivedData files for dirty names
 
+        let allowedTopLevelIntermediate = "Intermediates.noindex/\(appName).build"
+
         let pathsToDelete = FileManager.default.enumerateMap(
             path: derivedDataPath,
             options: [.skipsHiddenFiles]
-        ) { path, enumerator in
-            let fileRoot = path.lastPathComponent.components(separatedBy: ".").first ?? ""
-            if dirtyItemNames.contains(fileRoot) {
+        ) { path, enumerator -> String? in
+            let fileName = path.lastPathComponent
+            let fileBase = fileName.components(separatedBy: ".").first ?? ""
+            if dirtyItemNames.contains(fileBase) {
+                if path.hasSuffix(allowedTopLevelIntermediate) {
+                    // We can skip the top-most intermediate folder for the app.
+                    // We only want to remove the inner folder.
+                    return nil
+                }
                 enumerator?.skipDescendants()
                 return path
             }
