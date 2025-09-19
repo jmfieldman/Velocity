@@ -1,4 +1,7 @@
 dependencies:
+  - url: https://github.com/Brightify/Cuckoo
+    from: 2.1.1
+    templateName: CuckooTargetTemplate
   - url: https://github.com/jmfieldman/CombineEx
     from: 0.0.26
   - url: https://github.com/jmfieldman/Inject
