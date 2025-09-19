@@ -41,6 +41,9 @@ extension Velocity {
         @Option(help: "Comma-delimited list of suported platforms (options: iOS, tvOS, watchOS, visionOS, macOS, macCatalyst)")
         public var platforms: String = "iOS"
 
+        @Option(help: "Include this output filename to generate an optional Cuckoo config file (Cuckoofile.toml) for mock generation")
+        public var cuckooOutputFile: String? = nil
+
         @Option(help: "Path to the dependencies.yml file that lists the dependencies for this project")
         public var dependenciesConfig: String = kPathDependencyConfig
 
@@ -55,6 +58,7 @@ extension Velocity {
                     platforms: platforms,
                     dependenciesConfig: dependenciesConfig,
                     packageFileName: packageFileName,
+                    cuckooOutputFile: cuckooOutputFile,
                     defaultStatic: defaultStatic
                 )
             )

@@ -37,6 +37,15 @@ public class ModulePackageConfig: Codable {
     /// module generation.
     public let dynamic: Bool?
 
+    /// An override for mock generation. If the module generation command is told
+    /// to create mocks, it will generally create mocks for any module that declares
+    /// some kind of injection (injection or builder map). You can force the decision
+    /// to be yes or no with this override.
+    ///
+    /// Note: even if this is set to true, mocks will only be generated if the top-level
+    /// command is told to generate mocks.
+    public let generateMocks: Bool?
+
     // MARK: Injection
 
     /// The name of the protocol this module provides an Inject implementation for.
