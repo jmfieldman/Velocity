@@ -8,10 +8,13 @@ import CoasterDataManagerImpl
 @_exported import Inject
 import ParkUI
 import ParkUIImpl
+import UnitTestExampleManager
+import UnitTestExampleManagerImpl
 
 public extension InjectionManager {
     static func registerInjections() {
         InjectionManager.unsafeRegister(CoasterDataManager.self) { CoasterDataManagerImpl() }
+        InjectionManager.unsafeRegister(UnitTestExampleManager.self) { UnitTestExampleManagerImpl() }
     }
 }
 

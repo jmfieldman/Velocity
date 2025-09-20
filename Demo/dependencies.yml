@@ -3,13 +3,13 @@ dependencies:
     from: 2.1.1
     templateName: CuckooTargetTemplate
   - url: https://github.com/jmfieldman/CombineEx
-    from: 0.0.26
+    from: 0.0.31
   - url: https://github.com/jmfieldman/Inject
     from: 0.0.4
   - url: https://github.com/jmfieldman/Mortar
     from: 3.0.4
   - url: https://github.com/jmfieldman/Slate
-    from: 2.0.8
+    from: 2.0.9
   - url: https://github.com/open-meteo/sdk
     from: 1.20.1
     libraries:

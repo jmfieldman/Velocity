@@ -41,6 +41,7 @@ modules:
 		--regen-info-plists \
 		--root-path Modules \
 		--platforms iOS \
+		--cuckoo-output-file Cuckoofile.toml \
 		--verbose
 
 models:
