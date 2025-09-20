@@ -1,0 +1,12 @@
+- CoasterDataManager
+- CoasterDataManagerTestHelpers
+- CoasterModels
+- CombineEx
+- CoreData
+- Cuckoo
+- Foundation
+- Inject
+- Slate
+- Testing
+- UnitTestExampleManager
+- UnitTestExampleManagerImpl
