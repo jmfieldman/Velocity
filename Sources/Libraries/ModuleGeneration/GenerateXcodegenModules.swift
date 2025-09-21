@@ -164,6 +164,7 @@ public enum GenerateXcodegenModules {
         var internalDepMap: [String: [String]] = [:]
 
         var targets: [String: TargetEnc] = [:]
+        var testTargets: [String] = []
         var templateDeps: [DependencyEnc] = []
         try packages.sorted { $0.name < $1.name }.forEach { package in
             if generateCuckoo, package.generateMocks {
@@ -172,6 +173,10 @@ public enum GenerateXcodegenModules {
 
             package.modules.keys.sorted { $0.rawValue < $1.rawValue }.forEach { moduleType in
                 let module = package.modules[moduleType]!
+
+                if moduleType == .tests {
+                    testTargets.append(module.name)
+                }
 
                 // Determine dependencies
 
@@ -253,7 +258,8 @@ public enum GenerateXcodegenModules {
                             excludes: $0.excludes,
                             buildPhase: $0.buildPhase?.toJSONValue() as? String
                         )
-                    }
+                    },
+                    scheme: (moduleType == .tests) ? SchemeEnc(testTargets: [module.name]) : nil
                 )
 
                 // Include in main app template
@@ -277,9 +283,16 @@ public enum GenerateXcodegenModules {
             }
         }
 
+        var targetTemplates: [String: TargetTemplateEnc] = [
+            "ModuleInclusionTemplate": TargetTemplateEnc(dependencies: templateDeps),
+        ]
+        if testTargets.count > 0 {
+            targetTemplates["AllTestsTemplate"] = TargetTemplateEnc(scheme: SchemeEnc(testTargets: testTargets))
+        }
+
         let targetsEnc = TargetsEnc(
             targets: targets,
-            targetTemplates: ["ModuleInclusionTemplate": TargetTemplateEnc(dependencies: templateDeps)]
+            targetTemplates: targetTemplates
         )
         let encoder = YAMLEncoder()
         encoder.options = Emitter.Options(sortKeys: true, sequenceStyle: .block, mappingStyle: .block)
@@ -369,6 +382,7 @@ private struct TargetEnc: Encodable {
     var supportedDestinations: [String]
     var dependencies: [DependencyEnc]
     var sources: [SourceEnc]
+    var scheme: SchemeEnc?
 }
 
 private struct DependencyEnc: Encodable {
@@ -387,8 +401,13 @@ private struct SourceEnc: Encodable {
     var buildPhase: String?
 }
 
+private struct SchemeEnc: Encodable {
+    var testTargets: [String]?
+}
+
 private struct TargetTemplateEnc: Encodable {
-    var dependencies: [DependencyEnc]
+    var dependencies: [DependencyEnc]?
+    var scheme: SchemeEnc?
 }
 
 private extension ModuleType {

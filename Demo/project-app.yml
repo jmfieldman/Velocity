@@ -19,6 +19,7 @@ targets:
       # These templates are generated in project-modules.yml and project-dependencies.yml
       - ModuleInclusionTemplate
       - PackageInclusionTemplate
+      - AllTestsTemplate
 
 schemes:
   CoasterPal:
