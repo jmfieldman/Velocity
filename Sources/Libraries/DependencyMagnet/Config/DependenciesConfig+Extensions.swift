@@ -35,7 +35,7 @@ public extension DependencyConfig {
     }
 
     var localPackageSubpathName: String {
-        url.removingSuffix(".git").lastPathComponent
+        packageName ?? url.removingSuffix(".git").lastPathComponent
     }
 
     var inferredPackageName: String {
