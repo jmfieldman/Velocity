@@ -380,7 +380,7 @@ extension DependencyPull {
                 .prepending(path: kBuildDir)
                 .prepending(path: workspacePath)
 
-            let destinationPath = subpath
+            let destinationPath = (dependencyConfig?.packageName ?? subpath)
                 .prepending(path: kPackagesOutputPath)
                 .prepending(path: outputPath)
 
