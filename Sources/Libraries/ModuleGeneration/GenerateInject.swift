@@ -130,6 +130,12 @@ public enum GenerateInject {
                 "        \($0)"
             }.joined(separator: "\n")
 
+            let injectActivationString = injectionMap.keys.sorted().compactMap { name -> String? in
+                return "let _ = Inject(\(name).self)"
+            }.map {
+                "        \($0)"
+            }.joined(separator: "\n")
+
             let builderRegistrationString = buildersMap.keys.sorted().compactMap { builderName -> String? in
                 guard let impl = buildersMap[builderName] else {
                     return nil
@@ -143,6 +149,7 @@ public enum GenerateInject {
                 .replacingOccurrences(of: "{IMPORTS}", with: imports.sorted().map { "import \($0)" }.joined(separator: "\n"))
                 .replacingOccurrences(of: "{INJECT_FUNCNAME}", with: options.injectFunctionName)
                 .replacingOccurrences(of: "{INJECT_REGISTRATION}", with: injectRegistrationString)
+                .replacingOccurrences(of: "{INJECT_ACTIVATION}", with: injectActivationString)
                 .replacingOccurrences(of: "{BUILDER_FUNCNAME}", with: options.builderFunctionName)
                 .replacingOccurrences(of: "{BUILDER_REGISTRATION}", with: builderRegistrationString)
 
@@ -161,6 +168,10 @@ private let kFileTemplate = """
 public extension InjectionManager {
     static func {INJECT_FUNCNAME}() {
 {INJECT_REGISTRATION}
+    }
+
+    static func activateInjections() {
+{INJECT_ACTIVATION}
     }
 }
 

@@ -32,6 +32,8 @@ public final class ModulePackage {
 
     private lazy var resources: [ModuleType: [String]] = self.config.resources?.mapKeys { ModuleType(rawValue: $0) } ?? [:]
 
+    public private(set) lazy var quashActivation: Bool = config.quashActivation ?? false
+
     public private(set) lazy var generateMocks: Bool = {
         let hasInjections = injectMap.count > 0 || builderMap.count > 0
         return config.generateMocks ?? hasInjections

@@ -16,6 +16,11 @@ public extension InjectionManager {
         InjectionManager.unsafeRegister(CoasterDataManager.self) { CoasterDataManagerImpl() }
         InjectionManager.unsafeRegister(UnitTestExampleManager.self) { UnitTestExampleManagerImpl() }
     }
+
+    static func activateInjections() {
+        _ = Inject(CoasterDataManager.self)
+        _ = Inject(UnitTestExampleManager.self)
+    }
 }
 
 public extension BuilderManager {

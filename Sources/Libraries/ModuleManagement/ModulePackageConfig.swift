@@ -46,6 +46,11 @@ public class ModulePackageConfig: Codable {
     /// command is told to generate mocks.
     public let generateMocks: Bool?
 
+    /// All injection-based modules will be automatically included in an autogen
+    /// activation funciton. Other modules will not. You can override this decision
+    /// with this config and prevent certain injections from being included.
+    public let quashActivation: Bool?
+
     // MARK: Injection
 
     /// The name of the protocol this module provides an Inject implementation for.
