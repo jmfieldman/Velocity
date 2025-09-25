@@ -195,8 +195,10 @@ extension DependencyPull {
 
         var needleMap: [String: String] = [:]
         for dependency in workspaceState.object?.dependencies ?? [] {
+            let dependencyConfig = dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)
+
             // If a dependency is marked 'keepRemote' that we should not add its variants to the needleMap
-            guard dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)?.keepRemote != true else {
+            guard dependencyConfig?.keepRemote != true else {
                 continue
             }
 
@@ -204,7 +206,7 @@ extension DependencyPull {
                 continue
             }
 
-            guard let subpath = dependency.subpath else {
+            guard let subpath = dependencyConfig?.packageName ?? dependency.subpath else {
                 continue
             }
 
@@ -216,12 +218,14 @@ extension DependencyPull {
         }
 
         for dependency in workspaceState.object?.dependencies ?? [] {
+            let dependencyConfig = dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)
+
             // If a dependency is marked 'keepRemote' then we should not bother updating its Package.swift file
-            guard dependencyConfigs.dependencyConfig(relatedToUrl: dependency.packageRef?.location)?.keepRemote != true else {
+            guard dependencyConfig?.keepRemote != true else {
                 continue
             }
 
-            guard let subpath = dependency.subpath else {
+            guard let subpath = dependencyConfig?.packageName ?? dependency.subpath else {
                 continue
             }
 
