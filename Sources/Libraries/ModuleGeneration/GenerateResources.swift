@@ -129,7 +129,7 @@ private extension Module {
             try Module.resourceAssetExtensionTemplate
                 .replacingOccurrences(of: "{UICOLOR_EXT}", with: colorTemplateContent)
                 .replacingOccurrences(of: "{UIIMAGE_EXT}", with: imageTemplateContent)
-                .write(toFile: projectBasePath.appendingMissingSlash() + "\(assetPackName).swift", atomically: true, encoding: .utf8)
+                .write(toFile: projectBasePath.appendingMissingSlash() + "\(assetPackName)+Assets.swift", atomically: true, encoding: .utf8)
         }
     }
 
@@ -232,7 +232,7 @@ private extension Module {
             try Module.stringsExtensionTemplate
                 .replacingOccurrences(of: "{EXT_NAME}", with: stringsFileSlug)
                 .replacingOccurrences(of: "{STRING_FUNCS}", with: stringFuncs.joined(separator: "\n"))
-                .write(toFile: projectBasePath.appendingMissingSlash() + "\(stringsFileSlug).swift", atomically: true, encoding: .utf8)
+                .write(toFile: projectBasePath.appendingMissingSlash() + "\(stringsFileSlug)+Strings.swift", atomically: true, encoding: .utf8)
         }
     }
 
