@@ -56,7 +56,7 @@ public enum GenerateResources {
             }
 
             try resourceModule.generateBundleExtension()
-            try resourceModule.generateAssetExtensions(noSwiftUiAssets: noSwiftUiAssets)
+            try resourceModule.generateAssetExtensions(noSwiftUiAssets: options.noSwiftUiAssets)
             try resourceModule.generateStringExtensions()
         }
     }
