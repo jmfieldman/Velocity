@@ -15,13 +15,16 @@ import Yams
 public struct GenerateResourcesOptions {
     public let modulesPath: String
     public let packageFileName: String
+    public let noSwiftUiAssets: Bool
 
     public init(
         modulesPath: String,
-        packageFileName: String
+        packageFileName: String,
+        noSwiftUiAssets: Bool,
     ) {
         self.modulesPath = modulesPath
         self.packageFileName = packageFileName
+        self.noSwiftUiAssets = noSwiftUiAssets
     }
 }
 
@@ -53,7 +56,7 @@ public enum GenerateResources {
             }
 
             try resourceModule.generateBundleExtension()
-            try resourceModule.generateAssetExtensions()
+            try resourceModule.generateAssetExtensions(noSwiftUiAssets: noSwiftUiAssets)
             try resourceModule.generateStringExtensions()
         }
     }
@@ -84,7 +87,7 @@ private extension Module {
 }
 
 private extension Module {
-    func generateAssetExtensions() throws {
+    func generateAssetExtensions(noSwiftUiAssets: Bool) throws {
         try FileManager.default.files(at: projectBasePath, matching: { $0.hasSuffix(".xcassets") }).forEach { xcassetsPath in
             let assetPackName = xcassetsPath.lastPathComponent.removingSuffix(".xcassets")
 
@@ -126,6 +129,24 @@ private extension Module {
                     )
             }
 
+            var swiftUIImageTemplateContent = ""
+            if imageSets.count > 0 {
+                swiftUIImageTemplateContent = Module.resourceAssetSwiftUIImageExtensionTemplate
+                    .replacingOccurrences(of: "{EXT_NAME}", with: assetPackName)
+                    .replacingOccurrences(
+                        of: "{IMAGE_GETTERS}",
+                        with: imageSets.map {
+                            Module.resourceAssetSwiftUIImageGetterTemplate
+                                .replacingOccurrences(of: "{VAR_NAME}", with: $0.lowercaseFirstLetter())
+                        }.joined(separator: "\n")
+                    )
+            }
+
+            if !noSwiftUiAssets, swiftUIImageTemplateContent.count > 0 {
+                imageTemplateContent.append("\n\n")
+                imageTemplateContent.append(swiftUIImageTemplateContent)
+            }
+
             try Module.resourceAssetExtensionTemplate
                 .replacingOccurrences(of: "{UICOLOR_EXT}", with: colorTemplateContent)
                 .replacingOccurrences(of: "{UIIMAGE_EXT}", with: imageTemplateContent)
@@ -154,6 +175,18 @@ private extension Module {
 
     private static let resourceAssetImageGetterTemplate = """
     public static let {VAR_NAME}: UIImage = .init(resource: .{VAR_NAME})         
+    """
+
+    private static let resourceAssetSwiftUIImageExtensionTemplate = """
+    public extension Image {
+        enum {EXT_NAME} {
+            {IMAGE_GETTERS}
+        }
+    }            
+    """
+
+    private static let resourceAssetSwiftUIImageGetterTemplate = """
+    public static let {VAR_NAME}: Image = .init(uiImage: .{VAR_NAME})         
     """
 
     private static let resourceAssetColorExtensionTemplate = """

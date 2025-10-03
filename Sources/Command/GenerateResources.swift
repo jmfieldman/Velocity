@@ -23,12 +23,16 @@ extension Velocity {
         @Option(help: "Override the normal package file name (\(kPathPackageYml))")
         public var packageFileName: String = kPathPackageYml
 
+        @Flag(name: [.long], help: "Do not generate SwiftUI asset helpers")
+        public var noSwiftUiAssets: Bool = false
+
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
             try ModuleGenerationLib.GenerateResources.execute(
                 with: GenerateResourcesOptions(
                     modulesPath: modulesPath,
-                    packageFileName: packageFileName
+                    packageFileName: packageFileName,
+                    noSwiftUiAssets: noSwiftUiAssets
                 )
             )
         }
