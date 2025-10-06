@@ -26,6 +26,9 @@ extension Velocity {
 
         @Option(help: "Output path")
         public var dependencyOutputPath: String = kPathDependencyOutput
+        
+        @Flag(name: [.long], help: "Allow prebuilt downloads")
+        public var allowPrebuilts: Bool = false
 
         /// Execute the pull command
         func run() async throws {
@@ -34,7 +37,8 @@ extension Velocity {
                 with: DependencyPullOptions(
                     config: dependenciesConfig,
                     workspacePath: workspacePath,
-                    outputPath: dependencyOutputPath
+                    outputPath: dependencyOutputPath,
+                    allowPrebuilts: allowPrebuilts
                 )
             )
         }

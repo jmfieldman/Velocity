@@ -16,11 +16,18 @@ public struct DependencyPullOptions {
     public let config: String
     public let workspacePath: String
     public let outputPath: String
+    public let allowPrebuilts: Bool
 
-    public init(config: String, workspacePath: String, outputPath: String) {
+    public init(
+        config: String,
+        workspacePath: String,
+        outputPath: String,
+        allowPrebuilts: Bool
+    ) {
         self.config = config
         self.workspacePath = workspacePath
         self.outputPath = outputPath
+        self.allowPrebuilts = allowPrebuilts
     }
 }
 
@@ -28,7 +35,8 @@ public class DependencyPull: NSObject {
     public func pull(
         dependencies: [DependencyConfig],
         workspacePath: String,
-        outputPath: String
+        outputPath: String,
+        allowPrebuilts: Bool
     ) throws {
         // Validate inputs
         try validateNoDuplicates(dependencies)
@@ -40,7 +48,7 @@ public class DependencyPull: NSObject {
         // Setup the workspace and resolve our dependencies
         try createWorkspacePackage(workspacePath: workspacePath, dependencies: dependencies)
         try reuseExistingPackageResolvedFile(workspacePath: workspacePath, outputPath: outputPath)
-        try resolveWorkspacePackage(workspacePath: workspacePath)
+        try resolveWorkspacePackage(workspacePath: workspacePath, allowPrebuilts: allowPrebuilts)
 
         // Copy the new dependencies over to the output
         let workspaceState = try readWorkspaceState(workspacePath: workspacePath)
@@ -75,7 +83,8 @@ public class DependencyPull: NSObject {
         try pull(
             dependencies: dependenciesConfig.dependencies ?? [],
             workspacePath: options.workspacePath,
-            outputPath: options.outputPath
+            outputPath: options.outputPath,
+            allowPrebuilts: options.allowPrebuilts
         )
     }
 }
@@ -168,12 +177,14 @@ extension DependencyPull {
     /// workspace, pulling the dependencies into the checkout
     /// directory.
     func resolveWorkspacePackage(
-        workspacePath: String
+        workspacePath: String,
+        allowPrebuilts: Bool
     ) throws {
         vprint(.verbose, "Running 'swift package resolve' on shadow workspace")
-
+        let disableFlag = allowPrebuilts ? "" : "--disable-experimental-prebuilts"
+        
         let result = Process.execute(
-            command: "swift package resolve",
+            command: "swift package resolve \(disableFlag)",
             workingDirectory: workspacePath.prependingCurrentDirectory().directoryURL(),
             outputStdoutWhileRunning: gVerbosityLevel >= .normal,
             outputStderrWhileRunning: gVerbosityLevel >= .normal
