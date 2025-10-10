@@ -125,6 +125,7 @@ private extension Module {
                         with: colorSets.map {
                             Module.resourceAssetSwiftUIColorGetterTemplate
                                 .replacingOccurrences(of: "{VAR_NAME}", with: $0.lowercaseFirstLetter())
+                                .replacingOccurrences(of: "{EXT_NAME}", with: assetPackName)
                         }.joined(separator: "\n")
                     )
             }
