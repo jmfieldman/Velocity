@@ -116,6 +116,24 @@ private extension Module {
                     )
             }
 
+            var swiftUIColorTemplateContent = ""
+            if colorSets.count > 0 {
+                swiftUIColorTemplateContent = Module.resourceAssetSwiftUIColorExtensionTemplate
+                    .replacingOccurrences(of: "{EXT_NAME}", with: assetPackName)
+                    .replacingOccurrences(
+                        of: "{COLOR_GETTERS}",
+                        with: colorSets.map {
+                            Module.resourceAssetSwiftUIColorGetterTemplate
+                                .replacingOccurrences(of: "{VAR_NAME}", with: $0.lowercaseFirstLetter())
+                        }.joined(separator: "\n")
+                    )
+            }
+
+            if !noSwiftUiAssets, swiftUIColorTemplateContent.count > 0 {
+                colorTemplateContent.append("\n\n")
+                colorTemplateContent.append(swiftUIColorTemplateContent)
+            }
+
             var imageTemplateContent = ""
             if imageSets.count > 0 {
                 imageTemplateContent = Module.resourceAssetImageExtensionTemplate
@@ -200,6 +218,18 @@ private extension Module {
 
     private static let resourceAssetColorGetterTemplate = """
     public static let {VAR_NAME}: UIColor = .init(resource: .{VAR_NAME})         
+    """
+
+    private static let resourceAssetSwiftUIColorExtensionTemplate = """
+    public extension Color {
+        enum {EXT_NAME} {
+            {COLOR_GETTERS}
+        }
+    }            
+    """
+
+    private static let resourceAssetSwiftUIColorGetterTemplate = """
+    public static let {VAR_NAME}: Color = .init(UIColor.{EXT_NAME}.{VAR_NAME})         
     """
 }
 
