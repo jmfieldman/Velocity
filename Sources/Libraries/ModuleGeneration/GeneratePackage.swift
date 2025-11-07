@@ -19,6 +19,7 @@ public struct GeneratePackageOptions {
     public let dependenciesConfig: String
     public let dependencyOutputPath: String?
     public let packageName: String?
+    public let defaultLocalization: String
     public let packageFileName: String
 
     public init(
@@ -29,7 +30,8 @@ public struct GeneratePackageOptions {
         dependenciesConfig: String,
         dependencyOutputPath: String?,
         packageName: String?,
-        packageFileName: String = "Package.swift"
+        defaultLocalization: String,
+        packageFileName: String = "Package.swift",
     ) {
         self.regenImports = regenImports
         self.rootPath = rootPath
@@ -38,6 +40,7 @@ public struct GeneratePackageOptions {
         self.dependenciesConfig = dependenciesConfig
         self.dependencyOutputPath = dependencyOutputPath
         self.packageName = packageName
+        self.defaultLocalization = defaultLocalization
         self.packageFileName = packageFileName
     }
 }
@@ -79,6 +82,7 @@ public enum GeneratePackage {
         let packageContents = try kPackageSwiftTemplate
             .replacingOccurrences(of: "{SWIFT_TOOLS}", with: options.swiftToolsVersion)
             .replacingOccurrences(of: "{PACKAGE_NAME}", with: gen_PACKAGE_NAME(options: options))
+            .replacingOccurrences(of: "{DEFAULT_LOCALIZATION}", with: options.defaultLocalization)
             .replacingOccurrences(of: "{PLATFORMS}", with: options.platforms)
             .replacingOccurrences(of: "{PRODUCTS}", with: gen_PRODUCTS(packageManager: packageManager))
             .replacingOccurrences(of: "{DEPENDENCIES}", with: gen_DEPENDENCIES(options: options))
@@ -212,6 +216,7 @@ import PackageDescription
 
 let package = Package(
     name: "{PACKAGE_NAME}",
+    defaultLocalization: "{DEFAULT_LOCALIZATION}",
     platforms: [
         {PLATFORMS}
     ],

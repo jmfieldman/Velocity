@@ -44,6 +44,9 @@ extension Velocity {
         @Option(help: "Override the generated package name (otherwise will use the root basename)")
         public var packageName: String?
 
+        @Option(help: "Specify the default localization (default: en-US)")
+        public var defaultLocalization: String = "en-US"
+
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
             try ModuleGenerationLib.GeneratePackage.execute(
@@ -55,7 +58,8 @@ extension Velocity {
                     dependenciesConfig: dependenciesConfig,
                     dependencyOutputPath: dependencyOutputPath,
                     packageName: packageName,
-                    packageFileName: packageFileName
+                    defaultLocalization: defaultLocalization,
+                    packageFileName: packageFileName,
                 )
             )
         }
