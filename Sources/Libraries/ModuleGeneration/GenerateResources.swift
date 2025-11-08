@@ -157,6 +157,7 @@ private extension Module {
                         with: imageSets.map {
                             Module.resourceAssetSwiftUIImageGetterTemplate
                                 .replacingOccurrences(of: "{VAR_NAME}", with: $0.lowercaseFirstLetter())
+                                .replacingOccurrences(of: "{EXT_NAME}", with: assetPackName)
                         }.joined(separator: "\n")
                     )
             }
@@ -206,7 +207,7 @@ private extension Module {
     """
 
     private static let resourceAssetSwiftUIImageGetterTemplate = """
-    public static let {VAR_NAME}: Image = .init(uiImage: .{VAR_NAME})         
+    public static let {VAR_NAME}: Image = .init(uiImage: UIImage.{EXT_NAME}.{VAR_NAME})         
     """
 
     private static let resourceAssetColorExtensionTemplate = """

@@ -148,8 +148,12 @@ public enum GeneratePackage {
             dependencies.count > 0
         {
             for dependency in dependencies {
-                dependency.libraries?.forEach {
-                    externalImports[$0] = ".product(name: \"\($0)\", package: \"\(dependency.inferredPackageName)\")"
+                if let libraries = dependency.libraries, libraries.count > 0 {
+                    for library in libraries {
+                        externalImports[library] = ".product(name: \"\(library)\", package: \"\(dependency.inferredPackageName)\")"
+                    }
+                } else {
+                    externalImports[dependency.inferredPackageName] = ".product(name: \"\(dependency.inferredPackageName)\", package: \"\(dependency.inferredPackageName)\")"
                 }
             }
         }
