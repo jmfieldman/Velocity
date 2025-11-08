@@ -77,6 +77,15 @@ public enum GeneratePackage {
             }
         }
 
+        if let cycles = packageManager.importCycle(), let last = cycles.last {
+            for cycle in cycles {
+                vprint(.normal, "> \(cycle.0) -> \(cycle.1.name)\(cycle.1.bridge.flatMap { ":\($0)" } ?? "")")
+            }
+            try throwError(.dependencyCycle, "Found dependency cycle: \(last.0) -> \(last.1.name)\(last.1.bridge.flatMap { ":\($0)" } ?? "")")
+        } else {
+            vprint(.verbose, "No dependency cycles found")
+        }
+
         vprint(.normal, "Generating \(options.rootPath)/Package.swift", "🔧")
 
         let packageContents = try kPackageSwiftTemplate
