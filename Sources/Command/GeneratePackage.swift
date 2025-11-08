@@ -41,6 +41,9 @@ extension Velocity {
         @Option(help: "The output path of the dependency_magnet command used to create local packages. If not provided then no local packages will be used.")
         public var dependencyOutputPath: String?
 
+        @Option(help: "A comma-separated list of libraries in dependencies.yml that should not be included in the package")
+        public var ignoreDependencies: String? = nil
+
         @Option(help: "Override the generated package name (otherwise will use the root basename)")
         public var packageName: String?
 
@@ -57,6 +60,7 @@ extension Velocity {
                     platforms: platforms,
                     dependenciesConfig: dependenciesConfig,
                     dependencyOutputPath: dependencyOutputPath,
+                    ignoreDependencies: ignoreDependencies?.components(separatedBy: ",") ?? [],
                     packageName: packageName,
                     defaultLocalization: defaultLocalization,
                     packageFileName: packageFileName,

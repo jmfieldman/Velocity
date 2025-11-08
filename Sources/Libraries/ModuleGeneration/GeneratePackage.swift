@@ -18,6 +18,7 @@ public struct GeneratePackageOptions {
     public let platforms: String
     public let dependenciesConfig: String
     public let dependencyOutputPath: String?
+    public let ignoreDependencies: [String]
     public let packageName: String?
     public let defaultLocalization: String
     public let packageFileName: String
@@ -29,6 +30,7 @@ public struct GeneratePackageOptions {
         platforms: String,
         dependenciesConfig: String,
         dependencyOutputPath: String?,
+        ignoreDependencies: [String],
         packageName: String?,
         defaultLocalization: String,
         packageFileName: String = "Package.swift",
@@ -39,6 +41,7 @@ public struct GeneratePackageOptions {
         self.platforms = platforms
         self.dependenciesConfig = dependenciesConfig
         self.dependencyOutputPath = dependencyOutputPath
+        self.ignoreDependencies = ignoreDependencies
         self.packageName = packageName
         self.defaultLocalization = defaultLocalization
         self.packageFileName = packageFileName
@@ -120,7 +123,10 @@ public enum GeneratePackage {
             return ""
         }
 
-        return try dependencies.map { dependency -> String in
+        let ignoredDependencies: Set<String> = Set(options.ignoreDependencies)
+        return try dependencies.filter {
+            !ignoredDependencies.contains($0.inferredPackageName)
+        }.map { dependency -> String in
             guard dependency.keepRemote != true else {
                 return try dependency.packageString()
             }
