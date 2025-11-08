@@ -14,15 +14,18 @@ import Yams
 
 public struct GenerateResourcesOptions {
     public let modulesPath: String
+    public let swiftPackage: String?
     public let packageFileName: String
     public let noSwiftUiAssets: Bool
 
     public init(
         modulesPath: String,
+        swiftPackage: String?,
         packageFileName: String,
         noSwiftUiAssets: Bool,
     ) {
         self.modulesPath = modulesPath
+        self.swiftPackage = swiftPackage
         self.packageFileName = packageFileName
         self.noSwiftUiAssets = noSwiftUiAssets
     }
@@ -55,7 +58,7 @@ public enum GenerateResources {
                 continue
             }
 
-            try resourceModule.generateBundleExtension()
+            try resourceModule.generateBundleExtension(swiftPackage: options.swiftPackage)
             try resourceModule.generateAssetExtensions(noSwiftUiAssets: options.noSwiftUiAssets)
             try resourceModule.generateStringExtensions()
         }
@@ -63,12 +66,16 @@ public enum GenerateResources {
 }
 
 private extension Module {
-    func generateBundleExtension() throws {
+    func generateBundleExtension(swiftPackage: String?) throws {
         let bundleResourceExtensionPath = projectBasePath.appendingMissingSlash() + "Bundle+\(name).swift"
+
+        let bundleStyle = swiftPackage == nil ? Self.bundleResourceExtensionTemplateNoSwiftPackage : Self.bundleResourceExtensionTemplateSwiftPackage
 
         // Create bundle extension for resource-containing modules
         try Module.bundleResourceExtensionTemplate
+            .replacingOccurrences(of: "{BUNDLE_STYLE}", with: bundleStyle)
             .replacingOccurrences(of: "{MODULE_NAME}", with: name)
+            .replacingOccurrences(of: "{SWIFT_PACKAGE}", with: swiftPackage ?? "")
             .write(toFile: bundleResourceExtensionPath, atomically: true, encoding: .utf8)
     }
 
@@ -80,9 +87,20 @@ private extension Module {
 
     public extension Bundle {
         /// Access the {MODULE_NAME} bundle 
-        static let {MODULE_NAME} = Bundle(for: {MODULE_NAME}Beacon.self)
+        {BUNDLE_STYLE}
         private class {MODULE_NAME}Beacon {}
     }
+    """
+
+    // When the resources are build in their own modules, you can use the beacon class
+    private static let bundleResourceExtensionTemplateNoSwiftPackage = "static let {MODULE_NAME} = Bundle(for: {MODULE_NAME}Beacon.self)"
+
+    // When the resources are build in a swift package, their resource bundles are isolated from classes and put into the main bundle
+    private static let bundleResourceExtensionTemplateSwiftPackage = """
+    static let {MODULE_NAME} = {
+        let bundleUrl = Bundle.main.url(forResource: "{SWIFT_PACKAGE}_{MODULE_NAME}", withExtension: "bundle")!
+        return Bundle(url: bundleUrl)!
+    }()
     """
 }
 

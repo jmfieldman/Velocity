@@ -20,6 +20,9 @@ extension Velocity {
         @Option(help: "Root path for modules detection")
         public var modulesPath: String
 
+        @Option(help: "Set this value to the swift package name that the resource modules are inside of (if applicable)")
+        public var swiftPackage: String? = nil
+
         @Option(help: "Override the normal package file name (\(kPathPackageYml))")
         public var packageFileName: String = kPathPackageYml
 
@@ -31,6 +34,7 @@ extension Velocity {
             try ModuleGenerationLib.GenerateResources.execute(
                 with: GenerateResourcesOptions(
                     modulesPath: modulesPath,
+                    swiftPackage: swiftPackage,
                     packageFileName: packageFileName,
                     noSwiftUiAssets: noSwiftUiAssets
                 )
