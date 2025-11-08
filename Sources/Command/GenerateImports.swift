@@ -12,7 +12,7 @@ import ModuleManagementLib
 extension Velocity {
     final class GenerateImports: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Generate imports.yml files"
+            abstract: "Generate .imports.yml files"
         )
 
         @OptionGroup var commonOptions: CommonOptions

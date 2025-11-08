@@ -23,7 +23,7 @@ extension Velocity {
         @Option(help: "Specify the project path (if not the current working directory)")
         public var projectPath: String? = nil
 
-        @Flag(name: [.long], help: "Force imports.yml regeneration for all modules")
+        @Flag(name: [.long], help: "Force .imports.yml regeneration for all modules")
         public var regenImports: Bool = false
 
         @Option(help: "Root path for package generation")

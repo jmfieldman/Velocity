@@ -8,7 +8,7 @@ import InternalUtilities
 import ProjectSpec
 import Yams
 
-private let kImportsYml = "imports.yml"
+private let kImportsYml = ".imports.yml"
 private let kInfoPlist = "Info.plist"
 private let importsDecoder = YAMLDecoder()
 
@@ -76,7 +76,7 @@ public final class Module {
             return nil
         }
 
-        // Delete stray imports.yml if there are no imports in the module
+        // Delete stray .imports.yml if there are no imports in the module
         guard imports.count > 0 else {
             try? FileManager.default.removeItem(atPath: importsFilePath)
             return []
