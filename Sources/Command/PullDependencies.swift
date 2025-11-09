@@ -26,7 +26,10 @@ extension Velocity {
 
         @Option(help: "Output path")
         public var dependencyOutputPath: String = kPathDependencyOutput
-        
+
+        @Flag(name: [.long], help: "Bail early if the dependencies have already been pulled")
+        public var abortIfUnchanged: Bool = false
+
         @Flag(name: [.long], help: "Allow prebuilt downloads")
         public var allowPrebuilts: Bool = false
 
@@ -38,7 +41,8 @@ extension Velocity {
                     config: dependenciesConfig,
                     workspacePath: workspacePath,
                     outputPath: dependencyOutputPath,
-                    allowPrebuilts: allowPrebuilts
+                    allowPrebuilts: allowPrebuilts,
+                    abortIfUnchanged: abortIfUnchanged
                 )
             )
         }

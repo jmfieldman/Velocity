@@ -11,23 +11,27 @@ let kWorkspaceStateFile = "workspace-state.json"
 let kWorkspaceStateJsonPath = "\(kBuildDir)/\(kWorkspaceStateFile)"
 let kPackageResolver = "Package.resolved"
 let kPackagesOutputPath = "Packages"
+let kLastPulledDepFile = "last.dependencies.yml"
 
 public struct DependencyPullOptions {
     public let config: String
     public let workspacePath: String
     public let outputPath: String
     public let allowPrebuilts: Bool
+    public let abortIfUnchanged: Bool
 
     public init(
         config: String,
         workspacePath: String,
         outputPath: String,
-        allowPrebuilts: Bool
+        allowPrebuilts: Bool,
+        abortIfUnchanged: Bool
     ) {
         self.config = config
         self.workspacePath = workspacePath
         self.outputPath = outputPath
         self.allowPrebuilts = allowPrebuilts
+        self.abortIfUnchanged = abortIfUnchanged
     }
 }
 
@@ -80,11 +84,26 @@ public class DependencyPull: NSObject {
             try throwError(.noDependencies, "No dependencies found in dependencies config file \(options.config)")
         }
 
+        if options.abortIfUnchanged {
+            if dependenciesFilesMatch(
+                workspacePath: options.workspacePath,
+                dependeciesConfigPath: options.config
+            ) {
+                vprint(.normal, "☑️ No changes detected in \(options.config) - delete \(options.workspacePath) to force.")
+                exit(0)
+            }
+        }
+
         try pull(
             dependencies: dependenciesConfig.dependencies ?? [],
             workspacePath: options.workspacePath,
             outputPath: options.outputPath,
             allowPrebuilts: options.allowPrebuilts
+        )
+
+        saveLastDependenciesFile(
+            workspacePath: options.workspacePath,
+            dependeciesConfigPath: options.config
         )
     }
 }
@@ -110,6 +129,41 @@ extension DependencyPull {
             }
             urls.insert(dependency.url)
         }
+    }
+
+    /// Returns true if the last-pulled file matches the current config
+    func dependenciesFilesMatch(
+        workspacePath: String,
+        dependeciesConfigPath: String
+    ) -> Bool {
+        let lastPulledFile = kLastPulledDepFile.prepending(path: workspacePath)
+
+        guard
+            let workspaceFile = try? String(contentsOfFile: lastPulledFile, encoding: .utf8),
+            let dependenciesFile = try? String(contentsOfFile: dependeciesConfigPath, encoding: .utf8)
+        else {
+            return false
+        }
+
+        return workspaceFile == dependenciesFile
+    }
+
+    /// Save the current dependencies config to the last pulled file location
+    func saveLastDependenciesFile(
+        workspacePath: String,
+        dependeciesConfigPath: String
+    ) {
+        let lastPulledFile = kLastPulledDepFile.prepending(path: workspacePath)
+
+        do {
+            if lastPulledFile.isFile {
+                try FileManager.default.removeItem(atPath: lastPulledFile)
+            }
+            try FileManager.default.copyItem(
+                atPath: dependeciesConfigPath,
+                toPath: lastPulledFile
+            )
+        } catch {}
     }
 
     /// Creates the Package.swift file in the workspace; this package
@@ -182,7 +236,7 @@ extension DependencyPull {
     ) throws {
         vprint(.verbose, "Running 'swift package resolve' on shadow workspace")
         let disableFlag = allowPrebuilts ? "" : "--disable-experimental-prebuilts"
-        
+
         let result = Process.execute(
             command: "swift package resolve \(disableFlag)",
             workingDirectory: workspacePath.prependingCurrentDirectory().directoryURL(),
