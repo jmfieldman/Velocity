@@ -89,7 +89,7 @@ public class DependencyPull: NSObject {
                 workspacePath: options.workspacePath,
                 dependeciesConfigPath: options.config
             ) {
-                vprint(.normal, "☑️ No changes detected in \(options.config) - delete \(options.workspacePath) to force.")
+                vprint(.normal, "No changes detected in \(options.config) - delete \(options.workspacePath) to force.")
                 exit(0)
             }
         }
