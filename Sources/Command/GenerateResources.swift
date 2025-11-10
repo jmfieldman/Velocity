@@ -29,6 +29,9 @@ extension Velocity {
         @Flag(name: [.long], help: "Do not generate SwiftUI asset helpers")
         public var noSwiftUiAssets: Bool = false
 
+        @Option(help: "File to output list of resource directories (optional)")
+        public var outputResourceManifest: String? = nil
+
         func run() async throws {
             setVerbosity(commonOptions.verbosity)
             try ModuleGenerationLib.GenerateResources.execute(
@@ -36,7 +39,8 @@ extension Velocity {
                     modulesPath: modulesPath,
                     swiftPackage: swiftPackage,
                     packageFileName: packageFileName,
-                    noSwiftUiAssets: noSwiftUiAssets
+                    noSwiftUiAssets: noSwiftUiAssets,
+                    outputResourceManifest: outputResourceManifest
                 )
             )
         }

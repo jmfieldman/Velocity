@@ -19,3 +19,6 @@ public let kPathDependencyConfig = "dependencies.yml"
 /// The path that local dependencies are put under.
 /// This path should be included in .gitignore
 public let kPathDependencyOutput = "local"
+
+/// Directory for temporary files
+public let kCachesDirectory = ".cache"

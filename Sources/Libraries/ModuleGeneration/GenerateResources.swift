@@ -17,17 +17,20 @@ public struct GenerateResourcesOptions {
     public let swiftPackage: String?
     public let packageFileName: String
     public let noSwiftUiAssets: Bool
+    public let outputResourceManifest: String?
 
     public init(
         modulesPath: String,
         swiftPackage: String?,
         packageFileName: String,
         noSwiftUiAssets: Bool,
+        outputResourceManifest: String?,
     ) {
         self.modulesPath = modulesPath
         self.swiftPackage = swiftPackage
         self.packageFileName = packageFileName
         self.noSwiftUiAssets = noSwiftUiAssets
+        self.outputResourceManifest = outputResourceManifest
     }
 }
 
@@ -52,15 +55,32 @@ public enum GenerateResources {
             return
         }
 
+        var resourceDirectories: [String] = []
+
         // Parse injections
         for package in packages {
             guard let resourceModule = package.modules[.resources] else {
                 continue
             }
 
+            resourceDirectories.append(resourceModule.projectBasePath)
+
             try resourceModule.generateBundleExtension(swiftPackage: options.swiftPackage)
             try resourceModule.generateAssetExtensions(noSwiftUiAssets: options.noSwiftUiAssets)
             try resourceModule.generateStringExtensions()
+        }
+
+        if let outputResourceManifest = options.outputResourceManifest {
+            do {
+                if outputResourceManifest.contains("/") {
+                    try outputResourceManifest.basePath.createDirectory()
+                }
+                try resourceDirectories
+                    .joined(separator: "\n")
+                    .write(toFile: outputResourceManifest, atomically: true, encoding: .utf8)
+            } catch {
+                vprint(.normal, "Error writing resource directories manifest to \(outputResourceManifest)")
+            }
         }
     }
 }
