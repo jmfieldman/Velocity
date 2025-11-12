@@ -117,9 +117,10 @@ private extension Module {
 
     // When the resources are build in a swift package, their resource bundles are isolated from classes and put into the main bundle
     private static let bundleResourceExtensionTemplateSwiftPackage = """
-    static let {MODULE_NAME} = {
-        let bundleUrl = Bundle.main.url(forResource: "{SWIFT_PACKAGE}_{MODULE_NAME}", withExtension: "bundle")!
-        return Bundle(url: bundleUrl)!
+    static let {MODULE_NAME}: Bundle = {
+        Bundle.main.url(forResource: "{SWIFT_PACKAGE}_{MODULE_NAME}", withExtension: "bundle").flatMap {
+            Bundle(url: $0)
+        } ?? .main
     }()
     """
 }
