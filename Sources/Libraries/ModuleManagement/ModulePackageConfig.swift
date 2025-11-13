@@ -20,6 +20,11 @@ public class ModulePackageConfig: Codable {
     /// valve to turn off faulty tests while they can be repaired.
     public let disableTests: Bool?
 
+    /// If true, this package will be considered "flat" -- providing only the main
+    /// module with a basepath at the package's top level directory (i.e. no main
+    /// module subdirectory.) The package.yml file will automatically be excluded.
+    public let mainOnly: Bool?
+
     /// Allows subdirectory override. The key is the Module type (main, impl, etc).
     public let directoryOverrides: [String: String]?
 

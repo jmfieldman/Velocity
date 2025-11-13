@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import InternalUtilities
 import Yams
 
 private let kDefaultNameChar = "_"
@@ -108,6 +109,8 @@ public final class ModulePackage {
     private func scanModules() -> [ModuleType: Module] {
         guard config.disable.flatMap({ !$0 }) ?? true else { return [:] }
 
+        let mainOnly = config.mainOnly ?? false
+
         let codeCheck: (String) -> Bool = {
             $0.hasSuffix(".swift")
         }
@@ -130,7 +133,17 @@ public final class ModulePackage {
         }
 
         return Dictionary(uniqueKeysWithValues: ModuleType.allCases.compactMap { type in
-            let moduleDirectory = "\(self.absoluteBasePath)\(type.directory(for: self.name))"
+            if mainOnly, type != .main {
+                return nil
+            }
+
+            var moduleDirectory = "\(self.absoluteBasePath)\(type.directory(for: self.name))"
+            var projectBasePath = "\(self.projectBasePath)\(type.directory(for: self.name))/"
+            if mainOnly {
+                moduleDirectory = "\(self.absoluteBasePath)".removingSlash()
+                projectBasePath = self.absoluteBasePath
+            }
+
             if FileManager.default.directoryExists(atPath: moduleDirectory) {
                 if type.mustContainCode, !FileManager.default.directory(at: moduleDirectory, contains: codeCheck) {
                     return nil
@@ -143,7 +156,7 @@ public final class ModulePackage {
                     name: self.moduleNameFor(type: type),
                     type: type,
                     absoluteBasePath: "\(moduleDirectory)/",
-                    projectBasePath: "\(self.projectBasePath)\(type.directory(for: self.name))/",
+                    projectBasePath: projectBasePath,
                     resources: Set(detectedResources + (resources[type] ?? [])),
                     fileExclusions: Set(fileExclusions[type] ?? [])
                 ))

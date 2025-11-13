@@ -41,6 +41,7 @@ public final class ModulePackageManager {
 public extension ModulePackageManager {
     static func packages(named: String, root: String, absoluteProjectPath: String) -> [ModulePackage] {
         let nameSuffix = "/\(named)"
+        let hiddenNameSuffix = "/.\(named)"
 
         return FileManager.default.enumerateMap(
             path: root,
@@ -48,7 +49,7 @@ public extension ModulePackageManager {
             options: [],
             errorHandler: nil
         ) { path, _ in
-            guard path.hasSuffix(nameSuffix) else { return nil }
+            guard path.hasSuffix(nameSuffix) || path.hasSuffix(hiddenNameSuffix) else { return nil }
 
             guard let package = ModulePackage(packageFilePath: path, absoluteProjectPath: absoluteProjectPath) else {
                 fatalError("Error creating ModulePackage from: \(path)")
