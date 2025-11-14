@@ -53,6 +53,7 @@ public enum SwiftImportDetector {
             if !cleanLine.hasPrefix("import"),
                !cleanLine.hasPrefix("@testable import"),
                !cleanLine.hasPrefix("@_exported import"),
+               !cleanLine.hasPrefix("@preconcurrency import"),
                !cleanLine.hasPrefix("private import"),
                !cleanLine.hasPrefix("internal import")
             {
