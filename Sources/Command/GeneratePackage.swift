@@ -26,6 +26,9 @@ extension Velocity {
         @Flag(name: [.long], help: "Force .imports.yml regeneration for all modules")
         public var regenImports: Bool = false
 
+        @Flag(name: [.long], help: "Set the warnings-as-errors flag on all targets")
+        public var warningsAsErrors: Bool = false
+
         @Option(help: "Root path for package generation")
         public var rootPath: String
 
@@ -63,6 +66,7 @@ extension Velocity {
                     ignoreDependencies: ignoreDependencies?.components(separatedBy: ",") ?? [],
                     packageName: packageName,
                     defaultLocalization: defaultLocalization,
+                    warningsAsErrors: warningsAsErrors,
                     packageFileName: packageFileName,
                 )
             )

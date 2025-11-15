@@ -21,6 +21,7 @@ public struct GeneratePackageOptions {
     public let ignoreDependencies: [String]
     public let packageName: String?
     public let defaultLocalization: String
+    public let warningsAsErrors: Bool
     public let packageFileName: String
 
     public init(
@@ -33,6 +34,7 @@ public struct GeneratePackageOptions {
         ignoreDependencies: [String],
         packageName: String?,
         defaultLocalization: String,
+        warningsAsErrors: Bool,
         packageFileName: String = "Package.swift",
     ) {
         self.regenImports = regenImports
@@ -44,6 +46,7 @@ public struct GeneratePackageOptions {
         self.ignoreDependencies = ignoreDependencies
         self.packageName = packageName
         self.defaultLocalization = defaultLocalization
+        self.warningsAsErrors = warningsAsErrors
         self.packageFileName = packageFileName
     }
 }
@@ -194,6 +197,8 @@ public enum GeneratePackage {
                     }
                 }
 
+                let swiftSettings: String = options.warningsAsErrors ? ",\nswiftSettings: [.treatAllWarnings(as: .error)]" : ""
+
                 let targetStr = """
                 .target(
                   name: "\(module.name)",
@@ -203,9 +208,11 @@ public enum GeneratePackage {
                   path: "\(module.absoluteBasePath.relative(to: projectPath))",
                   exclude: [
                     \(module.fileExclusions.sorted().map { "\"\($0)\"," }.joined(separator: "\n"))
-                  ]
+                  ]{SWIFTSETTINGS}
                 ),
                 """
+                .replacingOccurrences(of: "{SWIFTSETTINGS}", with: swiftSettings)
+
                 targets.append(targetStr)
             }
         }
