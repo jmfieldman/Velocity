@@ -46,7 +46,7 @@ public enum SwiftImportDetector {
         for line in lineReader {
             let cleanLine = line.trimmingCharacters(in: whitespacesAndNewlines)
 
-            if cleanLine.hasPrefix("/") || cleanLine.hasPrefix(" ") || cleanLine.count == 0 {
+            if cleanLine.hasPrefix("/") || line.hasPrefix(" ") || line.hasPrefix("\t") || cleanLine.count == 0 {
                 continue
             }
 
