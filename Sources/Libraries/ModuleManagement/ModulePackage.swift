@@ -83,6 +83,17 @@ public final class ModulePackage {
     }()
 
     public private(set) lazy var builderMap: [String: String] = {
+        if let auto = config.buildersAuto, auto {
+            let results = Process.execute(command: "grep \"Builder: Builder {\" \"\(projectBasePath)\"* -R")
+            let lines = results.stdout.components(separatedBy: "\n")
+            let builders = lines.compactMap {
+                $0.components(separatedBy: .whitespaces).dropLast(2).last?.replacingOccurrences(of: "Builder:", with: "")
+            }
+            return builders.reduce(into: [:]) { result, builder in
+                result["\(builder)Builder"] = "\(builder)Impl"
+            }
+        }
+
         if let map = config.builderMap, map.count > 0 {
             return map
         }

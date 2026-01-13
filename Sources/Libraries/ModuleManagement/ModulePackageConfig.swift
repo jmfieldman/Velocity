@@ -88,4 +88,8 @@ public class ModulePackageConfig: Codable {
     /// Packages that provide more complex naming patterns for their builders will
     /// need to defined the explicit builderMap of [BuilderName: ImplementationName]
     public let builderMap: [String: String]?
+
+    /// If this is true, a grep command finds "Builder: Builder" in the main module to
+    /// determine a list of builders that need to be supported (with a corresponding Impl)
+    public let buildersAuto: Bool?
 }
