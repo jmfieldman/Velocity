@@ -16,6 +16,7 @@ public struct GenerateInjectOptions {
     public let modulesPath: String
     public let outputFile: String
     public let injectFunctionName: String
+    public let injectMainActor: Bool
     public let builderFunctionName: String
     public let packageFileName: String
 
@@ -23,12 +24,14 @@ public struct GenerateInjectOptions {
         modulesPath: String,
         outputFile: String,
         injectFunctionName: String,
+        injectMainActor: Bool,
         builderFunctionName: String,
         packageFileName: String
     ) {
         self.modulesPath = modulesPath
         self.outputFile = outputFile
         self.injectFunctionName = injectFunctionName
+        self.injectMainActor = injectMainActor
         self.builderFunctionName = builderFunctionName
         self.packageFileName = packageFileName
     }
@@ -148,6 +151,7 @@ public enum GenerateInject {
             let fileString = kFileTemplate
                 .replacingOccurrences(of: "{IMPORTS}", with: imports.sorted().map { "import \($0)" }.joined(separator: "\n"))
                 .replacingOccurrences(of: "{INJECT_FUNCNAME}", with: options.injectFunctionName)
+                .replacingOccurrences(of: "{INJECT_MAINACTOR}", with: options.injectMainActor ? "@MainActor " : "")
                 .replacingOccurrences(of: "{INJECT_REGISTRATION}", with: injectRegistrationString)
                 .replacingOccurrences(of: "{INJECT_ACTIVATION}", with: injectActivationString)
                 .replacingOccurrences(of: "{BUILDER_FUNCNAME}", with: options.builderFunctionName)
@@ -165,6 +169,7 @@ private let kFileTemplate = """
 @_exported import Inject
 {IMPORTS}
 
+{INJECT_MAINACTOR}
 public extension InjectionManager {
     static func {INJECT_FUNCNAME}() {
 {INJECT_REGISTRATION}

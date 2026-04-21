@@ -23,6 +23,9 @@ extension Velocity {
         @Option(help: "The swift file that will be output (including path)")
         public var outputFile: String
 
+        @Flag(name: [.long], help: "Use @MainActor on injections")
+        public var injectMainActor: Bool = false
+
         @Option(help: "The name of the function that will register injections")
         public var injectFunctionName: String = "registerInjections"
 
@@ -39,6 +42,7 @@ extension Velocity {
                     modulesPath: modulesPath,
                     outputFile: outputFile,
                     injectFunctionName: injectFunctionName,
+                    injectMainActor: injectMainActor,
                     builderFunctionName: builderFunctionName,
                     packageFileName: packageFileName
                 )
